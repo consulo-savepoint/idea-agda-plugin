@@ -19,12 +19,14 @@
   </project-components>
 
   <actions>
+      <!--
       <group id="AgdaPlugin.AgdaMenu" text="Agda" description="Agda menu">
           <add-to-group group-id="MainMenu" anchor="last"  />
           <action id="agda-plugin.LoadCode" class="org.agda.actions.LoadCode" text="Load Code" description="A test menu item">
               <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift L"/>
           </action>
       </group>
+      -->
   </actions>
 
   <extensions defaultExtensionNs="com.intellij">
