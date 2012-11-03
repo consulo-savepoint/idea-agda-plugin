@@ -87,6 +87,10 @@ public class AgdaLexer extends LexerBase {
                     myTokenType = AgdaTokenTypes.R_PAREN;
                     break;
                 case '{':
+                    if (charAt(myBufferIndex + 1) == '-') {
+                        parseComment();
+                        return;
+                    }
                     myTokenType = AgdaTokenTypes.L_CURLY;
                     break;
                 case '}':
@@ -119,6 +123,24 @@ public class AgdaLexer extends LexerBase {
             myTokenType = AgdaTokenTypes.KEYWORD;
         } else {
             myTokenType = AgdaTokenTypes.VALUE_CHARACTERS;
+        }
+    }
+
+    private void parseComment() {
+        while (myTokenEndOffset < myBufferEndOffset) {
+            if (charAt(myBufferEndOffset - 2) == '-' && charAt(myBufferEndOffset - 1) == '}') {
+                break;
+            }
+            myTokenEndOffset++;
+        }
+        myTokenType = AgdaTokenTypes.COMMENT;
+    }
+
+    private char charAt(int i) {
+        if (i < myBuffer.length())  {
+            return myBuffer.charAt(i);
+        } else {
+            return 0;
         }
     }
 

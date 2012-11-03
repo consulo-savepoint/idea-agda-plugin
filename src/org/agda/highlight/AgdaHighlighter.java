@@ -65,8 +65,8 @@ public class AgdaHighlighter extends SyntaxHighlighterBase {
   static {
     keys1 = new THashMap<IElementType, TextAttributesKey>();
 
-    //keys1.put(AgdaTokenTypes.SPEC_CHARACTERS, KEYWORD_VALUE);
     keys1.put(AgdaTokenTypes.END_OF_LINE_COMMENT, COMMENT);
+    keys1.put(AgdaTokenTypes.COMMENT, COMMENT);
     keys1.put(AgdaTokenTypes.KEYWORD, KEYWORD_VALUE);
 
     keys1.put(StringEscapesTokenTypes.VALID_STRING_ESCAPE_TOKEN, PROPERTIES_VALID_STRING_ESCAPE);

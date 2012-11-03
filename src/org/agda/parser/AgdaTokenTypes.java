@@ -10,6 +10,7 @@ public interface AgdaTokenTypes {
   IElementType LINE_END = new AgdaElementType("NEW_LINE");
   IElementType BAD_CHARACTER = TokenType.BAD_CHARACTER;
 
+  IElementType COMMENT = new AgdaElementType("COMMENT");
   IElementType END_OF_LINE_COMMENT = new AgdaElementType("END_OF_LINE_COMMENT");
   IElementType VALUE_CHARACTERS = new AgdaElementType("VALUE_CHARACTERS");
   IElementType SPEC_CHARACTERS = new AgdaElementType("SPEC_CHARACTERS");
@@ -22,7 +23,7 @@ public interface AgdaTokenTypes {
   IElementType R_CURLY = new AgdaElementType("R_CURLY");
 
 
-  TokenSet COMMENTS = TokenSet.create(END_OF_LINE_COMMENT);
+  TokenSet COMMENTS = TokenSet.create(END_OF_LINE_COMMENT, COMMENT);
   TokenSet WHITESPACES = TokenSet.create(WHITE_SPACE, LINE_END);
 
 
