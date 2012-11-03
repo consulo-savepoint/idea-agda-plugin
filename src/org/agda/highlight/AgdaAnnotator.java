@@ -84,8 +84,11 @@ public final class AgdaAnnotator extends ExternalAnnotator<PsiFile, AnnotationRe
                 }
                 if (annotation instanceof GoalAnnotation) {
                     GoalAnnotation goalAnnotation = (GoalAnnotation) annotation;
-                    Integer startOffset = goals.get(goalAnnotation.getIndex());
-                    holder.createWarningAnnotation(new TextRange(startOffset, startOffset + 2), goalAnnotation.getText());
+                    int index = goalAnnotation.getIndex();
+                    if (index < goals.size()) {
+                        Integer startOffset = goals.get(index);
+                        holder.createWarningAnnotation(new TextRange(startOffset, startOffset + 2), goalAnnotation.getText());
+                    }
                 }
             }
 

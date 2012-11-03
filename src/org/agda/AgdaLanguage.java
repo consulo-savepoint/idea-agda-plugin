@@ -8,15 +8,15 @@ import org.agda.highlight.AgdaHighlighter;
 import org.jetbrains.annotations.NotNull;
 
 public class AgdaLanguage extends Language {
-  public static final AgdaLanguage INSTANCE = new AgdaLanguage();
+    public static final AgdaLanguage INSTANCE = new AgdaLanguage();
 
-  public AgdaLanguage() {
-    super("Agda", "text/agda");
-      SyntaxHighlighterFactory.LANGUAGE_FACTORY.addExplicitExtension(this, new SingleLazyInstanceSyntaxHighlighterFactory() {
-          @NotNull
-          protected SyntaxHighlighter createHighlighter() {
-              return new AgdaHighlighter();
-          }
-      });
-  }
+    public AgdaLanguage() {
+        super("Agda", "text/agda");
+        SyntaxHighlighterFactory.LANGUAGE_FACTORY.addExplicitExtension(this, new SingleLazyInstanceSyntaxHighlighterFactory() {
+            @NotNull
+            protected SyntaxHighlighter createHighlighter() {
+                return new AgdaHighlighter();
+            }
+        });
+    }
 }
