@@ -1,6 +1,6 @@
-package org.agda.highlight;
+package org.agda.ghci;
 
-public class AgdaCompilerMessage {
+public class AgdaCompilerMessage extends AgdaExernalAnnotation {
     private int myStart;
     private int myEnd;
     private String myText;

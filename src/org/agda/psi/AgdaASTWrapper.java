@@ -1,17 +1,15 @@
 package org.agda.psi;
 
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
-import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import com.intellij.util.IncorrectOperationException;
-import org.agda.ghci.AgdaExternalAnnotation;
+import org.agda.ghci.AgdaExernalAnnotation;
+import org.agda.ghci.AgdaSyntaxAnnotation;
 import org.agda.ghci.AnnotationContainer;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -24,9 +22,14 @@ public class AgdaASTWrapper extends AgdaBaseElement {
 
     @Override
     public PsiReference getReference() {
-        List<AgdaExternalAnnotation> myAnnotations = AnnotationContainer.INSTANCE.myAnnotations;
+        List<AgdaExernalAnnotation> myAnnotations = AnnotationContainer.INSTANCE.myAnnotations;
         if (myAnnotations != null) {
-            for (AgdaExternalAnnotation annotation: myAnnotations) {
+            for (AgdaExernalAnnotation exernalAnnotation: myAnnotations) {
+                if (!(exernalAnnotation instanceof AgdaSyntaxAnnotation)) {
+                    continue;
+                }
+                AgdaSyntaxAnnotation annotation = (AgdaSyntaxAnnotation) exernalAnnotation;
+
                 if (annotation.getStart() == getTextRange().getStartOffset()) {
                     if (annotation.getReference() != null) {
                         PsiElement current = this;

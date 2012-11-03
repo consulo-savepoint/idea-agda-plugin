@@ -48,4 +48,8 @@ public class SExpression {
     public SExpression get(int i) {
         return myChildren.get(i);
     }
+
+    public String getValue(int i) {
+        return get(i).getValue();
+    }
 }

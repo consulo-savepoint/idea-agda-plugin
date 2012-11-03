@@ -8,10 +8,9 @@ import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDocumentManager;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import org.agda.ghci.AgdaExternalAnnotation;
-import org.agda.ghci.AnnotationContainer;
-import org.agda.ghci.LaunchAgda;
+import org.agda.ghci.*;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -48,41 +47,62 @@ public final class AgdaAnnotator extends ExternalAnnotator<PsiFile, AnnotationRe
         VirtualFile file = psiFile.getVirtualFile();
         if (file == null)
             return null;
-        List<AgdaCompilerMessage> messages = new ArrayList<AgdaCompilerMessage>();
-        List<AgdaExternalAnnotation> agdaExternalAnnotations = LaunchAgda.load(file.getPath(), messages);
+
+        List<AgdaExernalAnnotation> agdaExternalAnnotations = LaunchAgda.load(file.getPath());
+
         if (agdaExternalAnnotations != null) {
             AnnotationContainer.INSTANCE.myAnnotations = agdaExternalAnnotations;
         }
-        return new AnnotationResult(file, agdaExternalAnnotations, messages);
+        return new AnnotationResult(file, agdaExternalAnnotations);
     }
 
     @Override
     public void apply(@NotNull PsiFile file, AnnotationResult result, @NotNull AnnotationHolder holder) {
         if (result == null)
             return;
+
+        List<Integer> goals = new ArrayList<Integer>();
+        findGoals(file, goals);
         if (result.myAnnotations != null) {
-            for (AgdaExternalAnnotation annotation: result.myAnnotations) {
-                if ("datatype".equals(annotation.getType())) {
-                    Annotation infoAnnotation = holder.createInfoAnnotation(
-                            new TextRange(annotation.getStart(), annotation.getEnd()), null);
-                    infoAnnotation.setTextAttributes(AgdaHighlighter.TYPE);
+            for (AgdaExernalAnnotation annotation: result.myAnnotations) {
+                if (annotation instanceof AgdaSyntaxAnnotation) {
+                    AgdaSyntaxAnnotation syntaxAnnotation = (AgdaSyntaxAnnotation) annotation;
+                    if ("datatype".equals(syntaxAnnotation.getType())) {
+                        Annotation infoAnnotation = holder.createInfoAnnotation(
+                            new TextRange(syntaxAnnotation.getStart(), syntaxAnnotation.getEnd()), null);
+                        infoAnnotation.setTextAttributes(AgdaHighlighter.TYPE);
+                    }
+                    if ("inductiveconstructor".equals(syntaxAnnotation.getType())) {
+                        Annotation infoAnnotation = holder.createInfoAnnotation(
+                                new TextRange(syntaxAnnotation.getStart(), syntaxAnnotation.getEnd()), null);
+                        infoAnnotation.setTextAttributes(AgdaHighlighter.CONSTRUCTOR);
+                    }
                 }
-                if ("inductiveconstructor".equals(annotation.getType())) {
-                    Annotation infoAnnotation = holder.createInfoAnnotation(
-                            new TextRange(annotation.getStart(), annotation.getEnd()), null);
-                    infoAnnotation.setTextAttributes(AgdaHighlighter.CONSTRUCTOR);
+                if (annotation instanceof AgdaCompilerMessage) {
+                    AgdaCompilerMessage message = (AgdaCompilerMessage)annotation;
+                    holder.createErrorAnnotation(new TextRange(message.getStart(), message.getEnd()), message.getText());
+                }
+                if (annotation instanceof GoalAnnotation) {
+                    GoalAnnotation goalAnnotation = (GoalAnnotation) annotation;
+                    Integer startOffset = goals.get(goalAnnotation.getIndex());
+                    holder.createWarningAnnotation(new TextRange(startOffset, startOffset + 2), goalAnnotation.getText());
                 }
             }
 
         }
-
-        showMessages(file, holder, result.myFile, result.myMessages);
     }
 
-    private static void showMessages(PsiFile psiFile, AnnotationHolder annotationHolder, VirtualFile file, List<AgdaCompilerMessage> ghcMessages) {
-        File mainFile = new File(file.getPath());
-        for (AgdaCompilerMessage agdaMessage : ghcMessages) {
-            annotationHolder.createErrorAnnotation(new TextRange(agdaMessage.getStart(), agdaMessage.getEnd()), agdaMessage.getText());
+    private void findGoals(PsiElement element, List<Integer> goals) {
+        PsiElement[] children = element.getChildren();
+        if (children.length == 0) {
+            if (element.getText().equals("!!")) {
+                        goals.add(element.getTextOffset());
+            }
+        } else {
+            for (PsiElement child: children) {
+                findGoals(child, goals);
+            }
         }
     }
+
 }

@@ -1,6 +1,6 @@
 package org.agda;
 
-import org.agda.ghci.AgdaExternalAnnotation;
+import org.agda.ghci.AgdaSyntaxAnnotation;
 import org.agda.ghci.GHCIProcess;
 import org.agda.lisp.LispParser;
 import org.agda.lisp.SExpression;
@@ -27,7 +27,7 @@ public class TestGhci {
             process.stop();
 
             SExpression expr = new LispParser(FileUtil.readFile(temp)).parseExpression();
-            List<AgdaExternalAnnotation> annotations = AgdaExternalAnnotation.parse(expr);
+            List<AgdaSyntaxAnnotation> annotations = AgdaSyntaxAnnotation.parse(expr);
 
         } catch(Exception e) {
             e.printStackTrace();

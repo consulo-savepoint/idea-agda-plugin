@@ -4,7 +4,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
-import org.agda.ghci.AgdaExternalAnnotation;
+import org.agda.ghci.AgdaSyntaxAnnotation;
 import org.agda.ghci.LaunchAgda;
 
 import java.io.File;
@@ -22,9 +22,6 @@ public class LoadCode extends AnAction {
         Project project = event.getData(PlatformDataKeys.PROJECT);
         VirtualFile virtualFile = event.getData(PlatformDataKeys.VIRTUAL_FILE);
         String path = virtualFile.getPath();
-        if (path.endsWith(".agda") && new File(path).exists()) {
-            List<AgdaExternalAnnotation> messages = LaunchAgda.load(path, null);
-        }
     }
 
 }
