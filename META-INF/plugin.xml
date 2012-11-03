@@ -1,0 +1,42 @@
+<idea-plugin version="2">
+  <name>Agda Support</name>
+  <description>Language plugin for Agda</description>
+  <version>0.1</version>
+  <vendor>JetBrains</vendor>
+
+  <!-- please see http://confluence.jetbrains.net/display/IDEADEV/Build+Number+Ranges for description -->
+  <idea-version since-build="107.105"/>
+
+  <application-components>
+    <!-- Add your application components here -->
+  </application-components>
+
+  <project-components>
+      <component>
+          <implementation-class>org.agda.compiler.AgdaCompilerProjectComponent</implementation-class>
+      </component>
+
+  </project-components>
+
+  <actions>
+      <group id="AgdaPlugin.AgdaMenu" text="Agda" description="Agda menu">
+          <add-to-group group-id="MainMenu" anchor="last"  />
+          <action id="agda-plugin.LoadCode" class="org.agda.actions.LoadCode" text="Load Code" description="A test menu item">
+              <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift L"/>
+          </action>
+      </group>
+  </actions>
+
+  <extensions defaultExtensionNs="com.intellij">
+      <fileTypeFactory implementation="org.agda.AgdaFileTypeFactory"/>
+      <externalAnnotator implementationClass="org.agda.highlight.AgdaAnnotator" language="Agda"/>
+      <lang.braceMatcher language="Agda"
+                         implementationClass="org.agda.highlight.AgdaBraceMatcher"/>
+      <lang.parserDefinition language="Agda"
+                             implementationClass="org.agda.parser.AgdaParserDefinition"/>
+      <lang.syntaxHighlighterFactory key="Agda"
+                                     implementationClass="org.agda.highlight.AgdaHighlighterFactory"/>
+      <lang.fileViewProviderFactory language="Agda"
+                                    implementationClass="org.agda.AgdaFileViewProviderFactory"/>
+  </extensions>
+</idea-plugin>
