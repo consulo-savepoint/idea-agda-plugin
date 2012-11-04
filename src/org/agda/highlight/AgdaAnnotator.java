@@ -48,7 +48,7 @@ public final class AgdaAnnotator extends ExternalAnnotator<PsiFile, AnnotationRe
         if (file == null)
             return null;
 
-        List<AgdaExernalAnnotation> agdaExternalAnnotations = LaunchAgda.load(file.getPath());
+        List<AgdaExernalAnnotation> agdaExternalAnnotations = LaunchAgda.load(file.getPath(), psiFile.getProject());
 
         if (agdaExternalAnnotations != null) {
             AnnotationContainer.INSTANCE.myAnnotations = agdaExternalAnnotations;

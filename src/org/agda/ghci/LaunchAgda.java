@@ -1,6 +1,7 @@
 package org.agda.ghci;
 
 
+import com.intellij.openapi.project.Project;
 import org.agda.lisp.LispParser;
 import org.agda.lisp.SExpression;
 import org.agda.util.FileUtil;
@@ -60,11 +61,15 @@ public class LaunchAgda {
         return path.replace("\\", "\\\\");
     }
 
-    public static List<AgdaExernalAnnotation> load(String path) {
+    public static List<AgdaExernalAnnotation> load(String path, Project project) {
 
         try {
-            GHCIProcess ghciProcess = new GHCIProcess();
-            ghciProcess.init();
+            GhciProjectComponent component = project.getComponent(GhciProjectComponent.class);
+            if (component == null) {
+                return null;
+            }
+            GHCIProcess ghciProcess = component.getProcess();
+
             File agdaFile = new File(path);
             File tempFile = new File(path + ".tmp");
 
@@ -72,7 +77,6 @@ public class LaunchAgda {
 
             String text = ghciProcess.execute(cmd);
 
-            ghciProcess.stop();
             System.out.println("[" + text + "]");
             List<SExpression> results = GHCIProcess.getResults(text);
 

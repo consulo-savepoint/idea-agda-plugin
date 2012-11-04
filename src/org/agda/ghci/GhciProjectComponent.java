@@ -34,7 +34,7 @@ public final class GhciProjectComponent implements ProjectComponent {
 
     @NotNull
     public String getComponentName() {
-        return "AgdaCompilerComponent";
+        return "GhciProjectComponent";
     }
 
     public void initComponent() {

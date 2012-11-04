@@ -20,6 +20,10 @@
           <implementation-class>org.agda.compiler.AgdaCompilerProjectComponent</implementation-class>
       </component>
 
+      <component>
+          <implementation-class>org.agda.ghci.GhciProjectComponent</implementation-class>
+      </component>
+
   </project-components>
 
   <actions>
