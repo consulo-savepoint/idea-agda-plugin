@@ -26,6 +26,8 @@ public class CodeAutoReplaceComponent implements ProjectComponent {
         mySubstitutionsRules.put("->", "→");
         mySubstitutionsRules.put("\\::", "∷");
         mySubstitutionsRules.put("\\bn", "ℕ");
+        mySubstitutionsRules.put("\\all", "∀");
+        mySubstitutionsRules.put("\\==", "≡");
     }
 
     @Override

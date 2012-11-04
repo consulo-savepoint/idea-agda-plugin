@@ -22,7 +22,7 @@ public class AgdaLexer extends LexerBase {
             "open",       "unquote",     "constructor",
             "postulate",  "using",       "data",
             "primitive",  "where",       "field",
-            "Prop",       "with"}));
+            "Prop",       "with",        "∀"}));
 
     private CharSequence myBuffer;
     private int myBufferIndex;
