@@ -13,6 +13,10 @@
 
   <project-components>
       <component>
+          <implementation-class>org.agda.CodeAutoReplaceComponent</implementation-class>
+      </component>
+
+      <component>
           <implementation-class>org.agda.compiler.AgdaCompilerProjectComponent</implementation-class>
       </component>
 

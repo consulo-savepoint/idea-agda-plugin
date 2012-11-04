@@ -24,9 +24,6 @@ public class AgdaPsiBuilder {
             return new AgdaModule(node, children.toArray(new PsiElement[children.size()]));
         } else {
         */
-        if (" ".equals(node.getText())) {
-            System.out.println("");
-        }
         return new AgdaASTWrapper(node);
         //}
     }
