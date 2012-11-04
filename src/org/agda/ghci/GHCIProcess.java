@@ -5,6 +5,7 @@ import org.agda.lisp.LispParser;
 import org.agda.lisp.SExpression;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,9 +20,23 @@ public class GHCIProcess {
     public static String readData(InputStream input, int timeout, String s) throws IOException {
         StringBuilder builder = new StringBuilder();
         long time = System.currentTimeMillis();
+        byte[] bigBuffer = new byte[0];
         while (true) {
             int available = input.available();
             if (available == 0) {
+                if (bigBuffer.length > 0) {
+                    ByteArrayInputStream stream = new ByteArrayInputStream(bigBuffer);
+                    InputStreamReader inputStreamReader = new InputStreamReader(stream, "UTF-8");
+                    int ch;
+                    while ((ch = inputStreamReader.read()) != -1) {
+                        builder.append((char) ch);
+                    }
+                    String str = builder.toString();
+                    if (str.contains(s)) {
+                        break;
+                    }
+                    continue;
+                }
                 long diff = System.currentTimeMillis() - time;
                 if (diff > timeout) {
                     System.out.println("Time out: " + diff  );
@@ -35,19 +50,12 @@ public class GHCIProcess {
                 }
             } else {
                 time = System.currentTimeMillis();
-                byte[] buffer = new byte[available];
-                input.read(buffer);
 
-                ByteArrayInputStream stream = new ByteArrayInputStream(buffer);
-                InputStreamReader inputStreamReader = new InputStreamReader(stream);
-                int ch;
-                while ((ch = inputStreamReader.read()) != -1) {
-                    builder.append((char) ch);
-                }
-                String str = builder.toString();
-                if (str.contains(s)) {
-                    break;
-                }
+                final byte[] newBigBuffer = new byte[bigBuffer.length + available];
+                System.arraycopy(bigBuffer, 0, newBigBuffer, 0, bigBuffer.length);
+                input.read(newBigBuffer, bigBuffer.length, available);
+
+                bigBuffer = newBigBuffer;
             }
         }
         return builder.toString();
