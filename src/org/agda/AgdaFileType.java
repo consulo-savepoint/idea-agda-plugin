@@ -32,7 +32,7 @@ public class AgdaFileType extends LanguageFileType {
 
     @NotNull
     public String getName() {
-        return "Properties";
+        return "Agda file";
     }
 
     @NotNull
@@ -50,8 +50,6 @@ public class AgdaFileType extends LanguageFileType {
     }
 
     public String getCharset(@NotNull VirtualFile file, final byte[] content) {
-        Charset charset = EncodingManager.getInstance().getDefaultCharsetForPropertiesFiles(file);
-        String defaultCharsetName = charset == null ? CharsetToolkit.getDefaultSystemCharset().name() : charset.name();
-        return defaultCharsetName;
+        return "UTF-8";
     }
 }

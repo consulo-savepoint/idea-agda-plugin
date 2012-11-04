@@ -23,7 +23,7 @@ public class CodeAutoReplaceComponent implements ProjectComponent {
 
     public CodeAutoReplaceComponent(Project project) {
         this.myProject = project;
-        mySubstitutionsRules.put("->", "→");
+        mySubstitutionsRules.put("\\to", "→");
         mySubstitutionsRules.put("\\::", "∷");
         mySubstitutionsRules.put("\\bn", "ℕ");
         mySubstitutionsRules.put("\\all", "∀");
