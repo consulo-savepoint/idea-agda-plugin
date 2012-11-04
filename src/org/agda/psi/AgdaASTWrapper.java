@@ -1,14 +1,13 @@
 package org.agda.psi;
 
 import com.intellij.lang.ASTNode;
-import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
 import com.intellij.util.IncorrectOperationException;
-import org.agda.ghci.AgdaExernalAnnotation;
+import org.agda.ghci.AgdaExternalAnnotation;
 import org.agda.ghci.AgdaSyntaxAnnotation;
 import org.agda.ghci.AnnotationContainer;
 import org.jetbrains.annotations.NotNull;
@@ -26,13 +25,21 @@ public class AgdaASTWrapper extends AgdaBaseElement {
 
     @Override
     public PsiReference getReference() {
-        List<AgdaExernalAnnotation> myAnnotations = AnnotationContainer.INSTANCE.myAnnotations;
+        PsiElement current = this;
+        while (!(current instanceof PsiFile)) {
+            current = current.getParent();
+        }
+        AnnotationContainer container = current.getUserData(AnnotationContainer.KEY);
+        if (container == null) {
+            return null;
+        }
+        List<AgdaExternalAnnotation> myAnnotations = container.myAnnotations;
         if (myAnnotations != null) {
-            for (AgdaExernalAnnotation exernalAnnotation: myAnnotations) {
-                if (!(exernalAnnotation instanceof AgdaSyntaxAnnotation)) {
+            for (AgdaExternalAnnotation externalAnnotation : myAnnotations) {
+                if (!(externalAnnotation instanceof AgdaSyntaxAnnotation)) {
                     continue;
                 }
-                AgdaSyntaxAnnotation annotation = (AgdaSyntaxAnnotation) exernalAnnotation;
+                AgdaSyntaxAnnotation annotation = (AgdaSyntaxAnnotation) externalAnnotation;
                 if (annotation.getStart() == getTextRange().getStartOffset()) {
                     if (annotation.getReference() != null) {
                         return createRefercence(annotation, getProject());

@@ -3,7 +3,7 @@ package org.agda.ghci;
 /**
  * @author Evgeny.Kurbatsky
  */
-public class GoalAnnotation extends AgdaExernalAnnotation {
+public class GoalAnnotation extends AgdaExternalAnnotation {
 
     private int myIndex;
     private String myText;

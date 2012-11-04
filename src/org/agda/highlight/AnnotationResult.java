@@ -1,17 +1,15 @@
 package org.agda.highlight;
 
 import com.intellij.openapi.vfs.VirtualFile;
-import org.agda.ghci.AgdaCompilerMessage;
-import org.agda.ghci.AgdaExernalAnnotation;
-import org.agda.ghci.AgdaSyntaxAnnotation;
+import org.agda.ghci.AgdaExternalAnnotation;
 
 import java.util.List;
 
 public class AnnotationResult {
     VirtualFile myFile;
-    List<AgdaExernalAnnotation> myAnnotations;
+    List<AgdaExternalAnnotation> myAnnotations;
 
-    public AnnotationResult(VirtualFile file, List<AgdaExernalAnnotation> annotations) {
+    public AnnotationResult(VirtualFile file, List<AgdaExternalAnnotation> annotations) {
         myFile = file;
         myAnnotations = annotations;
     }

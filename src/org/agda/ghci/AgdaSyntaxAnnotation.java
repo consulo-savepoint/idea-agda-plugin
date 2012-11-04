@@ -6,7 +6,7 @@ import org.agda.lisp.SExpression;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AgdaSyntaxAnnotation extends AgdaExernalAnnotation {
+public class AgdaSyntaxAnnotation extends AgdaExternalAnnotation {
     private int myStart;
     private int myEnd;
     private String myType;

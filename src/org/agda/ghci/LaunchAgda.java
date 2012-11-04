@@ -8,12 +8,11 @@ import org.agda.util.FileUtil;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class LaunchAgda {
 
-    public static boolean parseResult(List<SExpression> results, List<AgdaExernalAnnotation> messages) {
+    public static boolean parseResult(List<SExpression> results, List<AgdaExternalAnnotation> messages) {
         String errorMessage = null;
         for (SExpression expression: results) {
             if ("Checked".equals(expression.get(1).getValue())) {
@@ -33,8 +32,8 @@ public class LaunchAgda {
         return false;
     }
 
-    private static List<AgdaExernalAnnotation> getGoals(String data) {
-        List<AgdaExernalAnnotation> annotations = new ArrayList<AgdaExernalAnnotation>();
+    private static List<AgdaExternalAnnotation> getGoals(String data) {
+        List<AgdaExternalAnnotation> annotations = new ArrayList<AgdaExternalAnnotation>();
         int index = 0;
         for (String str: data.split("\n")) {
             int i = str.indexOf(": ");
@@ -61,7 +60,7 @@ public class LaunchAgda {
         return path.replace("\\", "\\\\");
     }
 
-    public static List<AgdaExernalAnnotation> load(String path, Project project) {
+    public static List<AgdaExternalAnnotation> load(String path, Project project) {
 
         try {
             GhciProjectComponent component = project.getComponent(GhciProjectComponent.class);
@@ -80,7 +79,7 @@ public class LaunchAgda {
             System.out.println("[" + text + "]");
             List<SExpression> results = GHCIProcess.getResults(text);
 
-            List<AgdaExernalAnnotation> messages = new ArrayList<AgdaExernalAnnotation>();
+            List<AgdaExternalAnnotation> messages = new ArrayList<AgdaExternalAnnotation>();
             LaunchAgda.parseResult(results, messages);
             if (tempFile.exists()) {
                 SExpression expression = new LispParser(FileUtil.readFile(tempFile)).parseExpression();

@@ -14,7 +14,6 @@ import org.agda.ghci.*;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
-import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,10 +47,11 @@ public final class AgdaAnnotator extends ExternalAnnotator<PsiFile, AnnotationRe
         if (file == null)
             return null;
 
-        List<AgdaExernalAnnotation> agdaExternalAnnotations = LaunchAgda.load(file.getPath(), psiFile.getProject());
+        List<AgdaExternalAnnotation> agdaExternalAnnotations = LaunchAgda.load(file.getPath(), psiFile.getProject());
+
 
         if (agdaExternalAnnotations != null) {
-            AnnotationContainer.INSTANCE.myAnnotations = agdaExternalAnnotations;
+            psiFile.putUserData(AnnotationContainer.KEY, new AnnotationContainer(agdaExternalAnnotations));
         }
         return new AnnotationResult(file, agdaExternalAnnotations);
     }
@@ -64,7 +64,7 @@ public final class AgdaAnnotator extends ExternalAnnotator<PsiFile, AnnotationRe
         List<Integer> goals = new ArrayList<Integer>();
         findGoals(file, goals);
         if (result.myAnnotations != null) {
-            for (AgdaExernalAnnotation annotation: result.myAnnotations) {
+            for (AgdaExternalAnnotation annotation: result.myAnnotations) {
                 if (annotation instanceof AgdaSyntaxAnnotation) {
                     AgdaSyntaxAnnotation syntaxAnnotation = (AgdaSyntaxAnnotation) annotation;
                     if ("datatype".equals(syntaxAnnotation.getType())) {
