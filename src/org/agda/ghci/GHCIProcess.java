@@ -32,6 +32,7 @@ public class GHCIProcess {
                         builder.append((char) ch);
                     }
                     String str = builder.toString();
+                    bigBuffer = new byte[0];
                     if (str.contains(s)) {
                         break;
                     }
