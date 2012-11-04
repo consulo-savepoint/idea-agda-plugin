@@ -128,7 +128,7 @@ public class AgdaLexer extends LexerBase {
 
     private void parseComment() {
         while (myTokenEndOffset < myBufferEndOffset) {
-            if (charAt(myBufferEndOffset - 2) == '-' && charAt(myBufferEndOffset - 1) == '}') {
+            if (charAt(myTokenEndOffset - 2) == '-' && charAt(myTokenEndOffset - 1) == '}') {
                 break;
             }
             myTokenEndOffset++;
