@@ -73,6 +73,7 @@ public class LaunchAgda {
             File tempFile = new File(path + ".tmp");
 
             String cmd = "ioTCM \"" + esc(agdaFile.getPath()) + "\" (Just \"" + esc(tempFile.getPath()) + "\") (cmd_load \"" + esc(agdaFile.getPath()) + "\" [])\n";
+            System.out.println(cmd);
 
             String text = ghciProcess.execute(cmd);
 

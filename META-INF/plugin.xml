@@ -44,6 +44,8 @@
                          implementationClass="org.agda.highlight.AgdaBraceMatcher"/>
       <lang.parserDefinition language="Agda"
                              implementationClass="org.agda.parser.AgdaParserDefinition"/>
+      <lang.findUsagesProvider language="Agda"
+                               implementationClass="org.agda.findUssages.AgdaFindUsagesProvider"/>
       <lang.syntaxHighlighterFactory key="Agda"
                                      implementationClass="org.agda.highlight.AgdaHighlighterFactory"/>
       <lang.fileViewProviderFactory language="Agda"

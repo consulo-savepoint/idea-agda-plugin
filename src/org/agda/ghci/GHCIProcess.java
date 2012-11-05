@@ -76,11 +76,11 @@ public class GHCIProcess {
         execute(":module Agda.Interaction.GhciTop\n", ">");
     }
 
-    public String execute(String cmd) throws IOException {
+    public synchronized String execute(String cmd) throws IOException {
         return execute(cmd, "Agda.Interaction.GhciTop>");
     }
 
-    public String execute(String cmd, String waitFor) throws IOException {
+    public synchronized String execute(String cmd, String waitFor) throws IOException {
         myWriter.write(cmd);
         myWriter.flush();
         return GHCIProcess.readData(myInput, 10000, waitFor);

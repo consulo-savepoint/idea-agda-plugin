@@ -11,6 +11,7 @@ import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import org.agda.ghci.*;
+import org.agda.psi.AgdaASTWrapper;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -55,13 +56,16 @@ public final class AgdaAnnotator extends ExternalAnnotator<PsiFile, AnnotationRe
         return new AnnotationResult(file, agdaExternalAnnotations);
     }
 
-    private void applyAnnotations(PsiFile file, List<AgdaExternalAnnotation> agdaExternalAnnotations) {
+    public static void applyAnnotations(PsiFile file, List<AgdaExternalAnnotation> agdaExternalAnnotations) {
         for (AgdaExternalAnnotation annotation : agdaExternalAnnotations) {
             if (annotation instanceof AgdaSyntaxAnnotation) {
                 PsiElement element = file.findElementAt(((AgdaSyntaxAnnotation) annotation).getStart());
 
                 if (element != null) {
-                    element.getParent().putUserData(AgdaSyntaxAnnotation.SYNTAX, (AgdaSyntaxAnnotation) annotation);
+                    if (element instanceof AgdaASTWrapper) {
+                        ((AgdaASTWrapper) element).isLoaded = true;
+                    }
+                    element.putUserData(AgdaSyntaxAnnotation.SYNTAX, (AgdaSyntaxAnnotation) annotation);
                 }
             }
         }

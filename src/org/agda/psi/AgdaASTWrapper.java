@@ -6,14 +6,21 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
+import com.intellij.psi.impl.source.tree.LeafPsiElement;
 import com.intellij.util.IncorrectOperationException;
+import org.agda.ghci.AgdaExternalAnnotation;
 import org.agda.ghci.AgdaSyntaxAnnotation;
+import org.agda.ghci.LaunchAgda;
+import org.agda.highlight.AgdaAnnotator;
+import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.util.List;
 
 
-public class AgdaASTWrapper extends AgdaBaseElement {
+public class AgdaASTWrapper extends AgdaBaseElement implements PsiNamedElement {
+    public boolean isLoaded = false;
 
     public AgdaASTWrapper(ASTNode node) {
         super(node);
@@ -22,6 +29,9 @@ public class AgdaASTWrapper extends AgdaBaseElement {
 
     @Override
     public PsiReference getReference() {
+        if (!isLoaded) {
+            loadAnnotations();
+        }
         PsiElement current = this;
         while (!(current instanceof PsiFile)) {
             current = current.getParent();
@@ -36,6 +46,25 @@ public class AgdaASTWrapper extends AgdaBaseElement {
             return createRefercence(syntaxAnnotation, getProject());
         }
         return null;
+    }
+
+    private void loadAnnotations() {
+        PsiElement element = this;
+        while (!(element instanceof PsiFile)) {
+            element = element.getParent();
+        }
+        PsiFile psiFile = (PsiFile) element;
+
+        VirtualFile file = psiFile.getVirtualFile();
+        if (file == null)
+            return;
+
+        List<AgdaExternalAnnotation> agdaExternalAnnotations = LaunchAgda.load(file.getPath(), psiFile.getProject());
+
+        if (agdaExternalAnnotations != null) {
+            AgdaAnnotator.applyAnnotations(psiFile, agdaExternalAnnotations);
+        }
+        isLoaded = true;
     }
 
     private PsiReference createRefercence(AgdaSyntaxAnnotation annotation, Project project) {
@@ -87,5 +116,34 @@ public class AgdaASTWrapper extends AgdaBaseElement {
             };
         }
         return null;
+    }
+
+
+    @Override
+    public String getName() {
+        return getText();
+    }
+
+    @Override
+    public PsiElement getFirstChild() {
+        ASTNode firstChildNode = getNode().getFirstChildNode();
+        if (firstChildNode instanceof LeafPsiElement) {
+            return null;
+        }
+        return super.getFirstChild();
+    }
+
+    @Override
+    public PsiElement findElementAt(int offset) {
+        PsiElement elementAt = super.findElementAt(offset);
+        if (elementAt instanceof LeafPsiElement) {
+            return elementAt.getParent();
+        }
+        return elementAt;
+    }
+
+    @Override
+    public PsiElement setName(@NonNls @NotNull String name) throws IncorrectOperationException {
+        throw new IncorrectOperationException();
     }
 }

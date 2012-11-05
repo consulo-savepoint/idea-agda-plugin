@@ -10,7 +10,7 @@ import java.util.Set;
 
 
 public class AgdaLexer extends LexerBase {
-    private static Set<Character> SPEC_CHARACTERS = new HashSet<Character>(Lists.charactersOf("_;.’”(){}@"));
+    private static Set<Character> SPEC_CHARACTERS = new HashSet<Character>(Lists.charactersOf(";.’”(){}@"));
     private static Set<String> KEYWORDS = new HashSet<String>(Arrays.asList(new String[]{
             "forall",     "private",     "hiding",
             "public",     "import",      "quoteGoal",
