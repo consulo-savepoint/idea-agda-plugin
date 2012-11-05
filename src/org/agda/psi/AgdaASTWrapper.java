@@ -7,13 +7,10 @@ import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
 import com.intellij.util.IncorrectOperationException;
-import org.agda.ghci.AgdaExternalAnnotation;
 import org.agda.ghci.AgdaSyntaxAnnotation;
-import org.agda.ghci.AnnotationContainer;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.util.List;
 
 
 public class AgdaASTWrapper extends AgdaBaseElement {
@@ -29,23 +26,14 @@ public class AgdaASTWrapper extends AgdaBaseElement {
         while (!(current instanceof PsiFile)) {
             current = current.getParent();
         }
-        AnnotationContainer container = current.getUserData(AnnotationContainer.KEY);
-        if (container == null) {
+        AgdaSyntaxAnnotation syntaxAnnotation = getUserData(AgdaSyntaxAnnotation.SYNTAX);
+
+        if (syntaxAnnotation == null) {
             return null;
         }
-        List<AgdaExternalAnnotation> myAnnotations = container.myAnnotations;
-        if (myAnnotations != null) {
-            for (AgdaExternalAnnotation externalAnnotation : myAnnotations) {
-                if (!(externalAnnotation instanceof AgdaSyntaxAnnotation)) {
-                    continue;
-                }
-                AgdaSyntaxAnnotation annotation = (AgdaSyntaxAnnotation) externalAnnotation;
-                if (annotation.getStart() == getTextRange().getStartOffset()) {
-                    if (annotation.getReference() != null) {
-                        return createRefercence(annotation, getProject());
-                    }
-                }
-            }
+
+        if (syntaxAnnotation.getReference() != null) {
+            return createRefercence(syntaxAnnotation, getProject());
         }
         return null;
     }

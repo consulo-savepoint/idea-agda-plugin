@@ -49,11 +49,22 @@ public final class AgdaAnnotator extends ExternalAnnotator<PsiFile, AnnotationRe
 
         List<AgdaExternalAnnotation> agdaExternalAnnotations = LaunchAgda.load(file.getPath(), psiFile.getProject());
 
-
         if (agdaExternalAnnotations != null) {
-            psiFile.putUserData(AnnotationContainer.KEY, new AnnotationContainer(agdaExternalAnnotations));
+            applyAnnotations(psiFile, agdaExternalAnnotations);
         }
         return new AnnotationResult(file, agdaExternalAnnotations);
+    }
+
+    private void applyAnnotations(PsiFile file, List<AgdaExternalAnnotation> agdaExternalAnnotations) {
+        for (AgdaExternalAnnotation annotation : agdaExternalAnnotations) {
+            if (annotation instanceof AgdaSyntaxAnnotation) {
+                PsiElement element = file.findElementAt(((AgdaSyntaxAnnotation) annotation).getStart());
+
+                if (element != null) {
+                    element.getParent().putUserData(AgdaSyntaxAnnotation.SYNTAX, (AgdaSyntaxAnnotation) annotation);
+                }
+            }
+        }
     }
 
     @Override
@@ -63,23 +74,12 @@ public final class AgdaAnnotator extends ExternalAnnotator<PsiFile, AnnotationRe
 
         List<Integer> goals = new ArrayList<Integer>();
         findGoals(file, goals);
+        applySyntax(file, holder);
         if (result.myAnnotations != null) {
-            for (AgdaExternalAnnotation annotation: result.myAnnotations) {
-                if (annotation instanceof AgdaSyntaxAnnotation) {
-                    AgdaSyntaxAnnotation syntaxAnnotation = (AgdaSyntaxAnnotation) annotation;
-                    if ("datatype".equals(syntaxAnnotation.getType())) {
-                        Annotation infoAnnotation = holder.createInfoAnnotation(
-                            new TextRange(syntaxAnnotation.getStart(), syntaxAnnotation.getEnd()), null);
-                        infoAnnotation.setTextAttributes(AgdaHighlighter.TYPE);
-                    }
-                    if ("inductiveconstructor".equals(syntaxAnnotation.getType())) {
-                        Annotation infoAnnotation = holder.createInfoAnnotation(
-                                new TextRange(syntaxAnnotation.getStart(), syntaxAnnotation.getEnd()), null);
-                        infoAnnotation.setTextAttributes(AgdaHighlighter.CONSTRUCTOR);
-                    }
-                }
+            for (AgdaExternalAnnotation annotation : result.myAnnotations) {
+
                 if (annotation instanceof AgdaCompilerMessage) {
-                    AgdaCompilerMessage message = (AgdaCompilerMessage)annotation;
+                    AgdaCompilerMessage message = (AgdaCompilerMessage) annotation;
                     holder.createErrorAnnotation(new TextRange(message.getStart(), message.getEnd()), message.getText());
                 }
                 if (annotation instanceof GoalAnnotation) {
@@ -95,14 +95,37 @@ public final class AgdaAnnotator extends ExternalAnnotator<PsiFile, AnnotationRe
         }
     }
 
+    private void applySyntax(PsiElement element, AnnotationHolder holder) {
+        PsiElement[] children = element.getChildren();
+        if (children.length == 0) {
+            AgdaSyntaxAnnotation annotation = element.getUserData(AgdaSyntaxAnnotation.SYNTAX);
+            if (annotation != null) {
+                if ("datatype".equals(annotation.getType())) {
+                    Annotation infoAnnotation = holder.createInfoAnnotation(
+                            new TextRange(annotation.getStart(), annotation.getEnd()), null);
+                    infoAnnotation.setTextAttributes(AgdaHighlighter.TYPE);
+                }
+                if ("inductiveconstructor".equals(annotation.getType())) {
+                    Annotation infoAnnotation = holder.createInfoAnnotation(
+                            new TextRange(annotation.getStart(), annotation.getEnd()), null);
+                    infoAnnotation.setTextAttributes(AgdaHighlighter.CONSTRUCTOR);
+                }
+            }
+        } else {
+            for (PsiElement child : children) {
+                applySyntax(child, holder);
+            }
+        }
+    }
+
     private void findGoals(PsiElement element, List<Integer> goals) {
         PsiElement[] children = element.getChildren();
         if (children.length == 0) {
             if (element.getText().equals("!!")) {
-                        goals.add(element.getTextOffset());
+                goals.add(element.getTextOffset());
             }
         } else {
-            for (PsiElement child: children) {
+            for (PsiElement child : children) {
                 findGoals(child, goals);
             }
         }

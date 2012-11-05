@@ -1,12 +1,14 @@
 package org.agda.ghci;
 
 
+import com.intellij.openapi.util.Key;
 import org.agda.lisp.SExpression;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class AgdaSyntaxAnnotation extends AgdaExternalAnnotation {
+    public static Key<AgdaSyntaxAnnotation> SYNTAX = new Key<AgdaSyntaxAnnotation>("SYNTAX");
     private int myStart;
     private int myEnd;
     private String myType;
