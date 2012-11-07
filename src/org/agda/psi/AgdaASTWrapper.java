@@ -10,6 +10,7 @@ import com.intellij.psi.impl.source.tree.LeafPsiElement;
 import com.intellij.util.IncorrectOperationException;
 import org.agda.ghci.AgdaExternalAnnotation;
 import org.agda.ghci.AgdaSyntaxAnnotation;
+import org.agda.ghci.GhciProjectComponent;
 import org.agda.ghci.LaunchAgda;
 import org.agda.highlight.AgdaAnnotator;
 import org.jetbrains.annotations.NonNls;
@@ -20,7 +21,7 @@ import java.util.List;
 
 
 public class AgdaASTWrapper extends AgdaBaseElement implements PsiNamedElement {
-    public boolean isLoaded = false;
+    public volatile boolean isLoaded = false;
 
     public AgdaASTWrapper(ASTNode node) {
         super(node);
@@ -43,7 +44,7 @@ public class AgdaASTWrapper extends AgdaBaseElement implements PsiNamedElement {
         }
 
         if (syntaxAnnotation.getReference() != null) {
-            return createRefercence(syntaxAnnotation, getProject());
+            return createReference(syntaxAnnotation, getProject());
         }
         return null;
     }
@@ -58,16 +59,20 @@ public class AgdaASTWrapper extends AgdaBaseElement implements PsiNamedElement {
         VirtualFile file = psiFile.getVirtualFile();
         if (file == null)
             return;
-
-        List<AgdaExternalAnnotation> agdaExternalAnnotations = LaunchAgda.load(file.getPath(), psiFile.getProject());
-
-        if (agdaExternalAnnotations != null) {
-            AgdaAnnotator.applyAnnotations(psiFile, agdaExternalAnnotations);
+        synchronized (getProject().getComponent(GhciProjectComponent.class)) {
+            if (isLoaded) {
+                return;
+            }
+            List<AgdaExternalAnnotation> agdaExternalAnnotations = LaunchAgda.load(file.getPath(), psiFile.getProject());
+            if (agdaExternalAnnotations != null) {
+                AgdaAnnotator.applyAnnotations(psiFile, agdaExternalAnnotations);
+            }
         }
+
         isLoaded = true;
     }
 
-    private PsiReference createRefercence(AgdaSyntaxAnnotation annotation, Project project) {
+    private PsiReference createReference(AgdaSyntaxAnnotation annotation, Project project) {
         VirtualFile virtualFile = LocalFileSystem.getInstance().findFileByIoFile(new File(annotation.getReference()));
         PsiElement current = PsiManager.getInstance(project).findFile(virtualFile);
         while (current instanceof AgdaBaseElement) {
@@ -121,7 +126,14 @@ public class AgdaASTWrapper extends AgdaBaseElement implements PsiNamedElement {
 
     @Override
     public String getName() {
-        return getText();
+        String name = getText();
+        if (name.startsWith("_")) {
+            name = name.substring(1);
+        }
+        if (name.endsWith("_")) {
+            name = name.substring(0, name.length() - 1);
+        }
+        return name;
     }
 
     @Override

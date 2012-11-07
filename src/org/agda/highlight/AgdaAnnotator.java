@@ -1,14 +1,19 @@
 package org.agda.highlight;
 
+import com.intellij.ide.impl.PsiElementArrayDataValidator;
 import com.intellij.lang.annotation.Annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.ExternalAnnotator;
+import com.intellij.openapi.application.Application;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.PsiFile;
 import org.agda.ghci.*;
 import org.agda.psi.AgdaASTWrapper;
@@ -28,21 +33,26 @@ public final class AgdaAnnotator extends ExternalAnnotator<PsiFile, AnnotationRe
 
     @Override
     public AnnotationResult doAnnotate(final PsiFile psiFile) {
-
         try {
             SwingUtilities.invokeAndWait(new Runnable() {
                 @Override
                 public void run() {
-                    Document document = PsiDocumentManager.getInstance(psiFile.getProject()).getDocument(psiFile);
-                    FileDocumentManager.getInstance().saveDocument(document);
+                    ApplicationManager.getApplication().runWriteAction(new Runnable() {
+                        @Override
+                        public void run() {
+                            synchronized (psiFile.getProject().getComponent(GhciProjectComponent.class)) {
+                                Document document = PsiDocumentManager.getInstance(psiFile.getProject()).getDocument(psiFile);
+                                FileDocumentManager.getInstance().saveDocument(document);
+                            }
+                        }
+                    });
                 }
             });
         } catch (InterruptedException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         } catch (InvocationTargetException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         }
-
 
         VirtualFile file = psiFile.getVirtualFile();
         if (file == null)
@@ -69,6 +79,14 @@ public final class AgdaAnnotator extends ExternalAnnotator<PsiFile, AnnotationRe
                 }
             }
         }
+        file.acceptChildren(new PsiElementVisitor() {
+            @Override
+            public void visitElement(PsiElement element) {
+                if (element instanceof AgdaASTWrapper) {
+                    ((AgdaASTWrapper) element).isLoaded = true;
+                }
+            }
+        });
     }
 
     @Override
