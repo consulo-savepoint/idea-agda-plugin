@@ -8,10 +8,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
 import com.intellij.psi.impl.source.tree.LeafPsiElement;
 import com.intellij.util.IncorrectOperationException;
-import org.agda.ghci.AgdaExternalAnnotation;
-import org.agda.ghci.AgdaSyntaxAnnotation;
-import org.agda.ghci.GhciProjectComponent;
-import org.agda.ghci.LaunchAgda;
+import org.agda.ghci.*;
 import org.agda.highlight.AgdaAnnotator;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -59,7 +56,7 @@ public class AgdaASTWrapper extends AgdaBaseElement implements PsiNamedElement {
         VirtualFile file = psiFile.getVirtualFile();
         if (file == null)
             return;
-        synchronized (getProject().getComponent(GhciProjectComponent.class)) {
+        synchronized (getProject().getComponent(GhciProjectComponent.class).getProcess()) {
             if (isLoaded) {
                 return;
             }

@@ -33,6 +33,10 @@ public final class AgdaAnnotator extends ExternalAnnotator<PsiFile, AnnotationRe
 
     @Override
     public AnnotationResult doAnnotate(final PsiFile psiFile) {
+        VirtualFile file = psiFile.getVirtualFile();
+        if (file == null)
+            return null;
+
         try {
             SwingUtilities.invokeAndWait(new Runnable() {
                 @Override
@@ -40,7 +44,8 @@ public final class AgdaAnnotator extends ExternalAnnotator<PsiFile, AnnotationRe
                     ApplicationManager.getApplication().runWriteAction(new Runnable() {
                         @Override
                         public void run() {
-                            synchronized (psiFile.getProject().getComponent(GhciProjectComponent.class)) {
+                            GHCIProcess process = psiFile.getProject().getComponent(GhciProjectComponent.class).getProcess();
+                            synchronized (process) {
                                 Document document = PsiDocumentManager.getInstance(psiFile.getProject()).getDocument(psiFile);
                                 FileDocumentManager.getInstance().saveDocument(document);
                             }
@@ -54,10 +59,7 @@ public final class AgdaAnnotator extends ExternalAnnotator<PsiFile, AnnotationRe
             e.printStackTrace();
         }
 
-        VirtualFile file = psiFile.getVirtualFile();
-        if (file == null)
-            return null;
-
+        System.out.println("Annotations");
         List<AgdaExternalAnnotation> agdaExternalAnnotations = LaunchAgda.load(file.getPath(), psiFile.getProject());
 
         if (agdaExternalAnnotations != null) {
@@ -66,7 +68,7 @@ public final class AgdaAnnotator extends ExternalAnnotator<PsiFile, AnnotationRe
         return new AnnotationResult(file, agdaExternalAnnotations);
     }
 
-    public static void applyAnnotations(PsiFile file, List<AgdaExternalAnnotation> agdaExternalAnnotations) {
+    public static void applyAnnotations(final PsiFile file, List<AgdaExternalAnnotation> agdaExternalAnnotations) {
         for (AgdaExternalAnnotation annotation : agdaExternalAnnotations) {
             if (annotation instanceof AgdaSyntaxAnnotation) {
                 PsiElement element = file.findElementAt(((AgdaSyntaxAnnotation) annotation).getStart());
@@ -79,14 +81,28 @@ public final class AgdaAnnotator extends ExternalAnnotator<PsiFile, AnnotationRe
                 }
             }
         }
-        file.acceptChildren(new PsiElementVisitor() {
+        ApplicationManager.getApplication().runReadAction(new Runnable() {
             @Override
-            public void visitElement(PsiElement element) {
-                if (element instanceof AgdaASTWrapper) {
-                    ((AgdaASTWrapper) element).isLoaded = true;
-                }
+            public void run() {
+                visitAll(file, new PsiElementVisitor() {
+                    @Override
+                    public void visitElement(PsiElement element) {
+                        if (element instanceof AgdaASTWrapper) {
+                            ((AgdaASTWrapper) element).isLoaded = true;
+                        }
+                    }
+                });
             }
         });
+
+    }
+
+    private static void visitAll(PsiElement element, PsiElementVisitor psiElementVisitor) {
+        PsiElement[] children = element.getChildren();
+        psiElementVisitor.visitElement(element);
+        for (PsiElement child : children) {
+            visitAll(child, psiElementVisitor);
+        }
     }
 
     @Override
@@ -123,13 +139,11 @@ public final class AgdaAnnotator extends ExternalAnnotator<PsiFile, AnnotationRe
             AgdaSyntaxAnnotation annotation = element.getUserData(AgdaSyntaxAnnotation.SYNTAX);
             if (annotation != null) {
                 if ("datatype".equals(annotation.getType())) {
-                    Annotation infoAnnotation = holder.createInfoAnnotation(
-                            new TextRange(annotation.getStart(), annotation.getEnd()), null);
+                    Annotation infoAnnotation = holder.createInfoAnnotation(element, null);
                     infoAnnotation.setTextAttributes(AgdaHighlighter.TYPE);
                 }
                 if ("inductiveconstructor".equals(annotation.getType())) {
-                    Annotation infoAnnotation = holder.createInfoAnnotation(
-                            new TextRange(annotation.getStart(), annotation.getEnd()), null);
+                    Annotation infoAnnotation = holder.createInfoAnnotation(element, null);
                     infoAnnotation.setTextAttributes(AgdaHighlighter.CONSTRUCTOR);
                 }
             }
