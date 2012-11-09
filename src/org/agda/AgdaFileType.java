@@ -4,8 +4,6 @@ import com.intellij.openapi.fileTypes.LanguageFileType;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.vfs.CharsetToolkit;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.vfs.encoding.EncodingManager;
-import com.intellij.util.Icons;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
@@ -26,7 +24,6 @@ public class AgdaFileType extends LanguageFileType {
 
     private AgdaFileType() {
         super(AgdaLanguage.INSTANCE);
-
         myIcon = IconLoader.findIcon("/org/agda/agda_16.png");
     }
 
