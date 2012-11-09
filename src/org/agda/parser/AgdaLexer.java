@@ -79,27 +79,20 @@ public class AgdaLexer extends LexerBase {
         }
 
         if (SPEC_CHARACTERS.contains(ch)) {
-            switch (ch) {
-                case '(':
-                    myTokenType = AgdaTokenTypes.L_PAREN;
+            parseSpecCharacter(ch);
+            return;
+        }
+
+        if (ch == '\"') {
+            myTokenEndOffset++;
+            while (myTokenEndOffset < myBufferEndOffset) {
+                if (charAt(myTokenEndOffset) == '\"') {
                     break;
-                case ')':
-                    myTokenType = AgdaTokenTypes.R_PAREN;
-                    break;
-                case '{':
-                    if (charAt(myBufferIndex + 1) == '-') {
-                        parseComment();
-                        return;
-                    }
-                    myTokenType = AgdaTokenTypes.L_CURLY;
-                    break;
-                case '}':
-                    myTokenType = AgdaTokenTypes.R_CURLY;
-                    break;
-                default:
-                    myTokenType = AgdaTokenTypes.SPEC_CHARACTERS;
+                }
+                myTokenEndOffset++;
             }
             myTokenEndOffset++;
+            myTokenType = AgdaTokenTypes.STRING_LITERAL;
             return;
         }
 
@@ -124,6 +117,31 @@ public class AgdaLexer extends LexerBase {
         } else {
             myTokenType = AgdaTokenTypes.VALUE_CHARACTERS;
         }
+    }
+
+    private void parseSpecCharacter(char ch) {
+        switch (ch) {
+            case '(':
+                myTokenType = AgdaTokenTypes.L_PAREN;
+                break;
+            case ')':
+                myTokenType = AgdaTokenTypes.R_PAREN;
+                break;
+            case '{':
+                if (charAt(myBufferIndex + 1) == '-') {
+                    parseComment();
+                    return;
+                }
+                myTokenType = AgdaTokenTypes.L_CURLY;
+                break;
+            case '}':
+                myTokenType = AgdaTokenTypes.R_CURLY;
+                break;
+            default:
+                myTokenType = AgdaTokenTypes.SPEC_CHARACTERS;
+        }
+        myTokenEndOffset++;
+        return;
     }
 
     private void parseComment() {

@@ -28,8 +28,8 @@ public class AgdaHighlighter extends SyntaxHighlighterBase {
   }
 
 
-  public static final TextAttributesKey PROPERTY_VALUE = TextAttributesKey.createTextAttributesKey(
-    "PROPERTIES.VALUE",
+  public static final TextAttributesKey STRING_LITERAL = TextAttributesKey.createTextAttributesKey(
+    "STRING_LITERAL",
     SyntaxHighlighterColors.STRING.getDefaultAttributes()
   );
 
@@ -68,6 +68,7 @@ public class AgdaHighlighter extends SyntaxHighlighterBase {
     keys1.put(AgdaTokenTypes.END_OF_LINE_COMMENT, COMMENT);
     keys1.put(AgdaTokenTypes.COMMENT, COMMENT);
     keys1.put(AgdaTokenTypes.KEYWORD, KEYWORD_VALUE);
+    keys1.put(AgdaTokenTypes.STRING_LITERAL, STRING_LITERAL);
 
     keys1.put(StringEscapesTokenTypes.VALID_STRING_ESCAPE_TOKEN, PROPERTIES_VALID_STRING_ESCAPE);
     keys1.put(StringEscapesTokenTypes.INVALID_CHARACTER_ESCAPE_TOKEN, PROPERTIES_INVALID_STRING_ESCAPE);

@@ -16,6 +16,8 @@ public interface AgdaTokenTypes {
   IElementType SPEC_CHARACTERS = new AgdaElementType("SPEC_CHARACTERS");
   IElementType KEYWORD = new AgdaElementType("KEYWORD");
 
+  IElementType STRING_LITERAL = new AgdaElementType("STRING_LITERAL");
+
   IElementType L_PAREN = new AgdaElementType("L_PAREN");
   IElementType R_PAREN = new AgdaElementType("R_PAREN");
 
