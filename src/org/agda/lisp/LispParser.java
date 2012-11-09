@@ -33,9 +33,12 @@ public class LispParser {
             myIndex++;
             startToken();
             while (ch() != '"') {
+                if (ch() == '\\') {
+                    myIndex++;
+                }
                 myIndex++;
             }
-            SExpression expression = new SExpression(getToken());
+            SExpression expression = new SExpression(getToken().replace("\\\"", "\""));
             myIndex++;
             return expression;
         } else {
