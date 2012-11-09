@@ -19,6 +19,7 @@ import java.util.List;
 
 public class AgdaASTWrapper extends AgdaBaseElement implements PsiNamedElement {
     public volatile boolean isLoaded = false;
+    public PsiElement myReference = null;
 
     public AgdaASTWrapper(ASTNode node) {
         super(node);
@@ -70,54 +71,55 @@ public class AgdaASTWrapper extends AgdaBaseElement implements PsiNamedElement {
     }
 
     private PsiReference createReference(AgdaSyntaxAnnotation annotation, Project project) {
-        VirtualFile virtualFile = LocalFileSystem.getInstance().findFileByIoFile(new File(annotation.getReference()));
-        PsiElement current = PsiManager.getInstance(project).findFile(virtualFile);
-        while (current instanceof AgdaBaseElement) {
-            current = current.getParent();
+        if (myReference == null) {
+            return null;
         }
-        final PsiElement elementAt = current.findElementAt(annotation.getReferenceIndex());
-        if (elementAt != null) {
-            return new PsiReference() {
-                public PsiElement getElement() {
-                    return AgdaASTWrapper.this;
-                }
-
-                public TextRange getRangeInElement() {
-                    return new TextRange(0, getTextLength());
-                }
-
-                public PsiElement resolve() {
-                    return elementAt;
-                }
-
-                @NotNull
-                public String getCanonicalText() {
-                    return getText();
-                }
-
-                public PsiElement handleElementRename(String newElementName) throws IncorrectOperationException {
-                    throw new IncorrectOperationException();
-                }
-
-                public PsiElement bindToElement(@NotNull PsiElement element) throws IncorrectOperationException {
-                    throw new IncorrectOperationException();
-                }
-
-                public boolean isReferenceTo(PsiElement element) {
-                    return elementAt == element;
-                }
-
-                @NotNull
-                public Object[] getVariants() {
-                    return new Object[0];
-                }
-
-                public boolean isSoft() {
-                    return false;
-                }
-            };
+        if (!myReference.isValid()) {
+            return null;
         }
-        return null;
+
+        return new PsiReference() {
+            public PsiElement getElement() {
+                return AgdaASTWrapper.this;
+            }
+
+            public TextRange getRangeInElement() {
+                return new TextRange(0, getTextLength());
+            }
+
+            public PsiElement resolve() {
+                if (!myReference.isValid()) {
+                    return null;
+                }
+                return myReference;
+            }
+
+            @NotNull
+            public String getCanonicalText() {
+                return getText();
+            }
+
+            public PsiElement handleElementRename(String newElementName) throws IncorrectOperationException {
+                throw new IncorrectOperationException();
+            }
+
+            public PsiElement bindToElement(@NotNull PsiElement element) throws IncorrectOperationException {
+                throw new IncorrectOperationException();
+            }
+
+            public boolean isReferenceTo(PsiElement element) {
+                return myReference == element;
+            }
+
+            @NotNull
+            public Object[] getVariants() {
+                return new Object[0];
+            }
+
+            public boolean isSoft() {
+                return false;
+            }
+        };
     }
 
 

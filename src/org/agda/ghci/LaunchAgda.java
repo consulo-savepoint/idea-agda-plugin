@@ -84,8 +84,8 @@ public class LaunchAgda {
             LaunchAgda.parseResult(results, messages);
             if (tempFile.exists()) {
                 SExpression expression = new LispParser(FileUtil.readFile(tempFile)).parseExpression();
-                tempFile.delete();
                 messages.addAll(AgdaSyntaxAnnotation.parse(expression));
+                tempFile.delete();
             }
             return messages;
         } catch(Exception e) {
