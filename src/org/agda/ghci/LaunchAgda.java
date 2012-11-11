@@ -67,7 +67,6 @@ public class LaunchAgda {
             if (component == null) {
                 return null;
             }
-            GHCIProcess ghciProcess = component.getProcess();
 
             File agdaFile = new File(path);
             File tempFile = new File(path + ".tmp");
@@ -75,7 +74,7 @@ public class LaunchAgda {
             String cmd = "ioTCM \"" + esc(agdaFile.getPath()) + "\" (Just \"" + esc(tempFile.getPath()) + "\") (cmd_load \"" + esc(agdaFile.getPath()) + "\" [])\n";
             System.out.println(cmd);
 
-            String text = ghciProcess.execute(cmd);
+            String text = component.execute(cmd);
 
             System.out.println("[" + text + "]");
             List<SExpression> results = GHCIProcess.getResults(text);

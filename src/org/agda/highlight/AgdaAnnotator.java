@@ -44,11 +44,8 @@ public final class AgdaAnnotator extends ExternalAnnotator<PsiFile, AnnotationRe
                     ApplicationManager.getApplication().runWriteAction(new Runnable() {
                         @Override
                         public void run() {
-                            GHCIProcess process = psiFile.getProject().getComponent(GhciProjectComponent.class).getProcess();
-                            synchronized (process) {
-                                Document document = PsiDocumentManager.getInstance(psiFile.getProject()).getDocument(psiFile);
-                                FileDocumentManager.getInstance().saveDocument(document);
-                            }
+                            Document document = PsiDocumentManager.getInstance(psiFile.getProject()).getDocument(psiFile);
+                            FileDocumentManager.getInstance().saveDocument(document);
                         }
                     });
                 }
@@ -72,21 +69,29 @@ public final class AgdaAnnotator extends ExternalAnnotator<PsiFile, AnnotationRe
                 PsiElement element = file.findElementAt(syntaxAnnotation.getStart());
 
                 if (element != null) {
-                    if (element instanceof AgdaASTWrapper) {
-                        AgdaASTWrapper astWrapper = (AgdaASTWrapper) element;
-                        astWrapper.isLoaded = true;
-
-                        astWrapper.putUserData(AgdaSyntaxAnnotation.SYNTAX, syntaxAnnotation);
-                        if (syntaxAnnotation.getReference() != null) {
-                            VirtualFile virtualFile = LocalFileSystem.getInstance().findFileByIoFile(new File(syntaxAnnotation.getReference()));
-                            PsiFile file1 = PsiManager.getInstance(file.getProject()).findFile(virtualFile);
-
-                            final PsiElement elementAt = file1.findElementAt(syntaxAnnotation.getReferenceIndex());
-                            if (elementAt != null) {
-                                astWrapper.myReference = elementAt;
-                            }
+                    while (!(element instanceof AgdaASTWrapper)) {
+                        element = element.getParent();
+                        if (element instanceof PsiFile) {
+                            break;
                         }
                     }
+                    if (!(element instanceof AgdaASTWrapper)) {
+                      continue;
+                    }
+                    AgdaASTWrapper astWrapper = (AgdaASTWrapper) element;
+                    astWrapper.isLoaded = true;
+
+                    astWrapper.putUserData(AgdaSyntaxAnnotation.SYNTAX, syntaxAnnotation);
+                    if (syntaxAnnotation.getReference() != null) {
+                        VirtualFile virtualFile = LocalFileSystem.getInstance().findFileByIoFile(new File(syntaxAnnotation.getReference()));
+                        PsiFile file1 = PsiManager.getInstance(file.getProject()).findFile(virtualFile);
+
+                        final PsiElement elementAt = file1.findElementAt(syntaxAnnotation.getReferenceIndex());
+                        if (elementAt != null) {
+                            astWrapper.myReference = elementAt;
+                        }
+                    }
+
                 }
             }
         }
