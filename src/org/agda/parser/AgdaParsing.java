@@ -5,7 +5,7 @@ import com.intellij.lang.PsiBuilder;
 import com.intellij.lang.WhitespaceSkippedCallback;
 import com.intellij.psi.tree.IElementType;
 
-public class AgdaParsing {
+public class AgdaParsing implements AgdaASTTypes{
     PsiBuilder myBuilder;
     Integer myIndent;
 
@@ -35,30 +35,37 @@ public class AgdaParsing {
         while (!myBuilder.eof()) {
             parseDeclaration();
         }
-        mark.done(AgdaASTType.MODULE_DECLARATION);
+        mark.done(AgdaASTTypes.MODULE_DECLARATION);
     }
 
     private void parseDeclaration() {
         String tokenText = myBuilder.getTokenText();
-        /*
+
         if (tokenText.equals("data")) {
             parseData();
         } else if (myBuilder.getTokenText().equals("module")) {
             PsiBuilder.Marker mark = myBuilder.mark();
             myBuilder.advanceLexer();
-            String nameToken = myBuilder.getTokenText();
-            myBuilder.advanceLexer();
+            parseQName();
             match("where");
-            mark.done(AgdaASTType.MODULE_DECLARATION);
+            mark.done(AgdaASTTypes.MODULE_DECLARATION);
+        } if (myBuilder.getTokenText().equals("open")) {
+            PsiBuilder.Marker mark = myBuilder.mark();
+            myBuilder.advanceLexer();
+            if (tryMatch("import")) {
+                parseImport(mark);
+            } else {
+                mark.drop();
+            }
         } else {
+            /*
             PsiBuilder.Marker mark = myBuilder.mark();
             myBuilder.getTokenText();
             myBuilder.advanceLexer();
             String text = myBuilder.getTokenText();
             myBuilder.advanceLexer();
             mark.rollbackTo();
-             */
-            /*
+
             if (":".equals(text)) {
                 parseFunctionDeclaration();
             }
@@ -68,13 +75,29 @@ public class AgdaParsing {
             if (token != null) {
                 PsiBuilder.Marker marker = myBuilder.mark();
                 myBuilder.advanceLexer();
-                marker.done(AgdaASTType.NAMED_ELEMENT);
+                marker.done(AgdaASTTypes.NAMED_ELEMENT);
             } else {
                 myBuilder.advanceLexer();
             }
 
 
-        //}
+        }
+    }
+
+    private void parseImport(PsiBuilder.Marker mark) {
+        parseQName();
+        if (tryMatch("hiding")) {
+            match("(");
+            parseImportNames();
+            match(")");
+        }
+        mark.done(IMPORT);
+    }
+
+    private void parseImportNames() {
+        PsiBuilder.Marker mark = myBuilder.mark();
+        getToken();
+        mark.done(NAME);
     }
 
     private void parseFunctionDeclaration() {
@@ -106,7 +129,7 @@ public class AgdaParsing {
         match("where");
 
         parseConstructors(indent);
-        mark.done(AgdaASTType.TYPE_REFERENCE);
+        mark.done(AgdaASTTypes.TYPE_REFERENCE);
     }
 
     private void parseConstructors(int parentIndent) {
@@ -124,7 +147,7 @@ public class AgdaParsing {
             match(":");
 
             parseType();
-            //mark.done(AgdaASTType.CONSTRUCTOR_DECLARATION);
+            //mark.done(AgdaASTTypes.CONSTRUCTOR_DECLARATION);
             myBuilder.getTokenText();
             indent = getIndent();
 
@@ -136,14 +159,38 @@ public class AgdaParsing {
         PsiBuilder.Marker mark = myBuilder.mark();
         String nameToken = myBuilder.getTokenText();
         myBuilder.advanceLexer();
-        mark.done(AgdaASTType.TYPE_REFERENCE);
+        mark.done(AgdaASTTypes.TYPE_REFERENCE);
 
         if ("->".equals(myBuilder.getTokenText())) {
             myBuilder.advanceLexer();
             PsiBuilder.Marker mark2 = myBuilder.mark();
             String nameToken2 = myBuilder.getTokenText();
             myBuilder.advanceLexer();
-            mark2.done(AgdaASTType.TYPE_REFERENCE);
+            mark2.done(TYPE_REFERENCE);
         }
+    }
+
+    public  void parseQName() {
+        PsiBuilder.Marker marker = myBuilder.mark();
+        do {
+            getToken();
+        } while (tryMatch("."));
+        marker.done(QNAME);
+    }
+
+    private boolean tryMatch(String text) {
+        String name = myBuilder.getTokenText();
+
+        if (text.equals(name)) {
+            myBuilder.advanceLexer();
+            return true;
+        }
+        return false;
+    }
+
+    public String getToken() {
+        String text = myBuilder.getTokenText();
+        myBuilder.advanceLexer();
+        return text;
     }
 }

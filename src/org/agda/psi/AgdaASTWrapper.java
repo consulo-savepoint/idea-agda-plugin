@@ -28,9 +28,9 @@ public class AgdaASTWrapper extends AgdaBaseElement implements PsiNamedElement {
 
     @Override
     public PsiReference getReference() {
-        if (!isLoaded) {
-            loadAnnotations();
-        }
+        //if (!isLoaded) {
+        //    loadAnnotations();
+        //}
         PsiElement current = this;
         while (!(current instanceof PsiFile)) {
             current = current.getParent();
@@ -38,6 +38,9 @@ public class AgdaASTWrapper extends AgdaBaseElement implements PsiNamedElement {
         AgdaSyntaxAnnotation syntaxAnnotation = getUserData(AgdaSyntaxAnnotation.SYNTAX);
 
         if (syntaxAnnotation == null) {
+            return null;
+        }
+        if ("bound".equals(syntaxAnnotation.getType())) {
             return null;
         }
 
