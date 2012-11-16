@@ -5,19 +5,18 @@ import org.agda.lisp.LispParser;
 import org.agda.lisp.SExpression;
 
 import java.io.*;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GHCIProcess {
+public class AgdaProcess {
     private OutputStreamWriter myWriter;
     private Process myProcess;
     private InputStream myInput;
 
-    public GHCIProcess() {
+    public AgdaProcess() {
     }
 
-    public static String readData(InputStream input, int timeout, String s) throws IOException {
+    public static void readData(InputStream input, int timeout, String finish, Callback callback) throws IOException {
         StringBuilder builder = new StringBuilder();
         long time = System.currentTimeMillis();
         byte[] bigBuffer = new byte[0];
@@ -33,7 +32,17 @@ public class GHCIProcess {
                     }
                     String str = builder.toString();
                     bigBuffer = new byte[0];
-                    if (str.contains(s)) {
+                    while (str.contains("\n")) {
+                        String start = str.substring(0, str.indexOf("\n") + 1);
+                        if (!callback.call(start)) {
+                            break;
+                        }
+                        String end2 = str.substring(str.indexOf("\n") + 1);
+                        builder = new StringBuilder();
+                        builder.append(end2);
+                        str = builder.toString();
+                    }
+                    if (str.contains(finish)) {
                         break;
                     }
                     continue;
@@ -59,37 +68,45 @@ public class GHCIProcess {
                 bigBuffer = newBigBuffer;
             }
         }
-        return builder.toString();
     }
 
     public void init() throws IOException {
         Runtime rt = Runtime.getRuntime();
 
-        myProcess = rt.exec("ghci");
+        myProcess = rt.exec("C:\\Users\\Atsky\\Application Data\\cabal\\bin\\agda.exe --interaction");
 
         myInput = myProcess.getInputStream();
         myWriter = new OutputStreamWriter(myProcess.getOutputStream());
 
-        GHCIProcess.readData(myInput, 10000, ">");
+        AgdaProcess.readData(myInput, 10000, "Agda2>");
+    }
 
-        execute(":set -package Agda\n", ">");
-        execute(":module Agda.Interaction.GhciTop\n", ">");
+    private static String readData(InputStream input, int timeout, String finish) throws IOException {
+        final StringBuilder builder = new StringBuilder();
+        readData(input, timeout, finish, new Callback() {
+            @Override
+            public boolean call(String command) {
+                builder.append(command + "\n");
+                return true;
+            }
+        });
+        return builder.toString();
     }
 
     public synchronized String execute(String cmd) throws IOException {
-        return execute(cmd, "Agda.Interaction.GhciTop>");
+        return execute(cmd, "Agda2>");
     }
 
     public synchronized String execute(String cmd, String waitFor) throws IOException {
         myWriter.write(cmd);
         myWriter.flush();
-        return GHCIProcess.readData(myInput, 10000, waitFor);
+        return AgdaProcess.readData(myInput, 10000, waitFor);
     }
 
     public void stop() {
         try {
-            write(":q\n");
-            GHCIProcess.readData(myInput, 60000, "Leaving GHCi.");
+            myWriter.flush();
+            myWriter.close();
             myProcess.waitFor();
         } catch (Exception e) {
             e.printStackTrace();
@@ -115,11 +132,15 @@ public class GHCIProcess {
         myWriter.flush();
     }
 
-    public Process getProcess() {
-        return myProcess;
+
+    public void execute(String cmd, Callback callback) throws IOException {
+        myWriter.write(cmd);
+        myWriter.flush();
+
+        readData(myInput, 10000, "Agda2>", callback);
     }
 
-    public InputStream getInput() {
-        return myInput;
+    public static interface Callback {
+        public boolean call(String command);
     }
 }
