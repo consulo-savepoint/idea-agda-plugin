@@ -4,11 +4,6 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
-import org.agda.ghci.AgdaSyntaxAnnotation;
-import org.agda.ghci.LaunchAgda;
-
-import java.io.File;
-import java.util.List;
 
 public class LoadCode extends AnAction {
 

@@ -1,4 +1,4 @@
-package org.agda.ghci;
+package org.agda.external;
 
 
 import com.intellij.openapi.util.Key;
@@ -28,7 +28,11 @@ public class AgdaSyntaxAnnotation extends AgdaExternalAnnotation {
         for (SExpression expression: expr.getChildren()) {
             int start = Integer.parseInt(expression.get(0).getValue()) - 1;
             int end = Integer.parseInt(expression.get(1).getValue()) - 1;
-            String type = expression.get(2).get(0).getValue();
+            SExpression expression1 = expression.get(2).get(0);
+            if (expression1 == null) {
+                continue;
+            }
+            String type = expression1.getValue();
             String referenceFile = null;
             int referenceIndex = 0;
             if (expression.getChildren().size() == 5) {

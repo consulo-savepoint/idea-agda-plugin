@@ -1,4 +1,4 @@
-package org.agda.ghci;
+package org.agda.external;
 
 /**
  * @author Evgeny.Kurbatsky

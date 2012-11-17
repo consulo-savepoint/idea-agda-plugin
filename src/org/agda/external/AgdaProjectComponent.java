@@ -1,4 +1,4 @@
-package org.agda.ghci;
+package org.agda.external;
 
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.project.Project;
@@ -120,10 +120,10 @@ public final class AgdaProjectComponent implements ProjectComponent {
                             SExpression expression = new LispParser(data).parseExpression();
                             messages.addAll(AgdaSyntaxAnnotation.parse(expression));
                         } catch (IOException e) {
-                            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                            e.printStackTrace();
                         }
                     }
-                    if (!command.contains("*Type-checking*")) {
+                    if (!command.contains("*Type-checking*") && !command.contains("agda2-highlight-add-annotations")) {
                         System.out.println("[" + command + "]");
                     }
                     return true;

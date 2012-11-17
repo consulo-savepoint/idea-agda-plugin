@@ -46,7 +46,11 @@ public class SExpression {
     }
 
     public SExpression get(int i) {
-        return myChildren.get(i);
+        if (myChildren == null || i >= myChildren.size()) {
+            return null;
+        } else {
+            return myChildren.get(i);
+        }
     }
 
     public String getValue(int i) {

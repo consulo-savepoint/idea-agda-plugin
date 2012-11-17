@@ -1,21 +1,17 @@
 package org.agda.highlight;
 
-import com.intellij.ide.impl.PsiElementArrayDataValidator;
 import com.intellij.lang.annotation.Annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.ExternalAnnotator;
-import com.intellij.openapi.application.Application;
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
-import org.agda.ghci.*;
+import org.agda.external.*;
 import org.agda.psi.AgdaASTWrapper;
-import org.agda.psi.AgdaBaseElement;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -57,7 +53,8 @@ public final class AgdaAnnotator extends ExternalAnnotator<PsiFile, AnnotationRe
         }
 
         System.out.println("Annotations");
-        List<AgdaExternalAnnotation> agdaExternalAnnotations = LaunchAgda.load(file.getPath(), psiFile.getProject());
+        AgdaProjectComponent component = psiFile.getProject().getComponent(AgdaProjectComponent.class);
+        List<AgdaExternalAnnotation> agdaExternalAnnotations = component.load(file.getPath());
 
         return new AnnotationResult(file, agdaExternalAnnotations);
     }
@@ -135,8 +132,11 @@ public final class AgdaAnnotator extends ExternalAnnotator<PsiFile, AnnotationRe
             for (AgdaExternalAnnotation annotation : result.myAnnotations) {
 
                 if (annotation instanceof AgdaCompilerMessage) {
+                    Document document = PsiDocumentManager.getInstance(file.getProject()).getDocument(file);
                     AgdaCompilerMessage message = (AgdaCompilerMessage) annotation;
-                    holder.createErrorAnnotation(new TextRange(message.getStart(), message.getEnd()), message.getText());
+                    if (message.isValid()) {
+                        holder.createErrorAnnotation(new TextRange(message.getStart(document), message.getEnd(document)), message.getText());
+                    }
                 }
                 if (annotation instanceof GoalAnnotation) {
                     GoalAnnotation goalAnnotation = (GoalAnnotation) annotation;

@@ -1,13 +1,11 @@
 package org.agda;
 
-import org.agda.ghci.AgdaProcess;
-import org.agda.ghci.AgdaSyntaxAnnotation;
+import org.agda.external.AgdaProcess;
 import org.agda.lisp.LispParser;
 import org.agda.lisp.SExpression;
 import org.agda.util.FileUtil;
 
 import java.io.*;
-import java.util.List;
 
 public class TestAgdaCommunication {
     public static void main(String[] args) {

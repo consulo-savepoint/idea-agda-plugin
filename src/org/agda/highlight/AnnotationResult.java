@@ -1,7 +1,7 @@
 package org.agda.highlight;
 
 import com.intellij.openapi.vfs.VirtualFile;
-import org.agda.ghci.AgdaExternalAnnotation;
+import org.agda.external.AgdaExternalAnnotation;
 
 import java.util.List;
 

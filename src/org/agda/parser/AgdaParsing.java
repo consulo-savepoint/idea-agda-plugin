@@ -47,7 +47,7 @@ public class AgdaParsing implements AgdaASTTypes{
             PsiBuilder.Marker mark = myBuilder.mark();
             myBuilder.advanceLexer();
             parseQName();
-            match("where");
+            //match("where");
             mark.done(AgdaASTTypes.MODULE_DECLARATION);
         } if (myBuilder.getTokenText().equals("open")) {
             PsiBuilder.Marker mark = myBuilder.mark();
@@ -91,12 +91,20 @@ public class AgdaParsing implements AgdaASTTypes{
             parseImportNames();
             match(")");
         }
+        if (tryMatch("using")) {
+            match("(");
+            parseImportNames();
+            match(")");
+        }
         mark.done(IMPORT);
     }
 
     private void parseImportNames() {
         PsiBuilder.Marker mark = myBuilder.mark();
-        getToken();
+        do {
+            tryMatch("module");
+            getToken();
+        } while (tryMatch(";"));
         mark.done(NAME);
     }
 

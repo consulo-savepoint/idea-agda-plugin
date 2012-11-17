@@ -20,6 +20,9 @@ public class LispParser {
 
     public SExpression parseExpression() {
         skipWhitespace();
+        if (ch() == '\'') {
+            myIndex++;
+        }
         if (ch() == '(') {
             myIndex++;
             SExpression result = new SExpression();

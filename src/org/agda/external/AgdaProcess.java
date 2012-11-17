@@ -1,4 +1,4 @@
-package org.agda.ghci;
+package org.agda.external;
 
 
 import org.agda.lisp.LispParser;

@@ -3,18 +3,13 @@ package org.agda.psi;
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
-import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
 import com.intellij.psi.impl.source.tree.LeafPsiElement;
 import com.intellij.util.IncorrectOperationException;
-import org.agda.ghci.*;
-import org.agda.highlight.AgdaAnnotator;
+import org.agda.external.*;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
-
-import java.io.File;
-import java.util.List;
 
 
 public class AgdaASTWrapper extends AgdaBaseElement implements PsiNamedElement {
@@ -60,14 +55,14 @@ public class AgdaASTWrapper extends AgdaBaseElement implements PsiNamedElement {
         VirtualFile file = psiFile.getVirtualFile();
         if (file == null)
             return;
-        synchronized (getProject().getComponent(GhciProjectComponent.class).getProcess()) {
+        synchronized (getProject().getComponent(AgdaProjectComponent.class).getProcess()) {
             if (isLoaded) {
                 return;
             }
-            List<AgdaExternalAnnotation> agdaExternalAnnotations = LaunchAgda.load(file.getPath(), psiFile.getProject());
-            if (agdaExternalAnnotations != null) {
-                AgdaAnnotator.applyAnnotations(psiFile, agdaExternalAnnotations);
-            }
+            //List<AgdaExternalAnnotation> agdaExternalAnnotations = LaunchAgda.load(file.getPath(), psiFile.getProject());
+            //if (agdaExternalAnnotations != null) {
+            //    AgdaAnnotator.applyAnnotations(psiFile, agdaExternalAnnotations);
+            //}
         }
 
         isLoaded = true;

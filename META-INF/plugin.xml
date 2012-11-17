@@ -21,7 +21,7 @@
       </component>
 
       <component>
-          <implementation-class>org.agda.ghci.AgdaProjectComponent</implementation-class>
+          <implementation-class>org.agda.external.AgdaProjectComponent</implementation-class>
       </component>
 
   </project-components>

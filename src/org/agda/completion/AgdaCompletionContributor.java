@@ -5,14 +5,11 @@ import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionResultSet;
 import com.intellij.codeInsight.completion.CompletionType;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
-import com.intellij.codeInsight.lookup.LookupItem;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiElementVisitor;
-import org.agda.ghci.AgdaSyntaxAnnotation;
+import org.agda.external.AgdaSyntaxAnnotation;
 import org.agda.psi.AgdaASTWrapper;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 
