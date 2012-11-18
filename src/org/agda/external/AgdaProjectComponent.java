@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public final class AgdaProjectComponent implements ProjectComponent {
     private final boolean keepAlive = false;
@@ -80,13 +81,11 @@ public final class AgdaProjectComponent implements ProjectComponent {
     private static List<AgdaExternalAnnotation> getGoals(String data) {
         List<AgdaExternalAnnotation> annotations = new ArrayList<AgdaExternalAnnotation>();
         int index = 0;
-        for (String str : data.split("\\\\n")) {
-            int i = str.indexOf(": ");
-            if (i > 0) {
-                str = str.substring(i + 2);
-                annotations.add(new GoalAnnotation(index, str));
+        for (String str : Pattern.compile("\\?[\\d]+ :").split(data)) {
+            if (str.length() > 0) {
+             annotations.add(new GoalAnnotation(index, str));
+             index++;
             }
-            index++;
         }
         return annotations;
     }
@@ -99,7 +98,7 @@ public final class AgdaProjectComponent implements ProjectComponent {
         try {
             File agdaFile = new File(path);
 
-            String cmd = "IOTCM \"" + esc(agdaFile.getPath()) + "\" NonInteractive Indirect ( Cmd_load \"" + esc(agdaFile.getPath()) + "\" [\".\"] )\n";
+            String cmd = "IOTCM \"" + esc(agdaFile.getPath()) + "\" Interactive Direct ( Cmd_load \"" + esc(agdaFile.getPath()) + "\" [\".\"] )\n";
             System.out.println(cmd);
 
             final List<AgdaExternalAnnotation> messages = new ArrayList<AgdaExternalAnnotation>();
@@ -110,6 +109,10 @@ public final class AgdaProjectComponent implements ProjectComponent {
                     SExpression cmdExpression = new LispParser(command).parseExpression();
                     if (cmdExpression.get(1) != null) {
                         parseExpression(cmdExpression, messages);
+                    }
+                    if (command.contains("agda2-highlight-add-annotations")) {
+                        SExpression expr = new LispParser(command).parseExpression();
+                        messages.addAll(AgdaSyntaxAnnotation.parse(expr));
                     }
                     if (command.contains("agda2-highlight-load-and-delete-action")) {
                         SExpression expr = new LispParser(command).parseExpression();

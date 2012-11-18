@@ -19,6 +19,10 @@ public class TestAgdaCommunication {
             process.execute(cmd);
 
             cmd = "IOTCM \"" + esc(agdaFile.getPath()) + "\" NonInteractive Indirect ( Cmd_load \"" + esc(agdaFile.getPath()) + "\" [\".\"] )\n";
+            System.out.println(process.execute(cmd));
+
+            cmd = "IOTCM \"" + esc(agdaFile.getPath()) + "\" None Indirect ( Cmd_goal_type_context Normalised 0 noRange \"\" )\n";
+
             System.out.println(cmd);
 
             process.execute(cmd, new AgdaProcess.Callback() {
@@ -43,16 +47,12 @@ public class TestAgdaCommunication {
             });
 
             process.stop();
-            /*
-            SExpression expr = new LispParser(FileUtil.readFile(temp)).parseExpression();
-            List<AgdaSyntaxAnnotation> annotations = AgdaSyntaxAnnotation.parse(expr);
-            */
         } catch(Exception e) {
             e.printStackTrace();
         }
     }
 
     private static String esc(String path) {
-        return path.replace("\\", "\\\\");
+        return path.replace("\\", "/");
     }
 }

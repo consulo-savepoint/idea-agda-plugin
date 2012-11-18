@@ -53,6 +53,10 @@ public class SExpression {
         }
     }
 
+    public boolean isAtom() {
+        return isAtom;
+    }
+
     public String getValue(int i) {
         return get(i).getValue();
     }

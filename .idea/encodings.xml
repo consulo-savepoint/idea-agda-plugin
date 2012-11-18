@@ -3,7 +3,7 @@
   <component name="Encoding" useUTFGuessing="true" native2AsciiForPropertiesFiles="false">
     <file url="file://$PROJECT_DIR$/src/org/agda/compiler/AgdaCompiler.java" charset="windows-1251" />
     <file url="file://$PROJECT_DIR$/src/org/agda/compiler/AgdaCompilerProjectComponent.java" charset="windows-1251" />
-    <file url="file://$PROJECT_DIR$/src/org/agda/ghci/GhciProjectComponent.java" charset="windows-1251" />
+    <file url="file://$PROJECT_DIR$/src/org/agda/external/AgdaProjectComponent.java" charset="windows-1251" />
     <file url="file://$PROJECT_DIR$/src/org/agda/highlight/AgdaAnnotator.java" charset="windows-1251" />
     <file url="file://$PROJECT_DIR$/src/org/agda/highlight/AgdaBraceMatcher.java" charset="windows-1251" />
     <file url="file://$PROJECT_DIR$/src/org/agda/util/LineColPosition.java" charset="windows-1251" />

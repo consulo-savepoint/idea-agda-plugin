@@ -26,6 +26,9 @@ public class AgdaSyntaxAnnotation extends AgdaExternalAnnotation {
     public static List<AgdaSyntaxAnnotation> parse(SExpression expr) {
         List<AgdaSyntaxAnnotation> result = new ArrayList<AgdaSyntaxAnnotation>();
         for (SExpression expression: expr.getChildren()) {
+            if (expression.isAtom()) {
+                continue;
+            }
             int start = Integer.parseInt(expression.get(0).getValue()) - 1;
             int end = Integer.parseInt(expression.get(1).getValue()) - 1;
             SExpression expression1 = expression.get(2).get(0);
