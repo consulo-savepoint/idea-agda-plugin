@@ -10,7 +10,11 @@ public interface AgdaASTTypes {
     IElementType IMPORT = new AgdaElementType("MODULE_DECLARATION");
 
     IElementType TYPE_REFERENCE = new AgdaElementType("TYPE_REFERENCE");
+    IElementType TYPE_DECLARATION = new AgdaElementType("TYPE_DECLARATION");
     IElementType CONSTRUCTOR_DECLARATION = new AgdaElementType("CONSTRUCTOR_DECLARATION");
+    IElementType BINDINGS = new AgdaElementType("BINDINGS");
 
     IElementType NAMED_ELEMENT = new AgdaElementType("NAMED_ELEMENT");
+
+
 }
