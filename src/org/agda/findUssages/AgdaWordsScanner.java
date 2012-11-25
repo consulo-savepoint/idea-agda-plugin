@@ -7,7 +7,7 @@ import org.agda.parser.AgdaTokenTypes;
 
 public class AgdaWordsScanner extends DefaultWordsScanner {
   public AgdaWordsScanner() {
-    super(new AgdaLexer(), TokenSet.create(AgdaTokenTypes.VALUE_CHARACTERS),
+    super(new AgdaLexer(), TokenSet.create(AgdaTokenTypes.NAME),
             AgdaTokenTypes.COMMENTS, TokenSet.create(AgdaTokenTypes.SPEC_CHARACTERS));
   }
 }

@@ -86,7 +86,7 @@ public class CodeAutoReplaceComponent implements ProjectComponent {
                 CommandProcessor.getInstance().executeCommand(myProject, new Runnable() {
                     @Override
                     public void run() {
-                        TreeElement newNode = new LeafPsiElement(AgdaTokenTypes.VALUE_CHARACTERS, replace);
+                        TreeElement newNode = new LeafPsiElement(AgdaTokenTypes.NAME, replace);
                         node.getTreeParent().replaceChild(node, newNode);
                     }
                 }, "Auto Rename", null);

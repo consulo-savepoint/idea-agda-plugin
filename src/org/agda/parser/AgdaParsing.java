@@ -5,9 +5,18 @@ import com.intellij.lang.PsiBuilder;
 import com.intellij.lang.WhitespaceSkippedCallback;
 import com.intellij.psi.tree.IElementType;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
 public class AgdaParsing implements AgdaASTTypes{
+    static final String[][] BRACES = new String[][] {
+            {"(",")"},
+            {"{","}"}
+    };
     PsiBuilder myBuilder;
     Integer myIndent;
+
 
     public AgdaParsing(PsiBuilder builder) {
         this.myBuilder = builder;
@@ -47,9 +56,10 @@ public class AgdaParsing implements AgdaASTTypes{
             PsiBuilder.Marker mark = myBuilder.mark();
             myBuilder.advanceLexer();
             parseQName();
-            //match("where");
+            parseBindings();
+            match("where");
             mark.done(AgdaASTTypes.MODULE_DECLARATION);
-        } if (myBuilder.getTokenText().equals("open")) {
+        } if ("open".equals(myBuilder.getTokenText())) {
             PsiBuilder.Marker mark = myBuilder.mark();
             myBuilder.advanceLexer();
             if (tryMatch("import")) {
@@ -86,6 +96,9 @@ public class AgdaParsing implements AgdaASTTypes{
 
     private void parseImport(PsiBuilder.Marker mark) {
         parseQName();
+        if (tryMatch("as")) {
+            parseQName();
+        }
         if (tryMatch("hiding")) {
             match("(");
             parseImportNames();
@@ -96,7 +109,22 @@ public class AgdaParsing implements AgdaASTTypes{
             parseImportNames();
             match(")");
         }
+        if (tryMatch("renaming")) {
+            match("(");
+            parseRenamingsNames();
+            match(")");
+        }
         mark.done(IMPORT);
+    }
+
+    private void parseRenamingsNames() {
+        do {
+            PsiBuilder.Marker mark = myBuilder.mark();
+            getToken();
+            match("to");
+            getToken();
+            mark.done(RENAMING);
+        } while (tryMatch(";"));
     }
 
     private void parseImportNames() {
@@ -113,7 +141,7 @@ public class AgdaParsing implements AgdaASTTypes{
         String name = myBuilder.getTokenText();
         myBuilder.advanceLexer();
         match(":");
-        parseType();
+        parseExpression();
     }
 
     private boolean match(String str) {
@@ -140,7 +168,7 @@ public class AgdaParsing implements AgdaASTTypes{
             mark.drop();
             return;
         }
-        parseType();
+        parseExpression();
 
         match("where");
 
@@ -150,22 +178,41 @@ public class AgdaParsing implements AgdaASTTypes{
     }
 
     private void parseBindings() {
-        if ("(".equals(myBuilder.getTokenText()) || "{".equals(myBuilder.getTokenText())) {
+        String[] brace = getBrace(lookAtToken());
+        if (brace != null) {
             PsiBuilder.Marker mark = myBuilder.mark();
 
-            getToken(); // (
+            match(brace[0]);
             do {
                 getToken();
-            } while (!tryMatch(":"));
+                if (tryMatch(":")) {
+                    parseExpression();
+                    if (!match(brace[1])) {
+                        mark.drop();
+                        return;
+                    }
+                    break;
+                }
+            } while (!tryMatch(brace[1]));
 
-            parseType();
-
-            getToken(); // )
 
             mark.done(AgdaASTTypes.BINDINGS);
 
             parseBindings();
         }
+    }
+
+    private String lookAtToken() {
+        return myBuilder.getTokenText();
+    }
+
+    private String[] getBrace(String str) {
+        for (int i = 0; i < BRACES.length; i++) {
+            if (BRACES[i][0].equals(str)) {
+                return BRACES[i];
+            }
+        }
+        return null;
     }
 
     private void parseConstructors(int parentIndent) {
@@ -182,7 +229,7 @@ public class AgdaParsing implements AgdaASTTypes{
 
             match(":");
 
-            parseType();
+            parseExpression();
             //mark.done(AgdaASTTypes.CONSTRUCTOR_DECLARATION);
             myBuilder.getTokenText();
             indent = getIndent();
@@ -191,18 +238,35 @@ public class AgdaParsing implements AgdaASTTypes{
 
     }
 
-    private void parseType() {
-        PsiBuilder.Marker mark = myBuilder.mark();
-        String nameToken = myBuilder.getTokenText();
-        myBuilder.advanceLexer();
-        mark.done(AgdaASTTypes.TYPE_REFERENCE);
+    private void parseExpression() {
+        parseApplication();
 
         if ("→".equals(myBuilder.getTokenText()) || "->".equals(myBuilder.getTokenText())) {
             myBuilder.advanceLexer();
-            PsiBuilder.Marker mark2 = myBuilder.mark();
-            String nameToken2 = myBuilder.getTokenText();
+            parseApplication();
+        }
+    }
+
+    private void parseApplication() {
+        PsiBuilder.Marker last = null;
+        do {
+            PsiBuilder.Marker mark = myBuilder.mark();
+            String nameToken = myBuilder.getTokenText();
             myBuilder.advanceLexer();
-            mark2.done(TYPE_REFERENCE);
+            mark.done(AgdaASTTypes.REFERENCE);
+            if (myBuilder.getTokenType() == AgdaTokenTypes.NAME) {
+                if (last != null) {
+                    last.done(AgdaASTTypes.APPLICATION);
+                    last = last.precede();
+                } else {
+                    last = mark.precede();
+                }
+            } else {
+                break;
+            }
+        } while (true);
+        if (last != null) {
+            last.done(AgdaASTTypes.APPLICATION);
         }
     }
 

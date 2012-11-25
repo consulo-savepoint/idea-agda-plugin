@@ -115,7 +115,7 @@ public class AgdaLexer extends LexerBase {
         if (KEYWORDS.contains(charSequence.toString())) {
             myTokenType = AgdaTokenTypes.KEYWORD;
         } else {
-            myTokenType = AgdaTokenTypes.VALUE_CHARACTERS;
+            myTokenType = AgdaTokenTypes.NAME;
         }
     }
 
