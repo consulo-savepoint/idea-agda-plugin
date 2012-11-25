@@ -7,22 +7,22 @@ import com.intellij.psi.tree.TokenSet;
 
 public interface AgdaTokenTypes {
   IElementType WHITE_SPACE = TokenType.WHITE_SPACE;
-  IElementType LINE_END = new AgdaElementType("NEW_LINE");
+  IElementType LINE_END = new AgdaToken("NEW_LINE");
   IElementType BAD_CHARACTER = TokenType.BAD_CHARACTER;
 
-  IElementType COMMENT = new AgdaElementType("COMMENT");
-  IElementType END_OF_LINE_COMMENT = new AgdaElementType("END_OF_LINE_COMMENT");
-  IElementType NAME = new AgdaElementType("IMPORT_NAME");
-  IElementType SPEC_CHARACTERS = new AgdaElementType("SPEC_CHARACTERS");
-  IElementType KEYWORD = new AgdaElementType("KEYWORD");
+  IElementType COMMENT = new AgdaToken("COMMENT");
+  IElementType END_OF_LINE_COMMENT = new AgdaToken("END_OF_LINE_COMMENT");
+  IElementType NAME = new AgdaToken("IMPORT_NAME");
+  IElementType SPEC_CHARACTERS = new AgdaToken("SPEC_CHARACTERS");
+  IElementType KEYWORD = new AgdaToken("KEYWORD");
 
-  IElementType STRING_LITERAL = new AgdaElementType("STRING_LITERAL");
+  IElementType STRING_LITERAL = new AgdaToken("STRING_LITERAL");
 
-  IElementType L_PAREN = new AgdaElementType("L_PAREN");
-  IElementType R_PAREN = new AgdaElementType("R_PAREN");
+  IElementType L_PAREN = new AgdaToken("L_PAREN");
+  IElementType R_PAREN = new AgdaToken("R_PAREN");
 
-  IElementType L_CURLY = new AgdaElementType("L_CURLY");
-  IElementType R_CURLY = new AgdaElementType("R_CURLY");
+  IElementType L_CURLY = new AgdaToken("L_CURLY");
+  IElementType R_CURLY = new AgdaToken("R_CURLY");
 
 
   TokenSet COMMENTS = TokenSet.create(END_OF_LINE_COMMENT, COMMENT);
