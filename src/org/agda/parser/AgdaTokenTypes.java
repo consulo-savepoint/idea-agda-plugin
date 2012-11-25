@@ -12,7 +12,7 @@ public interface AgdaTokenTypes {
 
   IElementType COMMENT = new AgdaElementType("COMMENT");
   IElementType END_OF_LINE_COMMENT = new AgdaElementType("END_OF_LINE_COMMENT");
-  IElementType NAME = new AgdaElementType("NAME");
+  IElementType NAME = new AgdaElementType("IMPORT_NAME");
   IElementType SPEC_CHARACTERS = new AgdaElementType("SPEC_CHARACTERS");
   IElementType KEYWORD = new AgdaElementType("KEYWORD");
 

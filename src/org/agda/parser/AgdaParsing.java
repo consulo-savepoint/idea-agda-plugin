@@ -5,10 +5,6 @@ import com.intellij.lang.PsiBuilder;
 import com.intellij.lang.WhitespaceSkippedCallback;
 import com.intellij.psi.tree.IElementType;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-
 public class AgdaParsing implements AgdaASTTypes{
     static final String[][] BRACES = new String[][] {
             {"(",")"},
@@ -85,7 +81,7 @@ public class AgdaParsing implements AgdaASTTypes{
             if (token != null) {
                 PsiBuilder.Marker marker = myBuilder.mark();
                 myBuilder.advanceLexer();
-                marker.done(AgdaASTTypes.NAMED_ELEMENT);
+                marker.done(AgdaASTTypes.OTHER_ELEMENT);
             } else {
                 myBuilder.advanceLexer();
             }
@@ -133,7 +129,7 @@ public class AgdaParsing implements AgdaASTTypes{
             tryMatch("module");
             getToken();
         } while (tryMatch(";"));
-        mark.done(NAME);
+        mark.done(IMPORT_NAME);
     }
 
     private void parseFunctionDeclaration() {
