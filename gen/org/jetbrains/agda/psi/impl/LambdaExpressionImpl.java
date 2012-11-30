@@ -11,26 +11,26 @@ import static org.jetbrains.agda.gen.parser.AgdaTokenTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import org.jetbrains.agda.psi.*;
 
-public class FunctionTypeImpl extends ASTWrapperPsiElement implements FunctionType {
+public class LambdaExpressionImpl extends ASTWrapperPsiElement implements LambdaExpression {
 
-  public FunctionTypeImpl(ASTNode node) {
+  public LambdaExpressionImpl(ASTNode node) {
     super(node);
   }
 
   @Override
   @NotNull
-  public Application getApplication() {
-    return findNotNullChildByClass(Application.class);
+  public List<Expression> getExpressionList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, Expression.class);
   }
 
   @Override
-  @Nullable
-  public FunctionType getFunctionType() {
-    return findChildByClass(FunctionType.class);
+  @NotNull
+  public PsiElement getId() {
+    return findNotNullChildByType(ID);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof Visitor) ((Visitor)visitor).visitFunctionType(this);
+    if (visitor instanceof Visitor) ((Visitor)visitor).visitLambdaExpression(this);
     else super.accept(visitor);
   }
 

@@ -8,9 +8,12 @@ import com.intellij.psi.PsiElement;
 public interface Expression extends PsiElement {
 
   @Nullable
-  Application getApplication();
+  FunctionType getFunctionType();
 
   @Nullable
-  FunctionType getFunctionType();
+  LambdaExpression getLambdaExpression();
+
+  @Nullable
+  TeleArrow getTeleArrow();
 
 }

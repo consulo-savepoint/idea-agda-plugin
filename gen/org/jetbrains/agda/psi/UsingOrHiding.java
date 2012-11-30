@@ -5,12 +5,9 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface ModuleDeclaration extends PsiElement {
+public interface UsingOrHiding extends PsiElement {
 
   @NotNull
-  List<Binding> getBindingList();
-
-  @Nullable
-  FqName getFqName();
+  ImportNames getImportNames();
 
 }

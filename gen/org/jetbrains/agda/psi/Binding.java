@@ -5,12 +5,15 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface ModuleDeclaration extends PsiElement {
-
-  @NotNull
-  List<Binding> getBindingList();
+public interface Binding extends PsiElement {
 
   @Nullable
-  FqName getFqName();
+  Expression getExpression();
+
+  @NotNull
+  Ids getIds();
+
+  @NotNull
+  NewLine getNewLine();
 
 }

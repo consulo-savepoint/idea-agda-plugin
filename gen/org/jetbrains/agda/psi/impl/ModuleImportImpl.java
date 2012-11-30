@@ -19,14 +19,26 @@ public class ModuleImportImpl extends ASTWrapperPsiElement implements ModuleImpo
 
   @Override
   @Nullable
+  public AsName getAsName() {
+    return findChildByClass(AsName.class);
+  }
+
+  @Override
+  @Nullable
   public FqName getFqName() {
     return findChildByClass(FqName.class);
   }
 
   @Override
   @Nullable
-  public ImportNames getImportNames() {
-    return findChildByClass(ImportNames.class);
+  public Renaming getRenaming() {
+    return findChildByClass(Renaming.class);
+  }
+
+  @Override
+  @Nullable
+  public UsingOrHiding getUsingOrHiding() {
+    return findChildByClass(UsingOrHiding.class);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {

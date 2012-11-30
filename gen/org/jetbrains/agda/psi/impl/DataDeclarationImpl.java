@@ -18,6 +18,12 @@ public class DataDeclarationImpl extends ASTWrapperPsiElement implements DataDec
   }
 
   @Override
+  @NotNull
+  public List<Binding> getBindingList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, Binding.class);
+  }
+
+  @Override
   @Nullable
   public Constructors getConstructors() {
     return findChildByClass(Constructors.class);

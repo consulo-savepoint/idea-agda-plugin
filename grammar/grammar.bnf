@@ -21,6 +21,7 @@
     RIGHT_BRACE="}"
     LEFT_PAREN="("
     RIGHT_PAREN=")"
+    ARROW="->"
     VIRTUAL_LEFT_PAREN="VIRTUAL_LEFT_PAREN"
     VIRTUAL_RIGHT_PAREN="VIRTUAL_RIGHT_PAREN"
     VIRTUAL_SEMICOLON="VIRTUAL_SEMICOLON"
@@ -35,27 +36,52 @@ root ::= declaration *
 fqName ::= id ('.' id) *
 
 private declaration ::= module_declaration | module_import | data_declaration |
-      function_type_declaration | function_declaration | VIRTUAL_SEMICOLON
+      function_type_declaration | function_declaration | expression | VIRTUAL_SEMICOLON | VIRTUAL_RIGHT_PAREN
 
-module_declaration ::= 'module' fqName "where" {pin=1}
+module_declaration ::= 'module' fqName bindings "where" {pin=1}
+
+private bindings ::= binding *
+
+new_line ::= VIRTUAL_LEFT_PAREN | VIRTUAL_RIGHT_PAREN | VIRTUAL_SEMICOLON | ()
+
+ids ::= id+
+
+binding ::= (new_line "{" ids (":" expression)? "}") | (new_line "(" ids (":" expression)? ")")
 
 import_names ::= fqName (';' fqName) *
 
-module_import ::= 'open' ? 'import' fqName ('using' '(' import_names ')') ? {pin=2}
+module_import ::= 'open' ? 'import' fqName as_name? using_or_hiding? renaming? {pin=2}
 
-data_declaration ::= "data" id ":" expression "where" (VIRTUAL_LEFT_PAREN constructors VIRTUAL_RIGHT_PAREN) ? {pin=1}
+as_name ::= "as" id
+
+renaming ::= new_line "renaming" "(" renamings ")"
+
+private renamings ::= id "to" id (new_line ";" id "to" id)*
+
+using_or_hiding ::= ('using' '(' import_names ')') | ('hiding' '(' import_names ')')
+
+data_declaration ::= "data" id bindings ":" expression "where" (VIRTUAL_LEFT_PAREN constructors VIRTUAL_RIGHT_PAREN) ? {pin=1}
 
 constructors ::= constructor (VIRTUAL_SEMICOLON constructor) *
+constructor ::= expression ":" expression {pin=2 recoverUntil = recover}
 
-constructor ::= expression ":" expression
+private recover ::= ! (VIRTUAL_RIGHT_PAREN | VIRTUAL_SEMICOLON)
 
-function_type_declaration ::= expression ":" expression
-function_declaration ::= expression "=" expression
+function_type_declaration ::= expression ":" expression {pin=2}
 
-private id_or_pareses ::= ("(" expression ")") | id
+function_declaration ::= expression "=" expression {pin=2}
 
-application ::= (id_or_pareses application) | id_or_pareses
 
-expression ::= function_type | application
 
-function_type ::= application "->" application
+private atom_expr ::= ("(" expression ")") | ("(" ")") | "{" "!!" "}" | "." | id
+
+application ::= (atom_expr application) | atom_expr
+expression ::= tele_arrow | lambda_expression | function_type
+
+
+tele_arrow ::= telescope ARROW expression
+telescope ::= ("{" ids ":" expression "}") | ("(" ids ":" expression ")")
+
+lambda_expression ::= "\\" "(" id ":" expression ")" ARROW expression
+
+function_type ::= application (ARROW function_type)?

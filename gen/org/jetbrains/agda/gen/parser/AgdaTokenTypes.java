@@ -11,6 +11,8 @@ import org.jetbrains.agda.psi.impl.*;
 public interface AgdaTokenTypes {
 
   IElementType APPLICATION = new AgdaCompositeElementType("APPLICATION");
+  IElementType AS_NAME = new AgdaCompositeElementType("AS_NAME");
+  IElementType BINDING = new AgdaCompositeElementType("BINDING");
   IElementType CONSTRUCTOR = new AgdaCompositeElementType("CONSTRUCTOR");
   IElementType CONSTRUCTORS = new AgdaCompositeElementType("CONSTRUCTORS");
   IElementType DATA_DECLARATION = new AgdaCompositeElementType("DATA_DECLARATION");
@@ -19,10 +21,18 @@ public interface AgdaTokenTypes {
   IElementType FUNCTION_DECLARATION = new AgdaCompositeElementType("FUNCTION_DECLARATION");
   IElementType FUNCTION_TYPE = new AgdaCompositeElementType("FUNCTION_TYPE");
   IElementType FUNCTION_TYPE_DECLARATION = new AgdaCompositeElementType("FUNCTION_TYPE_DECLARATION");
+  IElementType IDS = new AgdaCompositeElementType("IDS");
   IElementType IMPORT_NAMES = new AgdaCompositeElementType("IMPORT_NAMES");
+  IElementType LAMBDA_EXPRESSION = new AgdaCompositeElementType("LAMBDA_EXPRESSION");
   IElementType MODULE_DECLARATION = new AgdaCompositeElementType("MODULE_DECLARATION");
   IElementType MODULE_IMPORT = new AgdaCompositeElementType("MODULE_IMPORT");
+  IElementType NEW_LINE = new AgdaCompositeElementType("NEW_LINE");
+  IElementType RENAMING = new AgdaCompositeElementType("RENAMING");
+  IElementType TELESCOPE = new AgdaCompositeElementType("TELESCOPE");
+  IElementType TELE_ARROW = new AgdaCompositeElementType("TELE_ARROW");
+  IElementType USING_OR_HIDING = new AgdaCompositeElementType("USING_OR_HIDING");
 
+  IElementType ARROW = new AgdaToken("->");
   IElementType ASSIGNMENT = new AgdaToken("=");
   IElementType COLON = new AgdaToken(":");
   IElementType COMMENT = new AgdaToken("COMMENT");
@@ -49,6 +59,12 @@ public interface AgdaTokenTypes {
        if (type == APPLICATION) {
         return new ApplicationImpl(node);
       }
+      else if (type == AS_NAME) {
+        return new AsNameImpl(node);
+      }
+      else if (type == BINDING) {
+        return new BindingImpl(node);
+      }
       else if (type == CONSTRUCTOR) {
         return new ConstructorImpl(node);
       }
@@ -73,14 +89,35 @@ public interface AgdaTokenTypes {
       else if (type == FUNCTION_TYPE_DECLARATION) {
         return new FunctionTypeDeclarationImpl(node);
       }
+      else if (type == IDS) {
+        return new IdsImpl(node);
+      }
       else if (type == IMPORT_NAMES) {
         return new ImportNamesImpl(node);
+      }
+      else if (type == LAMBDA_EXPRESSION) {
+        return new LambdaExpressionImpl(node);
       }
       else if (type == MODULE_DECLARATION) {
         return new ModuleDeclarationImpl(node);
       }
       else if (type == MODULE_IMPORT) {
         return new ModuleImportImpl(node);
+      }
+      else if (type == NEW_LINE) {
+        return new NewLineImpl(node);
+      }
+      else if (type == RENAMING) {
+        return new RenamingImpl(node);
+      }
+      else if (type == TELESCOPE) {
+        return new TelescopeImpl(node);
+      }
+      else if (type == TELE_ARROW) {
+        return new TeleArrowImpl(node);
+      }
+      else if (type == USING_OR_HIDING) {
+        return new UsingOrHidingImpl(node);
       }
       throw new AssertionError("Unknown element type: " + type);
     }

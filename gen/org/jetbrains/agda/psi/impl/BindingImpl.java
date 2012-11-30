@@ -11,26 +11,32 @@ import static org.jetbrains.agda.gen.parser.AgdaTokenTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import org.jetbrains.agda.psi.*;
 
-public class FunctionTypeImpl extends ASTWrapperPsiElement implements FunctionType {
+public class BindingImpl extends ASTWrapperPsiElement implements Binding {
 
-  public FunctionTypeImpl(ASTNode node) {
+  public BindingImpl(ASTNode node) {
     super(node);
   }
 
   @Override
-  @NotNull
-  public Application getApplication() {
-    return findNotNullChildByClass(Application.class);
+  @Nullable
+  public Expression getExpression() {
+    return findChildByClass(Expression.class);
   }
 
   @Override
-  @Nullable
-  public FunctionType getFunctionType() {
-    return findChildByClass(FunctionType.class);
+  @NotNull
+  public Ids getIds() {
+    return findNotNullChildByClass(Ids.class);
+  }
+
+  @Override
+  @NotNull
+  public NewLine getNewLine() {
+    return findNotNullChildByClass(NewLine.class);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof Visitor) ((Visitor)visitor).visitFunctionType(this);
+    if (visitor instanceof Visitor) ((Visitor)visitor).visitBinding(this);
     else super.accept(visitor);
   }
 

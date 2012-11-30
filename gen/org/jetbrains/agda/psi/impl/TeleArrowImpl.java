@@ -11,26 +11,26 @@ import static org.jetbrains.agda.gen.parser.AgdaTokenTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import org.jetbrains.agda.psi.*;
 
-public class FunctionTypeImpl extends ASTWrapperPsiElement implements FunctionType {
+public class TeleArrowImpl extends ASTWrapperPsiElement implements TeleArrow {
 
-  public FunctionTypeImpl(ASTNode node) {
+  public TeleArrowImpl(ASTNode node) {
     super(node);
   }
 
   @Override
   @NotNull
-  public Application getApplication() {
-    return findNotNullChildByClass(Application.class);
+  public Expression getExpression() {
+    return findNotNullChildByClass(Expression.class);
   }
 
   @Override
-  @Nullable
-  public FunctionType getFunctionType() {
-    return findChildByClass(FunctionType.class);
+  @NotNull
+  public Telescope getTelescope() {
+    return findNotNullChildByClass(Telescope.class);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof Visitor) ((Visitor)visitor).visitFunctionType(this);
+    if (visitor instanceof Visitor) ((Visitor)visitor).visitTeleArrow(this);
     else super.accept(visitor);
   }
 

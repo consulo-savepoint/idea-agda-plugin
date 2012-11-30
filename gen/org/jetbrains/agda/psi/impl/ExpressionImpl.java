@@ -19,14 +19,20 @@ public class ExpressionImpl extends ASTWrapperPsiElement implements Expression {
 
   @Override
   @Nullable
-  public Application getApplication() {
-    return findChildByClass(Application.class);
+  public FunctionType getFunctionType() {
+    return findChildByClass(FunctionType.class);
   }
 
   @Override
   @Nullable
-  public FunctionType getFunctionType() {
-    return findChildByClass(FunctionType.class);
+  public LambdaExpression getLambdaExpression() {
+    return findChildByClass(LambdaExpression.class);
+  }
+
+  @Override
+  @Nullable
+  public TeleArrow getTeleArrow() {
+    return findChildByClass(TeleArrow.class);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {

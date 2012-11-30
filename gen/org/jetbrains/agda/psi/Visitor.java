@@ -11,6 +11,14 @@ public class Visitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitAsName(@NotNull AsName o) {
+    visitPsiElement(o);
+  }
+
+  public void visitBinding(@NotNull Binding o) {
+    visitPsiElement(o);
+  }
+
   public void visitConstructor(@NotNull Constructor o) {
     visitPsiElement(o);
   }
@@ -43,7 +51,15 @@ public class Visitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitIds(@NotNull Ids o) {
+    visitPsiElement(o);
+  }
+
   public void visitImportNames(@NotNull ImportNames o) {
+    visitPsiElement(o);
+  }
+
+  public void visitLambdaExpression(@NotNull LambdaExpression o) {
     visitPsiElement(o);
   }
 
@@ -52,6 +68,26 @@ public class Visitor extends PsiElementVisitor {
   }
 
   public void visitModuleImport(@NotNull ModuleImport o) {
+    visitPsiElement(o);
+  }
+
+  public void visitNewLine(@NotNull NewLine o) {
+    visitPsiElement(o);
+  }
+
+  public void visitRenaming(@NotNull Renaming o) {
+    visitPsiElement(o);
+  }
+
+  public void visitTeleArrow(@NotNull TeleArrow o) {
+    visitPsiElement(o);
+  }
+
+  public void visitTelescope(@NotNull Telescope o) {
+    visitPsiElement(o);
+  }
+
+  public void visitUsingOrHiding(@NotNull UsingOrHiding o) {
     visitPsiElement(o);
   }
 

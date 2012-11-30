@@ -29,7 +29,7 @@ DIGIT=[0-9]
 WHITE_SPACE_CHAR=[\ \t\f]
 INDENT=[\n] {WHITE_SPACE_CHAR}* [^\ \t\f]
 EOL_COMMENT="--"[^\n]*
-LETTER = [^0-9{}().\ \n\t\f:]
+LETTER = [^0-9{}().\ \n\t\f:;]
 IDENTIFIER_PART=[:digit:]|{LETTER}
 IDENTIFIER={LETTER} {IDENTIFIER_PART}*
 
@@ -61,6 +61,7 @@ IDENTIFIER={LETTER} {IDENTIFIER_PART}*
 ";"          { return AgdaTokenTypes.SEMICOLON;}
 "."          { return AgdaTokenTypes.DOT; }
 "="          { return AgdaTokenTypes.ASSIGNMENT; }
+(->)|(\u2192)    { return  AgdaTokenTypes.ARROW; }
 "data"       { return AgdaTokenTypes.DATA_KEYWORD; }
 "where"      { return AgdaTokenTypes.WHERE_KEYWORD; }
 

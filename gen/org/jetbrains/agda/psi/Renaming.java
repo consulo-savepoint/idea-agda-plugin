@@ -5,12 +5,12 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface ModuleDeclaration extends PsiElement {
+public interface Renaming extends PsiElement {
 
   @NotNull
-  List<Binding> getBindingList();
+  List<NewLine> getNewLineList();
 
-  @Nullable
-  FqName getFqName();
+  @NotNull
+  PsiElement getId();
 
 }
