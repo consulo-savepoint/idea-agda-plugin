@@ -58,10 +58,10 @@ public final class AgdaProjectComponent implements ProjectComponent {
         if (keepAlive) {
             myProcess.execute(cmd, callback);
         } else {
-            AgdaProcess process = new AgdaProcess();
-            process.init();
-            process.execute(cmd, callback);
-            process.stop();
+            //AgdaProcess process = new AgdaProcess();
+            //process.init();
+            //process.execute(cmd, callback);
+            //process.stop();
 
         }
     }

@@ -11,8 +11,8 @@ import com.intellij.openapi.util.Pair;
 import com.intellij.psi.StringEscapesTokenTypes;
 import com.intellij.psi.tree.IElementType;
 import gnu.trove.THashMap;
+import org.jetbrains.agda.gen.parser.AgdaTokenTypes;
 import org.jetbrains.agda.parser.AgdaLexer;
-import org.jetbrains.agda.parser.AgdaTokenTypes;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
@@ -67,7 +67,7 @@ public class AgdaHighlighter extends SyntaxHighlighterBase {
     keys1.put(AgdaTokenTypes.END_OF_LINE_COMMENT, COMMENT);
     keys1.put(AgdaTokenTypes.COMMENT, COMMENT);
     keys1.put(AgdaTokenTypes.KEYWORD, KEYWORD_VALUE);
-    keys1.put(AgdaTokenTypes.STRING_LITERAL, STRING_LITERAL);
+    keys1.put(AgdaTokenTypes.STRING, STRING_LITERAL);
 
     keys1.put(StringEscapesTokenTypes.VALID_STRING_ESCAPE_TOKEN, PROPERTIES_VALID_STRING_ESCAPE);
     keys1.put(StringEscapesTokenTypes.INVALID_CHARACTER_ESCAPE_TOKEN, PROPERTIES_INVALID_STRING_ESCAPE);

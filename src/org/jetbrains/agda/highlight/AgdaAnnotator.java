@@ -92,6 +92,7 @@ public final class AgdaAnnotator extends ExternalAnnotator<PsiFile, AnnotationRe
                 }
             }
         }
+        /*
         ApplicationManager.getApplication().runReadAction(new Runnable() {
             @Override
             public void run() {
@@ -105,6 +106,7 @@ public final class AgdaAnnotator extends ExternalAnnotator<PsiFile, AnnotationRe
                 });
             }
         });
+        */
 
     }
 
@@ -126,8 +128,8 @@ public final class AgdaAnnotator extends ExternalAnnotator<PsiFile, AnnotationRe
         }
 
         List<Integer> goals = new ArrayList<Integer>();
-        findGoals(file, goals);
-        applySyntax(file, holder);
+        //findGoals(file, goals);
+        //applySyntax(file, holder);
         if (result.myAnnotations != null) {
             for (AgdaExternalAnnotation annotation : result.myAnnotations) {
 

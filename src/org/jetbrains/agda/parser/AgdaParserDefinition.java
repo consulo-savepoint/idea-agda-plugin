@@ -12,6 +12,7 @@ import com.intellij.psi.tree.TokenSet;
 import com.intellij.psi.tree.IFileElementType;
 import org.jetbrains.agda.AgdaFileImpl;
 import org.jetbrains.agda.AgdaLanguage;
+import org.jetbrains.agda.gen.parser.*;
 import org.jetbrains.agda.psi.AgdaPsiBuilder;
 import org.jetbrains.annotations.NotNull;
 
@@ -30,22 +31,22 @@ public class AgdaParserDefinition implements ParserDefinition {
 
     @NotNull
     public TokenSet getWhitespaceTokens() {
-        return AgdaTokenTypes.WHITESPACES;
+        return AgdaTokenTypesOld.WHITESPACES;
     }
 
     @NotNull
     public TokenSet getCommentTokens() {
-        return AgdaTokenTypes.COMMENTS;
+        return AgdaTokenTypesOld.COMMENTS;
     }
 
     @NotNull
     public TokenSet getStringLiteralElements() {
-        return TokenSet.EMPTY;
+        return TokenSet.create(AgdaTokenTypes.STRING);
     }
 
     @NotNull
     public PsiParser createParser(final Project project) {
-        return new AgdaParser();
+        return new org.jetbrains.agda.gen.parser.AgdaParser();
     }
 
     public PsiFile createFile(FileViewProvider viewProvider) {
@@ -58,6 +59,6 @@ public class AgdaParserDefinition implements ParserDefinition {
 
     @NotNull
     public PsiElement createElement(ASTNode node) {
-        return AgdaPsiBuilder.build(node);
+        return AgdaTokenTypes.Factory.createElement(node);
     }
 }

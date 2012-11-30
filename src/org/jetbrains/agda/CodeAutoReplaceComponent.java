@@ -10,7 +10,7 @@ import com.intellij.psi.*;
 import com.intellij.psi.impl.source.tree.LeafElement;
 import com.intellij.psi.impl.source.tree.LeafPsiElement;
 import com.intellij.psi.impl.source.tree.TreeElement;
-import org.jetbrains.agda.parser.AgdaTokenTypes;
+import org.jetbrains.agda.gen.parser.AgdaTokenTypes;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -86,7 +86,7 @@ public class CodeAutoReplaceComponent implements ProjectComponent {
                 CommandProcessor.getInstance().executeCommand(myProject, new Runnable() {
                     @Override
                     public void run() {
-                        TreeElement newNode = new LeafPsiElement(AgdaTokenTypes.NAME, replace);
+                        TreeElement newNode = new LeafPsiElement(AgdaTokenTypes.ID, replace);
                         node.getTreeParent().replaceChild(node, newNode);
                     }
                 }, "Auto Rename", null);

@@ -4,6 +4,7 @@ package org.jetbrains.agda.parser;
 import com.intellij.lang.PsiBuilder;
 import com.intellij.lang.WhitespaceSkippedCallback;
 import com.intellij.psi.tree.IElementType;
+import org.jetbrains.agda.gen.parser.AgdaTokenTypes;
 
 public class AgdaParsing implements AgdaASTTypes{
     static final String[][] BRACES = new String[][] {
@@ -18,7 +19,7 @@ public class AgdaParsing implements AgdaASTTypes{
         this.myBuilder = builder;
         builder.setWhitespaceSkippedCallback(new WhitespaceSkippedCallback() {
             public void onSkip(IElementType type, int start, int end) {
-                if (type == AgdaTokenTypes.LINE_END) {
+                if (type == AgdaTokenTypes.NEW_LINE) {
                     myIndent = null;
                 } else if (myIndent == null) {
                     myIndent = end - start;
@@ -250,7 +251,7 @@ public class AgdaParsing implements AgdaASTTypes{
             String nameToken = myBuilder.getTokenText();
             myBuilder.advanceLexer();
             mark.done(AgdaASTTypes.REFERENCE);
-            if (myBuilder.getTokenType() == AgdaTokenTypes.NAME) {
+            if (myBuilder.getTokenType() == AgdaTokenTypes.ID) {
                 if (last != null) {
                     last.done(AgdaASTTypes.APPLICATION);
                     last = last.precede();

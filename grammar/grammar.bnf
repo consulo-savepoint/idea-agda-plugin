@@ -1,0 +1,45 @@
+{
+  parserClass="org.jetbrains.agda.gen.parser.AgdaParser"
+  stubParserClass="org.jetbrains.agda.parser.AgdaParserUtil"
+  elementTypeHolderClass="org.jetbrains.agda.gen.parser.AgdaTokenTypes"
+  tokenTypeClass="org.jetbrains.agda.parser.AgdaToken"
+  elementTypeClass="org.jetbrains.agda.parser.AgdaCompositeElementType"
+
+  tokens = [
+    NEW_LINE="\n"
+    KEYWORD="KEYWORD"
+    SPEC_CHARACTERS="SPEC_CHARACTERS"
+    STRING="STRING"
+    COMMENT="COMMENT"
+    END_OF_LINE_COMMENT="--"
+    OP_EQ="="
+    DOT="."
+    COLON=":"
+    SEMICOLON=";"
+    LEFT_BRACE="{"
+    RIGHT_BRACE="}"
+    LEFT_PAREN="("
+    RIGHT_PAREN=")"
+    VIRTUAL_LEFT_PAREN="VIRTUAL_LEFT_PAREN"
+    VIRTUAL_RIGHT_PAREN="VIRTUAL_RIGHT_PAREN"
+    VIRTUAL_SEMICOLON="VIRTUAL_SEMICOLON"
+  ]
+
+  psiPackage="org.jetbrains.agda.psi"
+  psiImplPackage="org.jetbrains.agda.psi.impl"
+}
+
+root ::= declaration *
+
+fqName ::= id ('.' id) *
+
+private declaration ::= module_declaration |
+                        module_import
+
+module_declaration ::= 'module' fqName "where"
+
+import_names ::= fqName (';' fqName) *
+
+module_import ::= 'open' ? 'import' fqName ('using' '(' import_names ')') ?
+
+
