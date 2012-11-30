@@ -1,5 +1,6 @@
 package org.jetbrains.agda.highlight;
 
+import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.annotation.Annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.ExternalAnnotator;
@@ -11,7 +12,10 @@ import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
 import org.jetbrains.agda.external.*;
+import org.jetbrains.agda.parser.AgdaCompositeElementType;
 import org.jetbrains.agda.psi.AgdaASTWrapper;
+import org.jetbrains.agda.psi.Expression;
+import org.jetbrains.agda.psi.FunctionTypeDeclaration;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -20,7 +24,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class AgdaAnnotator extends ExternalAnnotator<PsiFile, AnnotationResult> {
+public final class AgdaExpernalAnnotator extends ExternalAnnotator<PsiFile, AnnotationResult> {
 
     @Override
     public PsiFile collectionInformation(@NotNull PsiFile file) {
@@ -54,7 +58,7 @@ public final class AgdaAnnotator extends ExternalAnnotator<PsiFile, AnnotationRe
 
         System.out.println("Annotations");
         AgdaProjectComponent component = psiFile.getProject().getComponent(AgdaProjectComponent.class);
-        List<AgdaExternalAnnotation> agdaExternalAnnotations = component.load(file.getPath());
+        List<AgdaExternalAnnotation> agdaExternalAnnotations = new ArrayList<AgdaExternalAnnotation>();//component.load(file.getPath());
 
         return new AnnotationResult(file, agdaExternalAnnotations);
     }
@@ -66,19 +70,20 @@ public final class AgdaAnnotator extends ExternalAnnotator<PsiFile, AnnotationRe
                 PsiElement element = file.findElementAt(syntaxAnnotation.getStart());
 
                 if (element != null) {
-                    while (!(element instanceof AgdaASTWrapper)) {
+                    while (!(element instanceof ASTWrapperPsiElement)) {
                         element = element.getParent();
                         if (element instanceof PsiFile) {
                             break;
                         }
                     }
-                    if (!(element instanceof AgdaASTWrapper)) {
+                    if (!(element instanceof ASTWrapperPsiElement)) {
                       continue;
                     }
-                    AgdaASTWrapper astWrapper = (AgdaASTWrapper) element;
-                    astWrapper.isLoaded = true;
+                    ASTWrapperPsiElement astWrapper = (ASTWrapperPsiElement) element;
+                    //astWrapper.isLoaded = true;
 
                     astWrapper.putUserData(AgdaSyntaxAnnotation.SYNTAX, syntaxAnnotation);
+                    /*
                     if (syntaxAnnotation.getReference() != null) {
                         VirtualFile virtualFile = LocalFileSystem.getInstance().findFileByIoFile(new File(syntaxAnnotation.getReference()));
                         PsiFile file1 = PsiManager.getInstance(file.getProject()).findFile(virtualFile);
@@ -88,11 +93,11 @@ public final class AgdaAnnotator extends ExternalAnnotator<PsiFile, AnnotationRe
                             astWrapper.myReference = elementAt;
                         }
                     }
-
+                    */
                 }
             }
         }
-        /*
+
         ApplicationManager.getApplication().runReadAction(new Runnable() {
             @Override
             public void run() {
@@ -106,8 +111,6 @@ public final class AgdaAnnotator extends ExternalAnnotator<PsiFile, AnnotationRe
                 });
             }
         });
-        */
-
     }
 
     private static void visitAll(PsiElement element, PsiElementVisitor psiElementVisitor) {
@@ -128,8 +131,8 @@ public final class AgdaAnnotator extends ExternalAnnotator<PsiFile, AnnotationRe
         }
 
         List<Integer> goals = new ArrayList<Integer>();
-        //findGoals(file, goals);
-        //applySyntax(file, holder);
+        findGoals(file, goals);
+        applySyntax(file, holder);
         if (result.myAnnotations != null) {
             for (AgdaExternalAnnotation annotation : result.myAnnotations) {
 

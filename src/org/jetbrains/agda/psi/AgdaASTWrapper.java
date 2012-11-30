@@ -61,7 +61,7 @@ public class AgdaASTWrapper extends AgdaBaseElement implements PsiNamedElement {
             }
             //List<AgdaExternalAnnotation> agdaExternalAnnotations = LaunchAgda.load(file.getPath(), psiFile.getProject());
             //if (agdaExternalAnnotations != null) {
-            //    AgdaAnnotator.applyAnnotations(psiFile, agdaExternalAnnotations);
+            //    AgdaExpernalAnnotator.applyAnnotations(psiFile, agdaExternalAnnotations);
             //}
         }
 

@@ -8,9 +8,6 @@ import com.intellij.psi.PsiElement;
 public interface ModuleImport extends PsiElement {
 
   @Nullable
-  AsName getAsName();
-
-  @Nullable
   FqName getFqName();
 
   @Nullable
@@ -18,5 +15,8 @@ public interface ModuleImport extends PsiElement {
 
   @Nullable
   UsingOrHiding getUsingOrHiding();
+
+  @Nullable
+  PsiElement getId();
 
 }

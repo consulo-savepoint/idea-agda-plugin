@@ -7,11 +7,11 @@ import com.intellij.psi.PsiElement;
 
 public class Visitor extends PsiElementVisitor {
 
-  public void visitApplication(@NotNull Application o) {
+  public void visitAName(@NotNull AName o) {
     visitPsiElement(o);
   }
 
-  public void visitAsName(@NotNull AsName o) {
+  public void visitApplication(@NotNull Application o) {
     visitPsiElement(o);
   }
 
@@ -52,10 +52,6 @@ public class Visitor extends PsiElementVisitor {
   }
 
   public void visitIds(@NotNull Ids o) {
-    visitPsiElement(o);
-  }
-
-  public void visitImportNames(@NotNull ImportNames o) {
     visitPsiElement(o);
   }
 

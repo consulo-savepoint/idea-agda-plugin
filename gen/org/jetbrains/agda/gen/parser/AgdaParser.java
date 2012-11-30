@@ -23,11 +23,11 @@ public class AgdaParser implements PsiParser {
     int level_ = 0;
     boolean result_;
     builder_ = adapt_builder_(root_, builder_, this);
-    if (root_ == APPLICATION) {
-      result_ = application(builder_, level_ + 1);
+    if (root_ == A_NAME) {
+      result_ = a_name(builder_, level_ + 1);
     }
-    else if (root_ == AS_NAME) {
-      result_ = as_name(builder_, level_ + 1);
+    else if (root_ == APPLICATION) {
+      result_ = application(builder_, level_ + 1);
     }
     else if (root_ == BINDING) {
       result_ = binding(builder_, level_ + 1);
@@ -58,9 +58,6 @@ public class AgdaParser implements PsiParser {
     }
     else if (root_ == IDS) {
       result_ = ids(builder_, level_ + 1);
-    }
-    else if (root_ == IMPORT_NAMES) {
-      result_ = import_names(builder_, level_ + 1);
     }
     else if (root_ == LAMBDA_EXPRESSION) {
       result_ = lambda_expression(builder_, level_ + 1);
@@ -102,14 +99,37 @@ public class AgdaParser implements PsiParser {
   }
 
   /* ********************************************************** */
-  // (atom_expr application) | atom_expr
+  // id
+  public static boolean a_name(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "a_name")) return false;
+    if (!nextTokenIs(builder_, ID)) return false;
+    boolean result_ = false;
+    Marker marker_ = builder_.mark();
+    result_ = consumeToken(builder_, ID);
+    if (result_) {
+      marker_.done(A_NAME);
+    }
+    else {
+      marker_.rollbackTo();
+    }
+    return result_;
+  }
+
+  /* ********************************************************** */
+  // (atom_expr maybe_application)
   public static boolean application(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "application")) return false;
+    return application_0(builder_, level_ + 1);
+  }
+
+  // atom_expr maybe_application
+  private static boolean application_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "application_0")) return false;
     boolean result_ = false;
     Marker marker_ = builder_.mark();
     enterErrorRecordingSection(builder_, level_, _SECTION_GENERAL_, "<application>");
-    result_ = application_0(builder_, level_ + 1);
-    if (!result_) result_ = atom_expr(builder_, level_ + 1);
+    result_ = atom_expr(builder_, level_ + 1);
+    result_ = result_ && maybe_application(builder_, level_ + 1);
     if (result_) {
       marker_.done(APPLICATION);
     }
@@ -120,19 +140,14 @@ public class AgdaParser implements PsiParser {
     return result_;
   }
 
-  // (atom_expr application)
-  private static boolean application_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "application_0")) return false;
-    return application_0_0(builder_, level_ + 1);
-  }
-
-  // atom_expr application
-  private static boolean application_0_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "application_0_0")) return false;
+  /* ********************************************************** */
+  // "as" id
+  static boolean as_name(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "as_name")) return false;
     boolean result_ = false;
     Marker marker_ = builder_.mark();
-    result_ = atom_expr(builder_, level_ + 1);
-    result_ = result_ && application(builder_, level_ + 1);
+    result_ = consumeToken(builder_, "as");
+    result_ = result_ && consumeToken(builder_, ID);
     if (!result_) {
       marker_.rollbackTo();
     }
@@ -143,26 +158,7 @@ public class AgdaParser implements PsiParser {
   }
 
   /* ********************************************************** */
-  // "as" id
-  public static boolean as_name(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "as_name")) return false;
-    boolean result_ = false;
-    Marker marker_ = builder_.mark();
-    enterErrorRecordingSection(builder_, level_, _SECTION_GENERAL_, "<as name>");
-    result_ = consumeToken(builder_, "as");
-    result_ = result_ && consumeToken(builder_, ID);
-    if (result_) {
-      marker_.done(AS_NAME);
-    }
-    else {
-      marker_.rollbackTo();
-    }
-    result_ = exitErrorRecordingSection(builder_, level_, result_, false, _SECTION_GENERAL_, null);
-    return result_;
-  }
-
-  /* ********************************************************** */
-  // ("(" expression ")") | ("(" ")") | "{" "!!" "}" | "." | id
+  // ("(" expression ")") | ("(" ")") | "{" "!!" "}" | "." | a_name
   static boolean atom_expr(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "atom_expr")) return false;
     boolean result_ = false;
@@ -171,7 +167,7 @@ public class AgdaParser implements PsiParser {
     if (!result_) result_ = atom_expr_1(builder_, level_ + 1);
     if (!result_) result_ = atom_expr_2(builder_, level_ + 1);
     if (!result_) result_ = consumeToken(builder_, DOT);
-    if (!result_) result_ = consumeToken(builder_, ID);
+    if (!result_) result_ = a_name(builder_, level_ + 1);
     if (!result_) {
       marker_.rollbackTo();
     }
@@ -548,7 +544,7 @@ public class AgdaParser implements PsiParser {
   }
 
   /* ********************************************************** */
-  // tele_arrow | lambda_expression | function_type
+  // tele_arrow | lambda_expression | maybe_function_type
   public static boolean expression(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "expression")) return false;
     boolean result_ = false;
@@ -556,7 +552,7 @@ public class AgdaParser implements PsiParser {
     enterErrorRecordingSection(builder_, level_, _SECTION_GENERAL_, "<expression>");
     result_ = tele_arrow(builder_, level_ + 1);
     if (!result_) result_ = lambda_expression(builder_, level_ + 1);
-    if (!result_) result_ = function_type(builder_, level_ + 1);
+    if (!result_) result_ = maybe_function_type(builder_, level_ + 1);
     if (result_) {
       marker_.done(EXPRESSION);
     }
@@ -646,14 +642,15 @@ public class AgdaParser implements PsiParser {
   }
 
   /* ********************************************************** */
-  // application (ARROW function_type)?
+  // maybe_application ARROW maybe_function_type
   public static boolean function_type(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "function_type")) return false;
     boolean result_ = false;
     Marker marker_ = builder_.mark();
     enterErrorRecordingSection(builder_, level_, _SECTION_GENERAL_, "<function type>");
-    result_ = application(builder_, level_ + 1);
-    result_ = result_ && function_type_1(builder_, level_ + 1);
+    result_ = maybe_application(builder_, level_ + 1);
+    result_ = result_ && consumeToken(builder_, ARROW);
+    result_ = result_ && maybe_function_type(builder_, level_ + 1);
     if (result_) {
       marker_.done(FUNCTION_TYPE);
     }
@@ -661,35 +658,6 @@ public class AgdaParser implements PsiParser {
       marker_.rollbackTo();
     }
     result_ = exitErrorRecordingSection(builder_, level_, result_, false, _SECTION_GENERAL_, null);
-    return result_;
-  }
-
-  // (ARROW function_type)?
-  private static boolean function_type_1(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "function_type_1")) return false;
-    function_type_1_0(builder_, level_ + 1);
-    return true;
-  }
-
-  // (ARROW function_type)
-  private static boolean function_type_1_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "function_type_1_0")) return false;
-    return function_type_1_0_0(builder_, level_ + 1);
-  }
-
-  // ARROW function_type
-  private static boolean function_type_1_0_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "function_type_1_0_0")) return false;
-    boolean result_ = false;
-    Marker marker_ = builder_.mark();
-    result_ = consumeToken(builder_, ARROW);
-    result_ = result_ && function_type(builder_, level_ + 1);
-    if (!result_) {
-      marker_.rollbackTo();
-    }
-    else {
-      marker_.drop();
-    }
     return result_;
   }
 
@@ -744,18 +712,18 @@ public class AgdaParser implements PsiParser {
 
   /* ********************************************************** */
   // fqName (';' fqName) *
-  public static boolean import_names(PsiBuilder builder_, int level_) {
+  static boolean import_names(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "import_names")) return false;
     if (!nextTokenIs(builder_, ID)) return false;
     boolean result_ = false;
     Marker marker_ = builder_.mark();
     result_ = fqName(builder_, level_ + 1);
     result_ = result_ && import_names_1(builder_, level_ + 1);
-    if (result_) {
-      marker_.done(IMPORT_NAMES);
+    if (!result_) {
+      marker_.rollbackTo();
     }
     else {
-      marker_.rollbackTo();
+      marker_.drop();
     }
     return result_;
   }
@@ -824,14 +792,49 @@ public class AgdaParser implements PsiParser {
   }
 
   /* ********************************************************** */
+  // application | atom_expr
+  static boolean maybe_application(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "maybe_application")) return false;
+    boolean result_ = false;
+    Marker marker_ = builder_.mark();
+    result_ = application(builder_, level_ + 1);
+    if (!result_) result_ = atom_expr(builder_, level_ + 1);
+    if (!result_) {
+      marker_.rollbackTo();
+    }
+    else {
+      marker_.drop();
+    }
+    return result_;
+  }
+
+  /* ********************************************************** */
+  // function_type | maybe_application
+  static boolean maybe_function_type(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "maybe_function_type")) return false;
+    boolean result_ = false;
+    Marker marker_ = builder_.mark();
+    result_ = function_type(builder_, level_ + 1);
+    if (!result_) result_ = maybe_application(builder_, level_ + 1);
+    if (!result_) {
+      marker_.rollbackTo();
+    }
+    else {
+      marker_.drop();
+    }
+    return result_;
+  }
+
+  /* ********************************************************** */
   // 'module' fqName bindings "where"
   public static boolean module_declaration(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "module_declaration")) return false;
+    if (!nextTokenIs(builder_, MODULE_KEYWORD)) return false;
     boolean result_ = false;
     boolean pinned_ = false;
     Marker marker_ = builder_.mark();
-    enterErrorRecordingSection(builder_, level_, _SECTION_GENERAL_, "<module declaration>");
-    result_ = consumeToken(builder_, "module");
+    enterErrorRecordingSection(builder_, level_, _SECTION_GENERAL_, null);
+    result_ = consumeToken(builder_, MODULE_KEYWORD);
     pinned_ = result_; // pin = 1
     result_ = result_ && report_error_(builder_, fqName(builder_, level_ + 1));
     result_ = pinned_ && report_error_(builder_, bindings(builder_, level_ + 1)) && result_;

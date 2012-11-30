@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="Encoding" useUTFGuessing="true" native2AsciiForPropertiesFiles="false">
-    <file url="file://$PROJECT_DIR$/src/org/jetbrains/agda/compiler/AgdaCompiler.java" charset="windows-1251" />
-    <file url="file://$PROJECT_DIR$/src/org/jetbrains/agda/compiler/AgdaCompilerProjectComponent.java" charset="windows-1251" />
-    <file url="file://$PROJECT_DIR$/src/org/jetbrains/agda/external/AgdaProjectComponent.java" charset="windows-1251" />
-    <file url="file://$PROJECT_DIR$/src/org/jetbrains/agda/highlight/AgdaAnnotator.java" charset="windows-1251" />
-    <file url="file://$PROJECT_DIR$/src/org/jetbrains/agda/highlight/AgdaBraceMatcher.java" charset="windows-1251" />
-    <file url="file://$PROJECT_DIR$/src/org/jetbrains/agda/util/LineColPosition.java" charset="windows-1251" />
   </component>
 </project>
 

@@ -8,6 +8,15 @@ import com.intellij.psi.PsiElement;
 public interface Expression extends PsiElement {
 
   @Nullable
+  AName getAName();
+
+  @Nullable
+  Application getApplication();
+
+  @Nullable
+  Expression getExpression();
+
+  @Nullable
   FunctionType getFunctionType();
 
   @Nullable

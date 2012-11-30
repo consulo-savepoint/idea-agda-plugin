@@ -7,13 +7,13 @@ import com.intellij.psi.PsiElement;
 
 public interface Application extends PsiElement {
 
+  @NotNull
+  List<AName> getANameList();
+
   @Nullable
   Application getApplication();
 
-  @Nullable
-  Expression getExpression();
-
-  @Nullable
-  PsiElement getId();
+  @NotNull
+  List<Expression> getExpressionList();
 
 }

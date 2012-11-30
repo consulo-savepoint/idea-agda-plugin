@@ -8,6 +8,6 @@ import com.intellij.psi.PsiElement;
 public interface UsingOrHiding extends PsiElement {
 
   @NotNull
-  ImportNames getImportNames();
+  List<FqName> getFqNameList();
 
 }

@@ -39,7 +39,8 @@
 
   <extensions defaultExtensionNs="com.intellij">
       <fileTypeFactory implementation="org.jetbrains.agda.AgdaFileTypeFactory"/>
-      <externalAnnotator implementationClass="org.jetbrains.agda.highlight.AgdaAnnotator" language="Agda"/>
+      <externalAnnotator implementationClass="org.jetbrains.agda.highlight.AgdaExpernalAnnotator" language="Agda"/>
+      <annotator implementationClass="org.jetbrains.agda.highlight.AgdaAnnotator2" language="Agda" />
       <lang.braceMatcher language="Agda"
                          implementationClass="org.jetbrains.agda.highlight.AgdaBraceMatcher"/>
       <lang.parserDefinition language="Agda"

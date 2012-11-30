@@ -11,7 +11,7 @@ import org.jetbrains.agda.psi.impl.*;
 public interface AgdaTokenTypes {
 
   IElementType APPLICATION = new AgdaCompositeElementType("APPLICATION");
-  IElementType AS_NAME = new AgdaCompositeElementType("AS_NAME");
+  IElementType A_NAME = new AgdaCompositeElementType("A_NAME");
   IElementType BINDING = new AgdaCompositeElementType("BINDING");
   IElementType CONSTRUCTOR = new AgdaCompositeElementType("CONSTRUCTOR");
   IElementType CONSTRUCTORS = new AgdaCompositeElementType("CONSTRUCTORS");
@@ -22,7 +22,6 @@ public interface AgdaTokenTypes {
   IElementType FUNCTION_TYPE = new AgdaCompositeElementType("FUNCTION_TYPE");
   IElementType FUNCTION_TYPE_DECLARATION = new AgdaCompositeElementType("FUNCTION_TYPE_DECLARATION");
   IElementType IDS = new AgdaCompositeElementType("IDS");
-  IElementType IMPORT_NAMES = new AgdaCompositeElementType("IMPORT_NAMES");
   IElementType LAMBDA_EXPRESSION = new AgdaCompositeElementType("LAMBDA_EXPRESSION");
   IElementType MODULE_DECLARATION = new AgdaCompositeElementType("MODULE_DECLARATION");
   IElementType MODULE_IMPORT = new AgdaCompositeElementType("MODULE_IMPORT");
@@ -40,9 +39,9 @@ public interface AgdaTokenTypes {
   IElementType DOT = new AgdaToken(".");
   IElementType END_OF_LINE_COMMENT = new AgdaToken("--");
   IElementType ID = new AgdaToken("id");
-  IElementType KEYWORD = new AgdaToken("KEYWORD");
   IElementType LEFT_BRACE = new AgdaToken("{");
   IElementType LEFT_PAREN = new AgdaToken("(");
+  IElementType MODULE_KEYWORD = new AgdaToken("module");
   IElementType RIGHT_BRACE = new AgdaToken("}");
   IElementType RIGHT_PAREN = new AgdaToken(")");
   IElementType SEMICOLON = new AgdaToken(";");
@@ -59,8 +58,8 @@ public interface AgdaTokenTypes {
        if (type == APPLICATION) {
         return new ApplicationImpl(node);
       }
-      else if (type == AS_NAME) {
-        return new AsNameImpl(node);
+      else if (type == A_NAME) {
+        return new ANameImpl(node);
       }
       else if (type == BINDING) {
         return new BindingImpl(node);
@@ -91,9 +90,6 @@ public interface AgdaTokenTypes {
       }
       else if (type == IDS) {
         return new IdsImpl(node);
-      }
-      else if (type == IMPORT_NAMES) {
-        return new ImportNamesImpl(node);
       }
       else if (type == LAMBDA_EXPRESSION) {
         return new LambdaExpressionImpl(node);

@@ -18,21 +18,21 @@ public class ApplicationImpl extends ASTWrapperPsiElement implements Application
   }
 
   @Override
+  @NotNull
+  public List<AName> getANameList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, AName.class);
+  }
+
+  @Override
   @Nullable
   public Application getApplication() {
     return findChildByClass(Application.class);
   }
 
   @Override
-  @Nullable
-  public Expression getExpression() {
-    return findChildByClass(Expression.class);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getId() {
-    return findChildByType(ID);
+  @NotNull
+  public List<Expression> getExpressionList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, Expression.class);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {

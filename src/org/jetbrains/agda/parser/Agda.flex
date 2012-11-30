@@ -64,6 +64,7 @@ IDENTIFIER={LETTER} {IDENTIFIER_PART}*
 (->)|(\u2192)    { return  AgdaTokenTypes.ARROW; }
 "data"       { return AgdaTokenTypes.DATA_KEYWORD; }
 "where"      { return AgdaTokenTypes.WHERE_KEYWORD; }
+"module"     { return AgdaTokenTypes.MODULE_KEYWORD; }
 
 {IDENTIFIER} { return AgdaTokenTypes.ID; }
 "\n"               { return AgdaTokenTypes.VIRTUAL_RIGHT_PAREN; }
