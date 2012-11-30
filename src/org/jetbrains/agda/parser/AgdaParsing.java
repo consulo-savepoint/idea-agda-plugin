@@ -17,15 +17,6 @@ public class AgdaParsing implements AgdaASTTypes{
 
     public AgdaParsing(PsiBuilder builder) {
         this.myBuilder = builder;
-        builder.setWhitespaceSkippedCallback(new WhitespaceSkippedCallback() {
-            public void onSkip(IElementType type, int start, int end) {
-                if (type == AgdaTokenTypes.NEW_LINE) {
-                    myIndent = null;
-                } else if (myIndent == null) {
-                    myIndent = end - start;
-                }
-            }
-        });
     }
 
     int getIndent() {

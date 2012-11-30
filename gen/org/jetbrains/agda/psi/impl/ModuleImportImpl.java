@@ -18,9 +18,9 @@ public class ModuleImportImpl extends ASTWrapperPsiElement implements ModuleImpo
   }
 
   @Override
-  @NotNull
+  @Nullable
   public FqName getFqName() {
-    return findNotNullChildByClass(FqName.class);
+    return findChildByClass(FqName.class);
   }
 
   @Override

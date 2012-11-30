@@ -7,7 +7,39 @@ import com.intellij.psi.PsiElement;
 
 public class Visitor extends PsiElementVisitor {
 
+  public void visitApplication(@NotNull Application o) {
+    visitPsiElement(o);
+  }
+
+  public void visitConstructor(@NotNull Constructor o) {
+    visitPsiElement(o);
+  }
+
+  public void visitConstructors(@NotNull Constructors o) {
+    visitPsiElement(o);
+  }
+
+  public void visitDataDeclaration(@NotNull DataDeclaration o) {
+    visitPsiElement(o);
+  }
+
+  public void visitExpression(@NotNull Expression o) {
+    visitPsiElement(o);
+  }
+
   public void visitFqName(@NotNull FqName o) {
+    visitPsiElement(o);
+  }
+
+  public void visitFunctionDeclaration(@NotNull FunctionDeclaration o) {
+    visitPsiElement(o);
+  }
+
+  public void visitFunctionType(@NotNull FunctionType o) {
+    visitPsiElement(o);
+  }
+
+  public void visitFunctionTypeDeclaration(@NotNull FunctionTypeDeclaration o) {
     visitPsiElement(o);
   }
 

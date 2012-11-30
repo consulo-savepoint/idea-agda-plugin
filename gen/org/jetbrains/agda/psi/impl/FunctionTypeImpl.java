@@ -11,20 +11,20 @@ import static org.jetbrains.agda.gen.parser.AgdaTokenTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import org.jetbrains.agda.psi.*;
 
-public class FqNameImpl extends ASTWrapperPsiElement implements FqName {
+public class FunctionTypeImpl extends ASTWrapperPsiElement implements FunctionType {
 
-  public FqNameImpl(ASTNode node) {
+  public FunctionTypeImpl(ASTNode node) {
     super(node);
   }
 
   @Override
   @NotNull
-  public PsiElement getId() {
-    return findNotNullChildByType(ID);
+  public List<Application> getApplicationList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, Application.class);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof Visitor) ((Visitor)visitor).visitFqName(this);
+    if (visitor instanceof Visitor) ((Visitor)visitor).visitFunctionType(this);
     else super.accept(visitor);
   }
 

@@ -5,9 +5,9 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface FqName extends PsiElement {
+public interface Constructors extends PsiElement {
 
   @NotNull
-  PsiElement getId();
+  List<Constructor> getConstructorList();
 
 }

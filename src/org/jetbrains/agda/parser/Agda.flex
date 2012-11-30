@@ -53,7 +53,6 @@ IDENTIFIER={LETTER} {IDENTIFIER_PART}*
 
 ({WHITE_SPACE_CHAR})+ { return TokenType.WHITE_SPACE; }
 {EOL_COMMENT} { return AgdaTokenTypes.END_OF_LINE_COMMENT; }
-{IDENTIFIER} { return AgdaTokenTypes.ID; }
 "{"          { return AgdaTokenTypes.LEFT_BRACE; }
 "}"          { return AgdaTokenTypes.RIGHT_BRACE; }
 "("          { return AgdaTokenTypes.LEFT_PAREN; }
@@ -61,5 +60,10 @@ IDENTIFIER={LETTER} {IDENTIFIER_PART}*
 ":"          { return AgdaTokenTypes.COLON;}
 ";"          { return AgdaTokenTypes.SEMICOLON;}
 "."          { return AgdaTokenTypes.DOT; }
-"\n"               { return AgdaTokenTypes.NEW_LINE; }
+"="          { return AgdaTokenTypes.ASSIGNMENT; }
+"data"       { return AgdaTokenTypes.DATA_KEYWORD; }
+"where"      { return AgdaTokenTypes.WHERE_KEYWORD; }
+
+{IDENTIFIER} { return AgdaTokenTypes.ID; }
+"\n"               { return AgdaTokenTypes.VIRTUAL_RIGHT_PAREN; }
 . { return TokenType.BAD_CHARACTER; }

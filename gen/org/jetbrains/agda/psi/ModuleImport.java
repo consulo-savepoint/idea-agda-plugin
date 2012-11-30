@@ -7,7 +7,7 @@ import com.intellij.psi.PsiElement;
 
 public interface ModuleImport extends PsiElement {
 
-  @NotNull
+  @Nullable
   FqName getFqName();
 
   @Nullable

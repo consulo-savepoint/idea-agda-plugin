@@ -6,15 +6,16 @@
   elementTypeClass="org.jetbrains.agda.parser.AgdaCompositeElementType"
 
   tokens = [
-    NEW_LINE="\n"
     KEYWORD="KEYWORD"
+    DATA_KEYWORD="data"
+    WHERE_KEYWORD="where"
     SPEC_CHARACTERS="SPEC_CHARACTERS"
     STRING="STRING"
     COMMENT="COMMENT"
     END_OF_LINE_COMMENT="--"
-    OP_EQ="="
     DOT="."
     COLON=":"
+    ASSIGNMENT="="
     SEMICOLON=";"
     LEFT_BRACE="{"
     RIGHT_BRACE="}"
@@ -33,13 +34,28 @@ root ::= declaration *
 
 fqName ::= id ('.' id) *
 
-private declaration ::= module_declaration |
-                        module_import
+private declaration ::= module_declaration | module_import | data_declaration |
+      function_type_declaration | function_declaration | VIRTUAL_SEMICOLON
 
-module_declaration ::= 'module' fqName "where"
+module_declaration ::= 'module' fqName "where" {pin=1}
 
 import_names ::= fqName (';' fqName) *
 
-module_import ::= 'open' ? 'import' fqName ('using' '(' import_names ')') ?
+module_import ::= 'open' ? 'import' fqName ('using' '(' import_names ')') ? {pin=2}
 
+data_declaration ::= "data" id ":" expression "where" (VIRTUAL_LEFT_PAREN constructors VIRTUAL_RIGHT_PAREN) ? {pin=1}
 
+constructors ::= constructor (VIRTUAL_SEMICOLON constructor) *
+
+constructor ::= expression ":" expression
+
+function_type_declaration ::= expression ":" expression
+function_declaration ::= expression "=" expression
+
+private id_or_pareses ::= ("(" expression ")") | id
+
+application ::= (id_or_pareses application) | id_or_pareses
+
+expression ::= function_type | application
+
+function_type ::= application "->" application

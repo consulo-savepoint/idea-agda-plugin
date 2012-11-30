@@ -18,9 +18,9 @@ public class ModuleDeclarationImpl extends ASTWrapperPsiElement implements Modul
   }
 
   @Override
-  @NotNull
+  @Nullable
   public FqName getFqName() {
-    return findNotNullChildByClass(FqName.class);
+    return findChildByClass(FqName.class);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {

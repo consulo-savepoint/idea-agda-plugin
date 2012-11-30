@@ -7,7 +7,7 @@ import org.jetbrains.agda.gen.parser.AgdaTokenTypes;
 
 public interface AgdaTokenTypesOld {
   TokenSet COMMENTS = TokenSet.create(AgdaTokenTypes.END_OF_LINE_COMMENT, AgdaTokenTypes.COMMENT);
-  TokenSet WHITESPACES = TokenSet.create(TokenType.WHITE_SPACE, AgdaTokenTypes.NEW_LINE);
+  TokenSet WHITESPACES = TokenSet.create(TokenType.WHITE_SPACE);
 
 
 }

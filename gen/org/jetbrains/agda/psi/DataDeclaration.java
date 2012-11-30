@@ -5,9 +5,15 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface FqName extends PsiElement {
+public interface DataDeclaration extends PsiElement {
 
-  @NotNull
+  @Nullable
+  Constructors getConstructors();
+
+  @Nullable
+  Expression getExpression();
+
+  @Nullable
   PsiElement getId();
 
 }
