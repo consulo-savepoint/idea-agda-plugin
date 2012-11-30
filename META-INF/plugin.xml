@@ -13,15 +13,15 @@
 
   <project-components>
       <component>
-          <implementation-class>org.agda.CodeAutoReplaceComponent</implementation-class>
+          <implementation-class>org.jetbrains.agda.CodeAutoReplaceComponent</implementation-class>
       </component>
 
       <component>
-          <implementation-class>org.agda.compiler.AgdaCompilerProjectComponent</implementation-class>
+          <implementation-class>org.jetbrains.agda.compiler.AgdaCompilerProjectComponent</implementation-class>
       </component>
 
       <component>
-          <implementation-class>org.agda.external.AgdaProjectComponent</implementation-class>
+          <implementation-class>org.jetbrains.agda.external.AgdaProjectComponent</implementation-class>
       </component>
 
   </project-components>
@@ -30,7 +30,7 @@
       <!--
       <group id="AgdaPlugin.AgdaMenu" text="Agda" description="Agda menu">
           <add-to-group group-id="MainMenu" anchor="last"  />
-          <action id="agda-plugin.LoadCode" class="org.agda.actions.LoadCode" text="Load Code" description="A test menu item">
+          <action id="agda-plugin.LoadCode" class="org.jetbrains.agda.actions.LoadCode" text="Load Code" description="A test menu item">
               <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift L"/>
           </action>
       </group>
@@ -38,19 +38,19 @@
   </actions>
 
   <extensions defaultExtensionNs="com.intellij">
-      <fileTypeFactory implementation="org.agda.AgdaFileTypeFactory"/>
-      <externalAnnotator implementationClass="org.agda.highlight.AgdaAnnotator" language="Agda"/>
+      <fileTypeFactory implementation="org.jetbrains.agda.AgdaFileTypeFactory"/>
+      <externalAnnotator implementationClass="org.jetbrains.agda.highlight.AgdaAnnotator" language="Agda"/>
       <lang.braceMatcher language="Agda"
-                         implementationClass="org.agda.highlight.AgdaBraceMatcher"/>
+                         implementationClass="org.jetbrains.agda.highlight.AgdaBraceMatcher"/>
       <lang.parserDefinition language="Agda"
-                             implementationClass="org.agda.parser.AgdaParserDefinition"/>
+                             implementationClass="org.jetbrains.agda.parser.AgdaParserDefinition"/>
       <completion.contributor language="Agda"
-                              implementationClass="org.agda.completion.AgdaCompletionContributor" />
+                              implementationClass="org.jetbrains.agda.completion.AgdaCompletionContributor" />
       <lang.findUsagesProvider language="Agda"
-                               implementationClass="org.agda.findUssages.AgdaFindUsagesProvider"/>
+                               implementationClass="org.jetbrains.agda.findUssages.AgdaFindUsagesProvider"/>
       <lang.syntaxHighlighterFactory key="Agda"
-                                     implementationClass="org.agda.highlight.AgdaHighlighterFactory"/>
+                                     implementationClass="org.jetbrains.agda.highlight.AgdaHighlighterFactory"/>
       <lang.fileViewProviderFactory language="Agda"
-                                    implementationClass="org.agda.AgdaFileViewProviderFactory"/>
+                                    implementationClass="org.jetbrains.agda.AgdaFileViewProviderFactory"/>
   </extensions>
 </idea-plugin>

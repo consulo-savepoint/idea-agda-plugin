@@ -1,5 +1,5 @@
-import org.agda.lisp.LispParser;
-import org.agda.lisp.SExpression;
+import org.jetbrains.agda.lisp.LispParser;
+import org.jetbrains.agda.lisp.SExpression;
 import org.junit.Assert;
 import org.junit.Test;
 
