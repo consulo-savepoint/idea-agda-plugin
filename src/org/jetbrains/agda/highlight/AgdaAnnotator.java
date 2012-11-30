@@ -9,7 +9,7 @@ import org.jetbrains.agda.psi.AName;
 import org.jetbrains.agda.psi.DataDeclaration;
 import org.jetbrains.annotations.NotNull;
 
-public class AgdaAnnotator2 implements Annotator {
+public class AgdaAnnotator implements Annotator {
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
         if (element instanceof DataDeclaration) {
