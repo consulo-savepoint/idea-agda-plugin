@@ -11,18 +11,20 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 public class AgdaElementType<T extends PsiElement> extends IElementType {
-    private final Constructor<T> constructor;
+    private Constructor<T> constructor = null;
 
     public AgdaElementType(@NonNls String debugName, Class<T> clazz) {
         super(debugName, AgdaLanguage.INSTANCE);
-        try {
-            constructor = clazz.getConstructor(ASTNode.class);
-        } catch (NoSuchMethodException e) {
-            throw new RuntimeException();
+        if (clazz != null) {
+            try {
+                constructor = clazz.getConstructor(ASTNode.class);
+            } catch (NoSuchMethodException e) {
+                throw new RuntimeException();
+            }
         }
     }
 
-    public T createPsy(ASTNode node) {
+    public T createPsi(ASTNode node) {
         if (constructor != null) {
             try {
                 return constructor.newInstance(node);
