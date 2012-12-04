@@ -19,14 +19,8 @@ public class TelescopeImpl extends ASTWrapperPsiElement implements Telescope {
 
   @Override
   @NotNull
-  public Expression getExpression() {
-    return findNotNullChildByClass(Expression.class);
-  }
-
-  @Override
-  @NotNull
-  public Ids getIds() {
-    return findNotNullChildByClass(Ids.class);
+  public TypeSignature getTypeSignature() {
+    return findNotNullChildByClass(TypeSignature.class);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {

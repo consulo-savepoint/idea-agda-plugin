@@ -7,6 +7,8 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.agda.psi.AName;
 import org.jetbrains.agda.psi.DataDeclaration;
+import org.jetbrains.agda.psi.impl.ANameImpl;
+import org.jetbrains.agda.scope.AgdaScope;
 import org.jetbrains.annotations.NotNull;
 
 public class AgdaAnnotator implements Annotator {
@@ -17,32 +19,11 @@ public class AgdaAnnotator implements Annotator {
             PsiElement id = data.getId();
             holder.createInfoAnnotation(id, null).setTextAttributes(AgdaHighlighter.TYPE);
         }
-        if (element instanceof AName) {
-            PsiElement root = element;
-            while (!(root instanceof PsiFile)) {
-                root = root.getParent();
-            }
-            String text = ((AName) element).getId().getText();
-            PsiElement declaration = tryToFindDeclaration(root, text);
+        if (element instanceof ANameImpl) {
+            PsiElement declaration = AgdaScope.findDeclaration((ANameImpl) element);
             if (declaration != null && (declaration instanceof DataDeclaration)) {
                 holder.createInfoAnnotation(element, null).setTextAttributes(AgdaHighlighter.TYPE);
             }
         }
-    }
-
-    private PsiElement tryToFindDeclaration(PsiElement element, String text) {
-        if (element instanceof DataDeclaration) {
-            DataDeclaration dataDeclaration = ((DataDeclaration)element);
-            if (text.equals(dataDeclaration.getId().getText())) {
-                return dataDeclaration;
-            }
-        }
-        for (PsiElement child: element.getChildren()) {
-            PsiElement result = tryToFindDeclaration(child, text);
-            if (result != null) {
-                return result;
-            }
-        }
-        return null;
     }
 }

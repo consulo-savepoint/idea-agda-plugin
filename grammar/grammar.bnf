@@ -63,16 +63,15 @@ using_or_hiding ::= ('using' '(' import_names ')') | ('hiding' '(' import_names 
 
 data_declaration ::= "data" id bindings ":" expression "where" (VIRTUAL_LEFT_PAREN constructors VIRTUAL_RIGHT_PAREN) ? {pin=1}
 
-constructors ::= constructor (VIRTUAL_SEMICOLON constructor) *
-constructor ::= expression ":" expression {pin=2 recoverUntil = recover}
+constructors ::= type_signature (VIRTUAL_SEMICOLON type_signature) *
 
 private recover ::= ! (VIRTUAL_RIGHT_PAREN | VIRTUAL_SEMICOLON)
 
-function_type_declaration ::= expression ":" expression {pin=2}
+function_type_declaration ::= id ":" expression {pin=2}
 
 function_declaration ::= expression "=" expression {pin=2}
 
-a_name ::= id
+a_name ::= id {mixin = "org.jetbrains.agda.psi.AgdaReferenceElementImpl"}
 
 private atom_expr ::= ("(" expression ")") | ("(" ")") | "{" "!!" "}" | "." | a_name
 
@@ -81,9 +80,10 @@ private maybe_application ::= application | atom_expr
 
 expression ::= tele_arrow | lambda_expression | maybe_function_type
 
-
 tele_arrow ::= telescope ARROW expression
-telescope ::= ("{" ids ":" expression "}") | ("(" ids ":" expression ")")
+telescope ::= ("{" type_signature "}") | ("(" type_signature ")")
+
+type_signature ::= ids ":" expression
 
 lambda_expression ::= "\\" "(" id ":" expression ")" ARROW expression
 

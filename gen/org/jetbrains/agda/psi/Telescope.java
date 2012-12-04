@@ -8,9 +8,6 @@ import com.intellij.psi.PsiElement;
 public interface Telescope extends PsiElement {
 
   @NotNull
-  Expression getExpression();
-
-  @NotNull
-  Ids getIds();
+  TypeSignature getTypeSignature();
 
 }

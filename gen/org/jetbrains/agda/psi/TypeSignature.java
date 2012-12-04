@@ -5,9 +5,12 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface Constructor extends PsiElement {
+public interface TypeSignature extends PsiElement {
 
   @NotNull
-  List<Expression> getExpressionList();
+  Expression getExpression();
+
+  @NotNull
+  Ids getIds();
 
 }

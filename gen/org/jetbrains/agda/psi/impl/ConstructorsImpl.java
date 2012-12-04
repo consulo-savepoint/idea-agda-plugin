@@ -19,8 +19,8 @@ public class ConstructorsImpl extends ASTWrapperPsiElement implements Constructo
 
   @Override
   @NotNull
-  public List<Constructor> getConstructorList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, Constructor.class);
+  public List<TypeSignature> getTypeSignatureList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, TypeSignature.class);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {

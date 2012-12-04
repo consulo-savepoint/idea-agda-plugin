@@ -8,6 +8,6 @@ import com.intellij.psi.PsiElement;
 public interface Constructors extends PsiElement {
 
   @NotNull
-  List<Constructor> getConstructorList();
+  List<TypeSignature> getTypeSignatureList();
 
 }

@@ -13,7 +13,6 @@ public interface AgdaTokenTypes {
   IElementType APPLICATION = new AgdaCompositeElementType("APPLICATION");
   IElementType A_NAME = new AgdaCompositeElementType("A_NAME");
   IElementType BINDING = new AgdaCompositeElementType("BINDING");
-  IElementType CONSTRUCTOR = new AgdaCompositeElementType("CONSTRUCTOR");
   IElementType CONSTRUCTORS = new AgdaCompositeElementType("CONSTRUCTORS");
   IElementType DATA_DECLARATION = new AgdaCompositeElementType("DATA_DECLARATION");
   IElementType EXPRESSION = new AgdaCompositeElementType("EXPRESSION");
@@ -29,6 +28,7 @@ public interface AgdaTokenTypes {
   IElementType RENAMING = new AgdaCompositeElementType("RENAMING");
   IElementType TELESCOPE = new AgdaCompositeElementType("TELESCOPE");
   IElementType TELE_ARROW = new AgdaCompositeElementType("TELE_ARROW");
+  IElementType TYPE_SIGNATURE = new AgdaCompositeElementType("TYPE_SIGNATURE");
   IElementType USING_OR_HIDING = new AgdaCompositeElementType("USING_OR_HIDING");
 
   IElementType ARROW = new AgdaToken("->");
@@ -63,9 +63,6 @@ public interface AgdaTokenTypes {
       }
       else if (type == BINDING) {
         return new BindingImpl(node);
-      }
-      else if (type == CONSTRUCTOR) {
-        return new ConstructorImpl(node);
       }
       else if (type == CONSTRUCTORS) {
         return new ConstructorsImpl(node);
@@ -111,6 +108,9 @@ public interface AgdaTokenTypes {
       }
       else if (type == TELE_ARROW) {
         return new TeleArrowImpl(node);
+      }
+      else if (type == TYPE_SIGNATURE) {
+        return new TypeSignatureImpl(node);
       }
       else if (type == USING_OR_HIDING) {
         return new UsingOrHidingImpl(node);

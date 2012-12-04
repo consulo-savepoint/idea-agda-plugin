@@ -7,7 +7,10 @@ import com.intellij.psi.PsiElement;
 
 public interface FunctionTypeDeclaration extends PsiElement {
 
+  @Nullable
+  Expression getExpression();
+
   @NotNull
-  List<Expression> getExpressionList();
+  PsiElement getId();
 
 }

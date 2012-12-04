@@ -19,10 +19,6 @@ public class Visitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
-  public void visitConstructor(@NotNull Constructor o) {
-    visitPsiElement(o);
-  }
-
   public void visitConstructors(@NotNull Constructors o) {
     visitPsiElement(o);
   }
@@ -80,6 +76,10 @@ public class Visitor extends PsiElementVisitor {
   }
 
   public void visitTelescope(@NotNull Telescope o) {
+    visitPsiElement(o);
+  }
+
+  public void visitTypeSignature(@NotNull TypeSignature o) {
     visitPsiElement(o);
   }
 

@@ -8,10 +8,10 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static org.jetbrains.agda.gen.parser.AgdaTokenTypes.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
+import org.jetbrains.agda.psi.AgdaReferenceElementImpl;
 import org.jetbrains.agda.psi.*;
 
-public class ANameImpl extends ASTWrapperPsiElement implements AName {
+public class ANameImpl extends AgdaReferenceElementImpl implements AName {
 
   public ANameImpl(ASTNode node) {
     super(node);
