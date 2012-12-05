@@ -8,9 +8,12 @@ import com.intellij.psi.PsiElement;
 public interface LambdaExpression extends PsiElement {
 
   @NotNull
-  List<Expression> getExpressionList();
+  Expression getExpression();
 
   @NotNull
-  PsiElement getId();
+  List<NameDeclaration> getNameDeclarationList();
+
+  @Nullable
+  TypeSignature getTypeSignature();
 
 }

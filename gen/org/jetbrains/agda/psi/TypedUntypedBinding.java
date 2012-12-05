@@ -5,12 +5,12 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface TeleArrow extends PsiElement {
+public interface TypedUntypedBinding extends PsiElement {
 
   @NotNull
-  Expression getExpression();
+  List<NameDeclaration> getNameDeclarationList();
 
-  @NotNull
-  List<Telescope> getTelescopeList();
+  @Nullable
+  TypeSignature getTypeSignature();
 
 }

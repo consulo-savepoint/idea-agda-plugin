@@ -25,8 +25,8 @@ public class TypeSignatureImpl extends ASTWrapperPsiElement implements TypeSigna
 
   @Override
   @NotNull
-  public Ids getIds() {
-    return findNotNullChildByClass(Ids.class);
+  public List<NameDeclaration> getNameDeclarationList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, NameDeclaration.class);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {

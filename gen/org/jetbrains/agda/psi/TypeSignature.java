@@ -11,6 +11,6 @@ public interface TypeSignature extends PsiElement {
   Expression getExpression();
 
   @NotNull
-  Ids getIds();
+  List<NameDeclaration> getNameDeclarationList();
 
 }

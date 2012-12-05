@@ -19,14 +19,20 @@ public class LambdaExpressionImpl extends ASTWrapperPsiElement implements Lambda
 
   @Override
   @NotNull
-  public List<Expression> getExpressionList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, Expression.class);
+  public Expression getExpression() {
+    return findNotNullChildByClass(Expression.class);
   }
 
   @Override
   @NotNull
-  public PsiElement getId() {
-    return findNotNullChildByType(ID);
+  public List<NameDeclaration> getNameDeclarationList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, NameDeclaration.class);
+  }
+
+  @Override
+  @Nullable
+  public TypeSignature getTypeSignature() {
+    return findChildByClass(TypeSignature.class);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {

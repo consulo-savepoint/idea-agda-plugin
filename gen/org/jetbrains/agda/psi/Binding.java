@@ -11,7 +11,7 @@ public interface Binding extends PsiElement {
   Expression getExpression();
 
   @NotNull
-  Ids getIds();
+  List<NameDeclaration> getNameDeclarationList();
 
   @NotNull
   NewLine getNewLine();

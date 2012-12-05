@@ -17,10 +17,16 @@ public interface Expression extends PsiElement {
   Expression getExpression();
 
   @Nullable
+  ForallExpression getForallExpression();
+
+  @Nullable
   FunctionType getFunctionType();
 
   @Nullable
   LambdaExpression getLambdaExpression();
+
+  @Nullable
+  LetExpression getLetExpression();
 
   @Nullable
   TeleArrow getTeleArrow();

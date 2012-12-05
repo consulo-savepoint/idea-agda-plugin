@@ -6,9 +6,12 @@
   elementTypeClass="org.jetbrains.agda.parser.AgdaCompositeElementType"
 
   tokens = [
+    LET_KEYWORD="let"
+    IN_KEYWORD="in"
     DATA_KEYWORD="data"
     WHERE_KEYWORD="where"
     MODULE_KEYWORD="module"
+    FORALL="forall"
 
     SPEC_CHARACTERS="SPEC_CHARACTERS"
     STRING="STRING"
@@ -23,6 +26,8 @@
     LEFT_PAREN="("
     RIGHT_PAREN=")"
     ARROW="->"
+
+    LAMBDA="\\"
     VIRTUAL_LEFT_PAREN="VIRTUAL_LEFT_PAREN"
     VIRTUAL_RIGHT_PAREN="VIRTUAL_RIGHT_PAREN"
     VIRTUAL_SEMICOLON="VIRTUAL_SEMICOLON"
@@ -45,7 +50,9 @@ private bindings ::= binding *
 
 new_line ::= VIRTUAL_LEFT_PAREN | VIRTUAL_RIGHT_PAREN | VIRTUAL_SEMICOLON | ()
 
-ids ::= id+
+name_declaration ::= id
+
+private ids ::= name_declaration+
 
 binding ::= (new_line "{" ids (":" expression)? "}") | (new_line "(" ids (":" expression)? ")")
 
@@ -78,14 +85,20 @@ private atom_expr ::= ("(" expression ")") | ("(" ")") | "{" "!!" "}" | "." | a_
 application ::= (atom_expr maybe_application)
 private maybe_application ::= application | atom_expr
 
-expression ::= tele_arrow | lambda_expression | maybe_function_type
+expression ::= tele_arrow | lambda_expression | maybe_function_type | forall_expression | let_expression
 
-tele_arrow ::= telescope ARROW expression
+let_expression ::= "let" name_declaration "=" expression "in" new_line expression
+
+typed_untyped_binding ::= '{' ids '}' | ("{" type_signature "}") | ("(" type_signature ")")
+
+forall_expression ::= 'forall' typed_untyped_binding+ ARROW expression
+
+tele_arrow ::= telescope+ ARROW expression
 telescope ::= ("{" type_signature "}") | ("(" type_signature ")")
 
 type_signature ::= ids ":" expression
 
-lambda_expression ::= "\\" "(" id ":" expression ")" ARROW expression
+lambda_expression ::= "\\" (("(" type_signature ")" ) | ids) ARROW expression
 
 function_type ::= maybe_application ARROW maybe_function_type
 private maybe_function_type ::= function_type | maybe_application

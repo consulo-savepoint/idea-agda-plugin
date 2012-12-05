@@ -25,8 +25,8 @@ public class BindingImpl extends ASTWrapperPsiElement implements Binding {
 
   @Override
   @NotNull
-  public Ids getIds() {
-    return findNotNullChildByClass(Ids.class);
+  public List<NameDeclaration> getNameDeclarationList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, NameDeclaration.class);
   }
 
   @Override

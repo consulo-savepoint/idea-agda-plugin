@@ -29,8 +29,8 @@ DIGIT=[0-9]
 WHITE_SPACE_CHAR=[\ \t\f]
 INDENT=[\n] {WHITE_SPACE_CHAR}* [^\ \t\f]
 EOL_COMMENT="--"[^\n]*
-LETTER = [^0-9{}().\ \n\t\f:;]
-IDENTIFIER_PART=[:digit:]|{LETTER}
+LETTER = [^0-9{}().\ \n\t\f:;\\]
+IDENTIFIER_PART=[:digit:]|{LETTER}|[\\]
 IDENTIFIER={LETTER} {IDENTIFIER_PART}*
 
 %%
@@ -52,19 +52,25 @@ IDENTIFIER={LETTER} {IDENTIFIER_PART}*
       }
 
 ({WHITE_SPACE_CHAR})+ { return TokenType.WHITE_SPACE; }
-{EOL_COMMENT} { return AgdaTokenTypes.END_OF_LINE_COMMENT; }
-"{"          { return AgdaTokenTypes.LEFT_BRACE; }
-"}"          { return AgdaTokenTypes.RIGHT_BRACE; }
-"("          { return AgdaTokenTypes.LEFT_PAREN; }
-")"          { return AgdaTokenTypes.RIGHT_PAREN; }
-":"          { return AgdaTokenTypes.COLON;}
-";"          { return AgdaTokenTypes.SEMICOLON;}
-"."          { return AgdaTokenTypes.DOT; }
-"="          { return AgdaTokenTypes.ASSIGNMENT; }
-(->)|(\u2192)    { return  AgdaTokenTypes.ARROW; }
-"data"       { return AgdaTokenTypes.DATA_KEYWORD; }
-"where"      { return AgdaTokenTypes.WHERE_KEYWORD; }
-"module"     { return AgdaTokenTypes.MODULE_KEYWORD; }
+{EOL_COMMENT}         { return AgdaTokenTypes.END_OF_LINE_COMMENT; }
+"{"                   { return AgdaTokenTypes.LEFT_BRACE; }
+"}"                   { return AgdaTokenTypes.RIGHT_BRACE; }
+"("                   { return AgdaTokenTypes.LEFT_PAREN; }
+")"                   { return AgdaTokenTypes.RIGHT_PAREN; }
+":"                   { return AgdaTokenTypes.COLON;}
+";"                   { return AgdaTokenTypes.SEMICOLON;}
+"."                   { return AgdaTokenTypes.DOT; }
+"="                   { return AgdaTokenTypes.ASSIGNMENT; }
+"\\/"                 { return AgdaTokenTypes.ID; } // Hack
+"\\"                  { return AgdaTokenTypes.LAMBDA; }
+(->)|(\u2192)         { return AgdaTokenTypes.ARROW; }
+"let"                 { return AgdaTokenTypes.LET_KEYWORD; }
+"in"                  { return AgdaTokenTypes.IN_KEYWORD; }
+"data"                { return AgdaTokenTypes.DATA_KEYWORD; }
+"where"               { return AgdaTokenTypes.WHERE_KEYWORD; }
+"module"              { return AgdaTokenTypes.MODULE_KEYWORD; }
+(forall)|(\u2200)     { return AgdaTokenTypes.FORALL; }
+
 
 {IDENTIFIER} { return AgdaTokenTypes.ID; }
 "\n"               { return AgdaTokenTypes.VIRTUAL_RIGHT_PAREN; }

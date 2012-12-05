@@ -5,6 +5,9 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface Ids extends PsiElement {
+public interface NameDeclaration extends PsiElement {
+
+  @NotNull
+  PsiElement getId();
 
 }

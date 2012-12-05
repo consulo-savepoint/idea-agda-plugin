@@ -3,10 +3,8 @@ package org.jetbrains.agda.psi;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
-import com.intellij.psi.PsiReferenceBase;
-import com.intellij.psi.ResolveResult;
 import com.intellij.util.IncorrectOperationException;
-import org.jetbrains.agda.scope.AgdaScope;
+import org.jetbrains.agda.scope.AgdaGlobalScope;
 import org.jetbrains.annotations.NotNull;
 
 public class AgdaReference implements PsiReference {
@@ -29,7 +27,7 @@ public class AgdaReference implements PsiReference {
 
     @Override
     public PsiElement resolve() {
-        return AgdaScope.findDeclaration(getElement());
+        return AgdaGlobalScope.findDeclaration(getElement());
     }
 
     @NotNull

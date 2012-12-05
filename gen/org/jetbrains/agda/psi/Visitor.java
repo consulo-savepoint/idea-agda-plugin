@@ -31,6 +31,10 @@ public class Visitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitForallExpression(@NotNull ForallExpression o) {
+    visitPsiElement(o);
+  }
+
   public void visitFqName(@NotNull FqName o) {
     visitPsiElement(o);
   }
@@ -47,11 +51,11 @@ public class Visitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
-  public void visitIds(@NotNull Ids o) {
+  public void visitLambdaExpression(@NotNull LambdaExpression o) {
     visitPsiElement(o);
   }
 
-  public void visitLambdaExpression(@NotNull LambdaExpression o) {
+  public void visitLetExpression(@NotNull LetExpression o) {
     visitPsiElement(o);
   }
 
@@ -60,6 +64,10 @@ public class Visitor extends PsiElementVisitor {
   }
 
   public void visitModuleImport(@NotNull ModuleImport o) {
+    visitPsiElement(o);
+  }
+
+  public void visitNameDeclaration(@NotNull NameDeclaration o) {
     visitPsiElement(o);
   }
 
@@ -80,6 +88,10 @@ public class Visitor extends PsiElementVisitor {
   }
 
   public void visitTypeSignature(@NotNull TypeSignature o) {
+    visitPsiElement(o);
+  }
+
+  public void visitTypedUntypedBinding(@NotNull TypedUntypedBinding o) {
     visitPsiElement(o);
   }
 

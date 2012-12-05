@@ -10,15 +10,18 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AgdaScope {
+public class AgdaGlobalScope {
     public static PsiElement findDeclaration(@NotNull AgdaReferenceElementImpl element) {
         if (element.getParent() instanceof Application) {
             Term term = Grammar.parse((Application) element.getParent());
             if (term != null) {
-                return term.getDeclaration(element);
+                PsiElement declaration = term.getDeclaration(element);
+                if (declaration != null) {
+                    return declaration;
+                }
             }
         }
-        Map<String, PsiElement> declarations = getDeclarations(element);
+        Map<String, PsiElement> declarations = new AgdaExpressionScope(element).getVisibleDeclarations();
         String text = ((AName) element).getId().getText();
         return declarations.get(text);
     }
@@ -31,8 +34,9 @@ public class AgdaScope {
         if (element instanceof Constructors) {
             Constructors constructors = ((Constructors) element);
             for (TypeSignature constructor: constructors.getTypeSignatureList()) {
-                Ids id =  constructor.getIds();
-                map.put(id.getText(), constructor);
+                for (NameDeclaration nameDeclaration: constructor.getNameDeclarationList()) {
+                    map.put(nameDeclaration.getText(), nameDeclaration);
+                }
             }
         }
         if (element instanceof FunctionTypeDeclaration) {

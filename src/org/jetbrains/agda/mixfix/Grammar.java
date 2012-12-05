@@ -4,12 +4,9 @@ package org.jetbrains.agda.mixfix;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.agda.psi.AName;
 import org.jetbrains.agda.psi.Application;
-import org.jetbrains.agda.scope.AgdaScope;
+import org.jetbrains.agda.scope.AgdaGlobalScope;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Grammar {
     private Map<String, PsiElement> myDeclarations;
@@ -22,13 +19,24 @@ public class Grammar {
                 myDeclarations.remove(declaration);
             }
         }
-        for (String declaration: myDeclarations.keySet()) {
+        Set<String> operationParts = getOperationParts(myDeclarations);
+        myOperatorParts.addAll(operationParts);
+    }
+
+    public static Set<String> getOperationParts(Map<String, PsiElement> declarations) {
+        Set<String> operationParts = new HashSet<String>();
+
+        for (String declaration: declarations.keySet()) {
+            if (!declaration.contains("_")) {
+                continue;
+            }
             for (String str: decode(declaration)) {
                 if (!str.equals("_")) {
-                    myOperatorParts.add(str);
+                    operationParts.add(str);
                 }
             }
         }
+        return operationParts;
     }
 
     private static List<PsiElement> getListOfTerminals(Application application) {
@@ -40,7 +48,11 @@ public class Grammar {
         while (element instanceof Application) {
             PsiElement[] expressionList = element.getChildren();
             result.add(expressionList[0]);
-            element = expressionList[1];
+            if (expressionList.length > 1) {
+                element = expressionList[1];
+            }  else {
+                break;
+            }
         }
         result.add(element);
         return result;
@@ -48,7 +60,7 @@ public class Grammar {
 
     public static Term parse(Application application) {
         List<PsiElement> listOfTerminals = getListOfTerminals(application);
-        Map<String, PsiElement> declarations = AgdaScope.getDeclarations(application);
+        Map<String, PsiElement> declarations = AgdaGlobalScope.getDeclarations(application);
 
         return new Grammar(declarations).parse(listOfTerminals);
     }
@@ -143,7 +155,7 @@ public class Grammar {
         return terms;
     }
 
-    private String[] decode(String rule) {
+    private static String[] decode(String rule) {
         if (rule.contains("_")) {
             List<String> result = new ArrayList<String>();
             int start = 0;
