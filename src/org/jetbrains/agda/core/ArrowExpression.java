@@ -10,13 +10,15 @@ public class ArrowExpression extends CExpression {
     public ArrowExpression(CExpression left, CExpression right) {
         myLeft = left;
         myFight = right;
+        attach(left);
+        attach(right);
     }
 
     public CExpression getLeft() {
         return myLeft;
     }
 
-    public CExpression getFight() {
+    public CExpression getRight() {
         return myFight;
     }
 

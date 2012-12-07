@@ -9,14 +9,10 @@ import org.jetbrains.agda.psi.*;
 import org.jetbrains.agda.psi.impl.ANameImpl;
 import org.jetbrains.agda.scope.AgdaGlobalScope;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Program {
-    List<CDeclaration> myDeclarations = new ArrayList<CDeclaration>();
-    Map<String, CExpression> myTypeSignatures = new HashMap<String, CExpression>();
+    Map<PsiElement, CDeclaration> myDeclarations = new LinkedHashMap<PsiElement, CDeclaration>();
     Map<PsiElement, CExpression> myExpressions = new HashMap<PsiElement, CExpression>();
     CFunctionDeclaration myLassDeclaration = null;
 
@@ -37,17 +33,18 @@ public class Program {
             for (TypeSignature typeSignature : psiData.getConstructors().getTypeSignatureList()) {
                 CExpression cExpression = parseExpression(typeSignature.getExpression());
                 for (NameDeclaration nameDeclaration : typeSignature.getNameDeclarationList()) {
-                    myTypeSignatures.put(nameDeclaration.getText(), cExpression);
-                    cDataDeclaration.geConstructors().add(new CTypeSignature(nameDeclaration.getText(), cExpression));
+                    CTypeSignature constructor = new CTypeSignature(nameDeclaration.getText(), cExpression);
+                    cDataDeclaration.geConstructors().add(constructor);
+                    myDeclarations.put(nameDeclaration, constructor);
                 }
             }
-            myDeclarations.add(cDataDeclaration);
+            myDeclarations.put(psiData, cDataDeclaration);
         }
         if (element instanceof FunctionTypeDeclaration) {
             FunctionTypeDeclaration functionDeclaration = (FunctionTypeDeclaration) element;
             String name = functionDeclaration.getNameDeclaration().getText();
             myLassDeclaration = new CFunctionDeclaration(name, parseExpression(functionDeclaration.getExpression()));
-            myDeclarations.add(myLassDeclaration);
+            myDeclarations.put(functionDeclaration, myLassDeclaration);
         }
         if (element instanceof FunctionDeclaration) {
             FunctionDeclaration functionDeclaration = (FunctionDeclaration) element;
@@ -67,6 +64,12 @@ public class Program {
     }
 
     private CExpression parseExpression(PsiElement expression) {
+        CExpression result = parseExpressionImpl(expression);
+        myExpressions.put(expression, result);
+        return result;
+    }
+
+    private CExpression parseExpressionImpl(PsiElement expression) {
         if (expression instanceof Application) {
             TreeElement treeElement = Grammar.parse((Application) expression);
             return treeToExpression(treeElement);
@@ -86,6 +89,9 @@ public class Program {
             CExpression left = parseExpression(children[0]);
             CExpression right = parseExpression(children[1]);
             return new ArrowExpression(left, right);
+        }
+        if (expression instanceof ParenthesisExpression) {
+            return parseExpression(((ParenthesisExpression) expression).getExpression());
         }
         PsiElement firstChild = expression.getFirstChild();
         if (firstChild != null) {
@@ -137,15 +143,50 @@ public class Program {
     }
 
     public CExpression getTypeOf(PsiElement elementAt) {
-        elementAt = elementAt.getParent();
-        if (elementAt instanceof AName) {
-            return myTypeSignatures.get(elementAt.getText());
+        CExpression expression = myExpressions.get(elementAt);
+        if (expression != null) {
+            return getTypeOf(expression);
+        }
+        return null;
+    }
+
+    private CExpression getTypeOf(CExpression expression) {
+        if (expression instanceof CRefExpression) {
+            PsiElement declaration = ((CRefExpression) expression).getDeclaration();
+            CDeclaration cDeclaration = myDeclarations.get(declaration);
+            if (cDeclaration != null) {
+                return cDeclaration.getType();
+            } else {
+                return deduceType(myExpressions.get(declaration));
+            }
+
+        }
+        if (expression instanceof CApplication) {
+            CExpression typeOf = getTypeOf(((CApplication) expression).getLeft());
+            if (typeOf instanceof ArrowExpression) {
+                return ((ArrowExpression) typeOf).getRight();
+            }
+        }
+        return null;
+    }
+
+    private CExpression deduceType(CExpression expression) {
+        CExpression parent = expression.getParent();
+        if (parent instanceof CApplication) {
+            CApplication application = (CApplication) parent;
+            if (application.getRight() == expression) {
+                CExpression leftType = getTypeOf(application.getLeft());
+                if (leftType instanceof ArrowExpression) {
+                    return ((ArrowExpression) leftType).getLeft();
+                }
+                return null;
+            }
         }
         return null;
     }
 
     public void printDebug() {
-        for (CDeclaration declaration: myDeclarations) {
+        for (CDeclaration declaration: myDeclarations.values()) {
             System.out.println(declaration.toString());
         }
     }

@@ -8,7 +8,6 @@ import java.util.List;
  */
 public class CFunctionDeclaration extends CDeclaration {
     private String myName;
-    private CExpression myType;
     private List<FunctionBody> myBodes = new ArrayList<FunctionBody>();
 
     public CFunctionDeclaration(String name, CExpression type) {
@@ -18,10 +17,6 @@ public class CFunctionDeclaration extends CDeclaration {
 
     public String getName() {
         return myName;
-    }
-
-    public CExpression getType() {
-        return myType;
     }
 
     public List<FunctionBody> getBodyes() {

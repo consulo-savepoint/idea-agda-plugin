@@ -87,7 +87,7 @@ private atom_expr ::= parenthesis_expression | ("(" ")") | "{" "!!" "}" | "." | 
 application ::= (atom_expr maybe_application)
 private maybe_application ::= application | atom_expr
 
-expression ::= tele_arrow | lambda_expression | maybe_function_type | forall_expression | let_expression
+expression ::= let_expression | tele_arrow | lambda_expression | maybe_function_type | forall_expression
 
 let_expression ::= "let" name_declaration "=" expression "in" new_line expression
 

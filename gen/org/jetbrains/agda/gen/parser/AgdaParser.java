@@ -520,18 +520,18 @@ public class AgdaParser implements PsiParser {
   }
 
   /* ********************************************************** */
-  // tele_arrow | lambda_expression | maybe_function_type | forall_expression | let_expression
+  // let_expression | tele_arrow | lambda_expression | maybe_function_type | forall_expression
   public static boolean expression(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "expression")) return false;
     boolean result_ = false;
     int start_ = builder_.getCurrentOffset();
     Marker marker_ = builder_.mark();
     enterErrorRecordingSection(builder_, level_, _SECTION_GENERAL_, "<expression>");
-    result_ = tele_arrow(builder_, level_ + 1);
+    result_ = let_expression(builder_, level_ + 1);
+    if (!result_) result_ = tele_arrow(builder_, level_ + 1);
     if (!result_) result_ = lambda_expression(builder_, level_ + 1);
     if (!result_) result_ = maybe_function_type(builder_, level_ + 1);
     if (!result_) result_ = forall_expression(builder_, level_ + 1);
-    if (!result_) result_ = let_expression(builder_, level_ + 1);
     LighterASTNode last_ = result_? builder_.getLatestDoneMarker() : null;
     if (last_ != null && last_.getStartOffset() == start_ && type_extends_(last_.getTokenType(), EXPRESSION)) {
       marker_.drop();

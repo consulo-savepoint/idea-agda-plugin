@@ -11,6 +11,15 @@ public class CRefExpression extends CExpression {
         myText = text;
     }
 
+
+    public PsiElement getDeclaration() {
+        return myDeclaration;
+    }
+
+    public String getText() {
+        return myText;
+    }
+
     @Override
     public String toString() {
         return myText;

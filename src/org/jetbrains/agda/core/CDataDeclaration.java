@@ -8,7 +8,6 @@ import java.util.List;
  */
 public class CDataDeclaration extends CDeclaration {
     private String myName;
-    private CExpression myType;
     private List<CTypeSignature> myConstructors = new ArrayList<CTypeSignature>();
 
     public CDataDeclaration(String name, CExpression type) {
@@ -18,10 +17,6 @@ public class CDataDeclaration extends CDeclaration {
 
     public String getName() {
         return myName;
-    }
-
-    public CExpression getType() {
-        return myType;
     }
 
     public List<CTypeSignature> geConstructors() {
