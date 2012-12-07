@@ -68,19 +68,21 @@ private renamings ::= id "to" id (new_line ";" id "to" id)*
 
 using_or_hiding ::= ('using' '(' import_names ')') | ('hiding' '(' import_names ')')
 
-data_declaration ::= "data" id bindings ":" expression "where" (VIRTUAL_LEFT_PAREN constructors VIRTUAL_RIGHT_PAREN) ? {pin=1}
+data_declaration ::= "data" name_declaration bindings ":" expression "where" (VIRTUAL_LEFT_PAREN constructors VIRTUAL_RIGHT_PAREN) ? {pin=1}
 
 constructors ::= type_signature (VIRTUAL_SEMICOLON type_signature) *
 
 private recover ::= ! (VIRTUAL_RIGHT_PAREN | VIRTUAL_SEMICOLON)
 
-function_type_declaration ::= id ":" expression {pin=2}
+function_type_declaration ::= name_declaration ":" expression {pin=2}
 
 function_declaration ::= expression "=" expression {pin=2}
 
 a_name ::= id {mixin = "org.jetbrains.agda.psi.AgdaReferenceElementImpl"}
 
-private atom_expr ::= ("(" expression ")") | ("(" ")") | "{" "!!" "}" | "." | a_name
+parenthesis_expression ::= "(" expression ")" {extends=expression}
+
+private atom_expr ::= parenthesis_expression | ("(" ")") | "{" "!!" "}" | "." | a_name
 
 application ::= (atom_expr maybe_application)
 private maybe_application ::= application | atom_expr
@@ -98,7 +100,7 @@ telescope ::= ("{" type_signature "}") | ("(" type_signature ")")
 
 type_signature ::= ids ":" expression
 
-lambda_expression ::= "\\" (("(" type_signature ")" ) | ids) ARROW expression
+lambda_expression ::= "\\" (("(" type_signature ")" ) | ids) ARROW expression {extends=expression}
 
 function_type ::= maybe_application ARROW maybe_function_type
 private maybe_function_type ::= function_type | maybe_application

@@ -10,7 +10,4 @@ public interface Renaming extends PsiElement {
   @NotNull
   List<NewLine> getNewLineList();
 
-  @NotNull
-  PsiElement getId();
-
 }

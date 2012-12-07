@@ -58,30 +58,26 @@ public class Grammar {
         return result;
     }
 
-    public static Term parse(Application application) {
+    public static TreeElement parse(Application application) {
         List<PsiElement> listOfTerminals = getListOfTerminals(application);
         Map<String, PsiElement> declarations = AgdaGlobalScope.getDeclarations(application);
 
         return new Grammar(declarations).parse(listOfTerminals);
     }
 
-    private Term parse(List<PsiElement> listOfTerminals) {
-        List<Term> list = new ArrayList<Term>();
+    private TreeElement parse(List<PsiElement> listOfTerminals) {
+        List<TreeElement> list = new ArrayList<TreeElement>();
         for (PsiElement element : listOfTerminals) {
-            if (element instanceof AName) {
-                list.add(new Term(element.getText(), element, null));
-            } else {
-                list.add(new Term(null, element, null));
-            }
+            list.add(new TreeElement(element, null));
         }
-        Term term = parseIterative(parseApplications(list));
+        TreeElement term = parseIterative(parseApplications(list));
         return term;
     }
 
-    private List<Term> parseApplications(List<Term> list) {
-        List<Term> result = new ArrayList<Term>();
-        Term current = null;
-        for (Term term : list) {
+    private List<TreeElement> parseApplications(List<TreeElement> list) {
+        List<TreeElement> result = new ArrayList<TreeElement>();
+        TreeElement current = null;
+        for (TreeElement term : list) {
             if (myOperatorParts.contains(term.getText())) {
                 if (current != null) {
                     result.add(current);
@@ -90,9 +86,9 @@ public class Grammar {
                 result.add(term);
             } else {
                 if (current == null) {
-                    current = new Term(null, null, null, term);
+                    current = new TreeElement(null, null, term);
                 } else {
-                    current = new Term(null, null, null, current, new Term(null, null, null, term));
+                    current = new TreeElement(null, null, current, new TreeElement(null, null, term));
                 }
             }
         }
@@ -102,12 +98,12 @@ public class Grammar {
         return result;
     }
 
-    private Term parseIterative(List<Term> list) {
+    private TreeElement parseIterative(List<TreeElement> list) {
         if (list.size() == 1) {
             return list.get(0);
         }
         for (int i = 0; i < list.size(); i++) {
-            Term term = applyRule(list, i);
+            TreeElement term = applyRule(list, i);
             if (term != null) {
                 return term;
             }
@@ -115,7 +111,7 @@ public class Grammar {
         return null;
     }
 
-    private Term applyRule(List<Term> list, int i) {
+    private TreeElement applyRule(List<TreeElement> list, int i) {
         for (String rule: myDeclarations.keySet()) {
             String[] ruleCode = decode(rule);
             int length = ruleCode.length - 1;
@@ -136,8 +132,8 @@ public class Grammar {
                 }
 
                 if (matches) {
-                    List<Term> termList = list.subList(i - length, i + 1);
-                    Term term = new Term(null, null, myDeclarations.get(rule), termList.toArray(new Term[termList.size()]));
+                    List<TreeElement> termList = list.subList(i - length, i + 1);
+                    TreeElement term = new TreeElement(null, myDeclarations.get(rule), termList.toArray(new TreeElement[termList.size()]));
 
                     return parseIterative(replace(list, i, length, term));
                 }
@@ -146,8 +142,8 @@ public class Grammar {
         return null;
     }
 
-    private List<Term> replace(List<Term> list, int i, int size, Term v) {
-        ArrayList<Term> terms = new ArrayList<Term>(list);
+    private List<TreeElement> replace(List<TreeElement> list, int i, int size, TreeElement v) {
+        ArrayList<TreeElement> terms = new ArrayList<TreeElement>(list);
         for (int j = 0; j <= size; j++) {
             terms.remove(i - size);
         }

@@ -11,6 +11,6 @@ public interface FunctionTypeDeclaration extends PsiElement {
   Expression getExpression();
 
   @NotNull
-  PsiElement getId();
+  NameDeclaration getNameDeclaration();
 
 }

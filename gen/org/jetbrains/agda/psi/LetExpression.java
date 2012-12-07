@@ -5,18 +5,15 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface DataDeclaration extends PsiElement {
+public interface LetExpression extends PsiElement {
 
   @NotNull
-  List<Binding> getBindingList();
+  List<Expression> getExpressionList();
 
-  @Nullable
-  Constructors getConstructors();
-
-  @Nullable
-  Expression getExpression();
-
-  @Nullable
+  @NotNull
   NameDeclaration getNameDeclaration();
+
+  @NotNull
+  NewLine getNewLine();
 
 }

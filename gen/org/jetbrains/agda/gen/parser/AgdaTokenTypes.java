@@ -27,6 +27,7 @@ public interface AgdaTokenTypes {
   IElementType MODULE_IMPORT = new AgdaCompositeElementType("MODULE_IMPORT");
   IElementType NAME_DECLARATION = new AgdaCompositeElementType("NAME_DECLARATION");
   IElementType NEW_LINE = new AgdaCompositeElementType("NEW_LINE");
+  IElementType PARENTHESIS_EXPRESSION = new AgdaCompositeElementType("PARENTHESIS_EXPRESSION");
   IElementType RENAMING = new AgdaCompositeElementType("RENAMING");
   IElementType TELESCOPE = new AgdaCompositeElementType("TELESCOPE");
   IElementType TELE_ARROW = new AgdaCompositeElementType("TELE_ARROW");
@@ -112,6 +113,9 @@ public interface AgdaTokenTypes {
       }
       else if (type == NEW_LINE) {
         return new NewLineImpl(node);
+      }
+      else if (type == PARENTHESIS_EXPRESSION) {
+        return new ParenthesisExpressionImpl(node);
       }
       else if (type == RENAMING) {
         return new RenamingImpl(node);

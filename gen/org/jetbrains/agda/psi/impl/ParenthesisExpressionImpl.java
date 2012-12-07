@@ -8,29 +8,22 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static org.jetbrains.agda.gen.parser.AgdaTokenTypes.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import org.jetbrains.agda.psi.*;
 
-public class FunctionTypeDeclarationImpl extends ASTWrapperPsiElement implements FunctionTypeDeclaration {
+public class ParenthesisExpressionImpl extends ExpressionImpl implements ParenthesisExpression {
 
-  public FunctionTypeDeclarationImpl(ASTNode node) {
+  public ParenthesisExpressionImpl(ASTNode node) {
     super(node);
   }
 
   @Override
-  @Nullable
-  public Expression getExpression() {
-    return findChildByClass(Expression.class);
-  }
-
-  @Override
   @NotNull
-  public NameDeclaration getNameDeclaration() {
-    return findNotNullChildByClass(NameDeclaration.class);
+  public Expression getExpression() {
+    return findNotNullChildByClass(Expression.class);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof Visitor) ((Visitor)visitor).visitFunctionTypeDeclaration(this);
+    if (visitor instanceof Visitor) ((Visitor)visitor).visitParenthesisExpression(this);
     else super.accept(visitor);
   }
 

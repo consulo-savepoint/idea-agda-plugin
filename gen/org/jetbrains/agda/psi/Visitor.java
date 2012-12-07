@@ -52,7 +52,7 @@ public class Visitor extends PsiElementVisitor {
   }
 
   public void visitLambdaExpression(@NotNull LambdaExpression o) {
-    visitPsiElement(o);
+    visitExpression(o);
   }
 
   public void visitLetExpression(@NotNull LetExpression o) {
@@ -73,6 +73,10 @@ public class Visitor extends PsiElementVisitor {
 
   public void visitNewLine(@NotNull NewLine o) {
     visitPsiElement(o);
+  }
+
+  public void visitParenthesisExpression(@NotNull ParenthesisExpression o) {
+    visitExpression(o);
   }
 
   public void visitRenaming(@NotNull Renaming o) {

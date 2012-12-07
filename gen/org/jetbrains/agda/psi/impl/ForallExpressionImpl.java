@@ -11,26 +11,26 @@ import static org.jetbrains.agda.gen.parser.AgdaTokenTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import org.jetbrains.agda.psi.*;
 
-public class FunctionTypeDeclarationImpl extends ASTWrapperPsiElement implements FunctionTypeDeclaration {
+public class ForallExpressionImpl extends ASTWrapperPsiElement implements ForallExpression {
 
-  public FunctionTypeDeclarationImpl(ASTNode node) {
+  public ForallExpressionImpl(ASTNode node) {
     super(node);
   }
 
   @Override
-  @Nullable
+  @NotNull
   public Expression getExpression() {
-    return findChildByClass(Expression.class);
+    return findNotNullChildByClass(Expression.class);
   }
 
   @Override
   @NotNull
-  public NameDeclaration getNameDeclaration() {
-    return findNotNullChildByClass(NameDeclaration.class);
+  public List<TypedUntypedBinding> getTypedUntypedBindingList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, TypedUntypedBinding.class);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof Visitor) ((Visitor)visitor).visitFunctionTypeDeclaration(this);
+    if (visitor instanceof Visitor) ((Visitor)visitor).visitForallExpression(this);
     else super.accept(visitor);
   }
 

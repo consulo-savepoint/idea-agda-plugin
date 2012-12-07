@@ -5,7 +5,7 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface LambdaExpression extends PsiElement {
+public interface LambdaExpression extends Expression {
 
   @NotNull
   Expression getExpression();

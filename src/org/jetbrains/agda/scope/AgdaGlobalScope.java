@@ -3,7 +3,7 @@ package org.jetbrains.agda.scope;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.agda.mixfix.Grammar;
-import org.jetbrains.agda.mixfix.Term;
+import org.jetbrains.agda.mixfix.TreeElement;
 import org.jetbrains.agda.psi.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -13,7 +13,7 @@ import java.util.Map;
 public class AgdaGlobalScope {
     public static PsiElement findDeclaration(@NotNull AgdaReferenceElementImpl element) {
         if (element.getParent() instanceof Application) {
-            Term term = Grammar.parse((Application) element.getParent());
+            TreeElement term = Grammar.parse((Application) element.getParent());
             if (term != null) {
                 PsiElement declaration = term.getDeclaration(element);
                 if (declaration != null) {
@@ -29,7 +29,7 @@ public class AgdaGlobalScope {
     private static void getDeclarations(PsiElement element, Map<String, PsiElement> map) {
         if (element instanceof DataDeclaration) {
             DataDeclaration dataDeclaration = ((DataDeclaration) element);
-            map.put(dataDeclaration.getId().getText(), element);
+            map.put(dataDeclaration.getNameDeclaration().getText(), element);
         }
         if (element instanceof Constructors) {
             Constructors constructors = ((Constructors) element);

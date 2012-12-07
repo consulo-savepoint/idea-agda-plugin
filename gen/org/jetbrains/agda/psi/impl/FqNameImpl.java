@@ -17,6 +17,12 @@ public class FqNameImpl extends ASTWrapperPsiElement implements FqName {
     super(node);
   }
 
+  @Override
+  @NotNull
+  public PsiElement getId() {
+    return findNotNullChildByType(ID);
+  }
+
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof Visitor) ((Visitor)visitor).visitFqName(this);
     else super.accept(visitor);

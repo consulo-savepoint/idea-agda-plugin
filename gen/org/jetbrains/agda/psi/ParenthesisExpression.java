@@ -5,18 +5,9 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface DataDeclaration extends PsiElement {
+public interface ParenthesisExpression extends Expression {
 
   @NotNull
-  List<Binding> getBindingList();
-
-  @Nullable
-  Constructors getConstructors();
-
-  @Nullable
   Expression getExpression();
-
-  @Nullable
-  NameDeclaration getNameDeclaration();
 
 }

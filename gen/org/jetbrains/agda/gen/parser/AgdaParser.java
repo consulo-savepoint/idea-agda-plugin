@@ -74,6 +74,9 @@ public class AgdaParser implements PsiParser {
     else if (root_ == NEW_LINE) {
       result_ = new_line(builder_, level_ + 1);
     }
+    else if (root_ == PARENTHESIS_EXPRESSION) {
+      result_ = parenthesis_expression(builder_, level_ + 1);
+    }
     else if (root_ == RENAMING) {
       result_ = renaming(builder_, level_ + 1);
     }
@@ -105,6 +108,16 @@ public class AgdaParser implements PsiParser {
 
   protected boolean parse_root_(final IElementType root_, final PsiBuilder builder_, final int level_) {
     return root(builder_, level_ + 1);
+  }
+
+  private static final TokenSet[] EXTENDS_SETS_ = new TokenSet[] {
+    TokenSet.create(EXPRESSION, LAMBDA_EXPRESSION, PARENTHESIS_EXPRESSION),
+  };
+  public static boolean type_extends_(IElementType child_, IElementType parent_) {
+    for (TokenSet set : EXTENDS_SETS_) {
+      if (set.contains(child_) && set.contains(parent_)) return true;
+    }
+    return false;
   }
 
   /* ********************************************************** */
@@ -167,39 +180,16 @@ public class AgdaParser implements PsiParser {
   }
 
   /* ********************************************************** */
-  // ("(" expression ")") | ("(" ")") | "{" "!!" "}" | "." | a_name
+  // parenthesis_expression | ("(" ")") | "{" "!!" "}" | "." | a_name
   static boolean atom_expr(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "atom_expr")) return false;
     boolean result_ = false;
     Marker marker_ = builder_.mark();
-    result_ = atom_expr_0(builder_, level_ + 1);
+    result_ = parenthesis_expression(builder_, level_ + 1);
     if (!result_) result_ = atom_expr_1(builder_, level_ + 1);
     if (!result_) result_ = atom_expr_2(builder_, level_ + 1);
     if (!result_) result_ = consumeToken(builder_, DOT);
     if (!result_) result_ = a_name(builder_, level_ + 1);
-    if (!result_) {
-      marker_.rollbackTo();
-    }
-    else {
-      marker_.drop();
-    }
-    return result_;
-  }
-
-  // ("(" expression ")")
-  private static boolean atom_expr_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "atom_expr_0")) return false;
-    return atom_expr_0_0(builder_, level_ + 1);
-  }
-
-  // "(" expression ")"
-  private static boolean atom_expr_0_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "atom_expr_0_0")) return false;
-    boolean result_ = false;
-    Marker marker_ = builder_.mark();
-    result_ = consumeToken(builder_, LEFT_PAREN);
-    result_ = result_ && expression(builder_, level_ + 1);
-    result_ = result_ && consumeToken(builder_, RIGHT_PAREN);
     if (!result_) {
       marker_.rollbackTo();
     }
@@ -449,7 +439,7 @@ public class AgdaParser implements PsiParser {
   }
 
   /* ********************************************************** */
-  // "data" id bindings ":" expression "where" (VIRTUAL_LEFT_PAREN constructors VIRTUAL_RIGHT_PAREN) ?
+  // "data" name_declaration bindings ":" expression "where" (VIRTUAL_LEFT_PAREN constructors VIRTUAL_RIGHT_PAREN) ?
   public static boolean data_declaration(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "data_declaration")) return false;
     if (!nextTokenIs(builder_, DATA_KEYWORD)) return false;
@@ -459,7 +449,7 @@ public class AgdaParser implements PsiParser {
     enterErrorRecordingSection(builder_, level_, _SECTION_GENERAL_, null);
     result_ = consumeToken(builder_, DATA_KEYWORD);
     pinned_ = result_; // pin = 1
-    result_ = result_ && report_error_(builder_, consumeToken(builder_, ID));
+    result_ = result_ && report_error_(builder_, name_declaration(builder_, level_ + 1));
     result_ = pinned_ && report_error_(builder_, bindings(builder_, level_ + 1)) && result_;
     result_ = pinned_ && report_error_(builder_, consumeToken(builder_, COLON)) && result_;
     result_ = pinned_ && report_error_(builder_, expression(builder_, level_ + 1)) && result_;
@@ -534,6 +524,7 @@ public class AgdaParser implements PsiParser {
   public static boolean expression(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "expression")) return false;
     boolean result_ = false;
+    int start_ = builder_.getCurrentOffset();
     Marker marker_ = builder_.mark();
     enterErrorRecordingSection(builder_, level_, _SECTION_GENERAL_, "<expression>");
     result_ = tele_arrow(builder_, level_ + 1);
@@ -541,7 +532,11 @@ public class AgdaParser implements PsiParser {
     if (!result_) result_ = maybe_function_type(builder_, level_ + 1);
     if (!result_) result_ = forall_expression(builder_, level_ + 1);
     if (!result_) result_ = let_expression(builder_, level_ + 1);
-    if (result_) {
+    LighterASTNode last_ = result_? builder_.getLatestDoneMarker() : null;
+    if (last_ != null && last_.getStartOffset() == start_ && type_extends_(last_.getTokenType(), EXPRESSION)) {
+      marker_.drop();
+    }
+    else if (result_) {
       marker_.done(EXPRESSION);
     }
     else {
@@ -695,7 +690,7 @@ public class AgdaParser implements PsiParser {
   }
 
   /* ********************************************************** */
-  // id ":" expression
+  // name_declaration ":" expression
   public static boolean function_type_declaration(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "function_type_declaration")) return false;
     if (!nextTokenIs(builder_, ID)) return false;
@@ -703,7 +698,7 @@ public class AgdaParser implements PsiParser {
     boolean pinned_ = false;
     Marker marker_ = builder_.mark();
     enterErrorRecordingSection(builder_, level_, _SECTION_GENERAL_, null);
-    result_ = consumeToken(builder_, ID);
+    result_ = name_declaration(builder_, level_ + 1);
     result_ = result_ && consumeToken(builder_, COLON);
     pinned_ = result_; // pin = 2
     result_ = result_ && expression(builder_, level_ + 1);
@@ -1045,6 +1040,25 @@ public class AgdaParser implements PsiParser {
 
   private static boolean new_line_3_0(PsiBuilder builder_, int level_) {
     return true;
+  }
+
+  /* ********************************************************** */
+  // "(" expression ")"
+  public static boolean parenthesis_expression(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "parenthesis_expression")) return false;
+    if (!nextTokenIs(builder_, LEFT_PAREN)) return false;
+    boolean result_ = false;
+    Marker marker_ = builder_.mark();
+    result_ = consumeToken(builder_, LEFT_PAREN);
+    result_ = result_ && expression(builder_, level_ + 1);
+    result_ = result_ && consumeToken(builder_, RIGHT_PAREN);
+    if (result_) {
+      marker_.done(PARENTHESIS_EXPRESSION);
+    }
+    else {
+      marker_.rollbackTo();
+    }
+    return result_;
   }
 
   /* ********************************************************** */

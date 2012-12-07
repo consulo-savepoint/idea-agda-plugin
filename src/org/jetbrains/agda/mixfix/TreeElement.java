@@ -2,26 +2,27 @@ package org.jetbrains.agda.mixfix;
 
 
 import com.intellij.psi.PsiElement;
-import org.jetbrains.agda.psi.AgdaReferenceElementImpl;
+import org.jetbrains.agda.psi.AName;
 
-public class Term {
-    private final String myText;
-    private final Term[] myChildren;
+public class TreeElement {
+    private final TreeElement[] myChildren;
     private final PsiElement myElement;
     private final PsiElement myDeclaration;
 
-    public Term(String text, PsiElement element, PsiElement declaration, Term ... children) {
-        myText = text;
+    public TreeElement(PsiElement element, PsiElement declaration, TreeElement... children) {
         myElement = element;
         myDeclaration = declaration;
         myChildren = children;
     }
 
     public String getText() {
-        return myText;
+        if (myElement instanceof AName) {
+            return myElement.getText();
+        }
+        return null;
     }
 
-    public Term[] getChildren() {
+    public TreeElement[] getChildren() {
         return myChildren;
     }
 
@@ -30,11 +31,15 @@ public class Term {
     }
 
     public boolean isTerm() {
-        return myText != null;
+        return myElement instanceof AName;
+    }
+
+    public PsiElement getDeclaration() {
+        return myDeclaration;
     }
 
     public PsiElement getDeclaration(PsiElement element) {
-        for (Term child: myChildren) {
+        for (TreeElement child: myChildren) {
             if (child.getElement() == element) {
                 return myDeclaration;
             }

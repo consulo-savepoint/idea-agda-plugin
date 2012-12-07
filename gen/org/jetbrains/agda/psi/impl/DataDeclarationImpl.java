@@ -37,8 +37,8 @@ public class DataDeclarationImpl extends ASTWrapperPsiElement implements DataDec
 
   @Override
   @Nullable
-  public PsiElement getId() {
-    return findChildByType(ID);
+  public NameDeclaration getNameDeclaration() {
+    return findChildByClass(NameDeclaration.class);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {

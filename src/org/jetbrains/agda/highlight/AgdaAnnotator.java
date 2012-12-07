@@ -14,7 +14,7 @@ public class AgdaAnnotator implements Annotator {
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
         if (element instanceof DataDeclaration) {
             DataDeclaration data = ((DataDeclaration)element);
-            PsiElement id = data.getId();
+            PsiElement id = data.getNameDeclaration();
             holder.createInfoAnnotation(id, null).setTextAttributes(AgdaHighlighter.TYPE);
         }
         if (element instanceof ANameImpl) {

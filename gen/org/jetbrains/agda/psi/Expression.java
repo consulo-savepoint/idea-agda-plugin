@@ -14,16 +14,10 @@ public interface Expression extends PsiElement {
   Application getApplication();
 
   @Nullable
-  Expression getExpression();
-
-  @Nullable
   ForallExpression getForallExpression();
 
   @Nullable
   FunctionType getFunctionType();
-
-  @Nullable
-  LambdaExpression getLambdaExpression();
 
   @Nullable
   LetExpression getLetExpression();

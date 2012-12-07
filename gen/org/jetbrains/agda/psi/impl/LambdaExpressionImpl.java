@@ -8,10 +8,9 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static org.jetbrains.agda.gen.parser.AgdaTokenTypes.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import org.jetbrains.agda.psi.*;
 
-public class LambdaExpressionImpl extends ASTWrapperPsiElement implements LambdaExpression {
+public class LambdaExpressionImpl extends ExpressionImpl implements LambdaExpression {
 
   public LambdaExpressionImpl(ASTNode node) {
     super(node);

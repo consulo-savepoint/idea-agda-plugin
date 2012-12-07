@@ -31,12 +31,6 @@ public class ExpressionImpl extends ASTWrapperPsiElement implements Expression {
 
   @Override
   @Nullable
-  public Expression getExpression() {
-    return findChildByClass(Expression.class);
-  }
-
-  @Override
-  @Nullable
   public ForallExpression getForallExpression() {
     return findChildByClass(ForallExpression.class);
   }
@@ -45,12 +39,6 @@ public class ExpressionImpl extends ASTWrapperPsiElement implements Expression {
   @Nullable
   public FunctionType getFunctionType() {
     return findChildByClass(FunctionType.class);
-  }
-
-  @Override
-  @Nullable
-  public LambdaExpression getLambdaExpression() {
-    return findChildByClass(LambdaExpression.class);
   }
 
   @Override
