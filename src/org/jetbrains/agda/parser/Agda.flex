@@ -29,7 +29,7 @@ DIGIT=[0-9]
 WHITE_SPACE_CHAR=[\ \t\f]
 INDENT=[\n] {WHITE_SPACE_CHAR}* [^\ \t\f]
 EOL_COMMENT="--"[^\n]*
-LETTER = [^0-9{}().\ \n\t\f:;\\]
+LETTER = [^0-9{}().\ \n\t\f;\\]
 IDENTIFIER_PART=[:digit:]|{LETTER}|[\\]
 IDENTIFIER={LETTER} {IDENTIFIER_PART}*
 
