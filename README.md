@@ -19,5 +19,5 @@ Plugin provides features:
 
 To provide normal work of plugin.
 
- * *hgci* should be in PATH.
- * Last agda [Agda](http://wiki.portal.chalmers.se/agda/pmwiki.php) should be intalled.
+ * *agda* execuatable should be in PATH.
+ * Last agda [Agda](http://wiki.portal.chalmers.se/agda/pmwiki.php) should be installed.
