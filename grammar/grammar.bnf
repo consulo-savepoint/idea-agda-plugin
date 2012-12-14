@@ -39,10 +39,14 @@
 
 root ::= declaration *
 
+private recover ::= ! (id | "data" | VIRTUAL_RIGHT_PAREN | VIRTUAL_SEMICOLON)
+
 fqName ::= id ('.' id) *
 
+name_declaration ::= id
+
 private declaration ::= module_declaration | module_import | data_declaration |
-      function_type_declaration | function_declaration | expression | VIRTUAL_SEMICOLON | VIRTUAL_RIGHT_PAREN
+      function_type_declaration | function_declaration | expression | VIRTUAL_SEMICOLON | VIRTUAL_RIGHT_PAREN {recoverUntil=recover}
 
 module_declaration ::= 'module' fqName bindings "where" {pin=1}
 
@@ -50,7 +54,6 @@ private bindings ::= binding *
 
 new_line ::= VIRTUAL_LEFT_PAREN | VIRTUAL_RIGHT_PAREN | VIRTUAL_SEMICOLON | ()
 
-name_declaration ::= id
 
 private ids ::= name_declaration+
 
@@ -68,23 +71,28 @@ private renamings ::= id "to" id (new_line ";" id "to" id)*
 
 using_or_hiding ::= ('using' '(' import_names ')') | ('hiding' '(' import_names ')')
 
+// Data declaration
+
 data_declaration ::= "data" name_declaration bindings ":" expression "where" (VIRTUAL_LEFT_PAREN constructors VIRTUAL_RIGHT_PAREN) ? {pin=1}
 
 constructors ::= type_signature (VIRTUAL_SEMICOLON type_signature) *
 
-private recover ::= ! (VIRTUAL_RIGHT_PAREN | VIRTUAL_SEMICOLON)
+// Function declaration
 
 function_type_declaration ::= name_declaration ":" expression {pin=2}
 
 function_declaration ::= expression "=" expression {pin=2}
 
+// Expressions
+
 a_name ::= id {mixin = "org.jetbrains.agda.psi.AgdaReferenceElementImpl"}
 
-parenthesis_expression ::= "(" expression ")" {extends=expression}
+parenthesis_expression ::= "(" expression ")" {pin=1; extends=expression}
 
 private atom_expr ::= parenthesis_expression | ("(" ")") | "{" "!!" "}" | "." | a_name
 
 application ::= (atom_expr maybe_application)
+
 private maybe_application ::= application | atom_expr
 
 expression ::= let_expression | tele_arrow | lambda_expression | maybe_function_type | forall_expression
@@ -96,7 +104,9 @@ typed_untyped_binding ::= '{' ids '}' | ("{" type_signature "}") | ("(" type_sig
 forall_expression ::= 'forall' typed_untyped_binding+ ARROW expression
 
 tele_arrow ::= telescope+ ARROW expression
-telescope ::= ("{" type_signature "}") | ("(" type_signature ")")
+telescope ::= implicit_telescope | explicit_telescope
+implicit_telescope ::= "{" type_signature "}" {extends=telescope}
+explicit_telescope ::= "(" type_signature ")" {extends=telescope}
 
 type_signature ::= ids ":" expression
 

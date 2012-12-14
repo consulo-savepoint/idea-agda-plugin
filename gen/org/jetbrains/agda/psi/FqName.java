@@ -7,7 +7,4 @@ import com.intellij.psi.PsiElement;
 
 public interface FqName extends PsiElement {
 
-  @NotNull
-  PsiElement getId();
-
 }

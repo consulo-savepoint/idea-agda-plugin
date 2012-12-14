@@ -25,7 +25,13 @@ public class AgdaExpressionScope {
             }
             if (current instanceof TeleArrow) {
                 for (Telescope telescope : ((TeleArrow) current).getTelescopeList()) {
-                    for (PsiElement element : telescope.getTypeSignature().getNameDeclarationList()) {
+                    TypeSignature typeSignature = null;
+                    if (telescope instanceof ImplicitTelescope) {
+                        typeSignature = ((ImplicitTelescope) telescope).getTypeSignature();
+                    } else {
+                        typeSignature = ((ExplicitTelescope) telescope).getTypeSignature();
+                    }
+                    for (PsiElement element : typeSignature.getNameDeclarationList()) {
                         declarations.put(element.getText(), element);
                     }
                 }

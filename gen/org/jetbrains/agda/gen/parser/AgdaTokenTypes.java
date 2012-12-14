@@ -15,12 +15,14 @@ public interface AgdaTokenTypes {
   IElementType BINDING = new AgdaCompositeElementType("BINDING");
   IElementType CONSTRUCTORS = new AgdaCompositeElementType("CONSTRUCTORS");
   IElementType DATA_DECLARATION = new AgdaCompositeElementType("DATA_DECLARATION");
+  IElementType EXPLICIT_TELESCOPE = new AgdaCompositeElementType("EXPLICIT_TELESCOPE");
   IElementType EXPRESSION = new AgdaCompositeElementType("EXPRESSION");
   IElementType FORALL_EXPRESSION = new AgdaCompositeElementType("FORALL_EXPRESSION");
   IElementType FQ_NAME = new AgdaCompositeElementType("FQ_NAME");
   IElementType FUNCTION_DECLARATION = new AgdaCompositeElementType("FUNCTION_DECLARATION");
   IElementType FUNCTION_TYPE = new AgdaCompositeElementType("FUNCTION_TYPE");
   IElementType FUNCTION_TYPE_DECLARATION = new AgdaCompositeElementType("FUNCTION_TYPE_DECLARATION");
+  IElementType IMPLICIT_TELESCOPE = new AgdaCompositeElementType("IMPLICIT_TELESCOPE");
   IElementType LAMBDA_EXPRESSION = new AgdaCompositeElementType("LAMBDA_EXPRESSION");
   IElementType LET_EXPRESSION = new AgdaCompositeElementType("LET_EXPRESSION");
   IElementType MODULE_DECLARATION = new AgdaCompositeElementType("MODULE_DECLARATION");
@@ -78,6 +80,9 @@ public interface AgdaTokenTypes {
       else if (type == DATA_DECLARATION) {
         return new DataDeclarationImpl(node);
       }
+      else if (type == EXPLICIT_TELESCOPE) {
+        return new ExplicitTelescopeImpl(node);
+      }
       else if (type == EXPRESSION) {
         return new ExpressionImpl(node);
       }
@@ -95,6 +100,9 @@ public interface AgdaTokenTypes {
       }
       else if (type == FUNCTION_TYPE_DECLARATION) {
         return new FunctionTypeDeclarationImpl(node);
+      }
+      else if (type == IMPLICIT_TELESCOPE) {
+        return new ImplicitTelescopeImpl(node);
       }
       else if (type == LAMBDA_EXPRESSION) {
         return new LambdaExpressionImpl(node);

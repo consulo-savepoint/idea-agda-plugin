@@ -102,6 +102,24 @@ public class Grammar {
         if (list.size() == 1) {
             return list.get(0);
         }
+        boolean good = true;
+        for (TreeElement treeElement : list) {
+            if (myOperatorParts.contains(treeElement.getText())) {
+                good = false;
+                break;
+            }
+        }
+        if (good) {
+            TreeElement current = null;
+            for (TreeElement treeElement : list) {
+                if (current == null) {
+                    current = treeElement;
+                } else {
+                    current = new TreeElement(null, null, current, treeElement);
+                }
+            }
+            return current;
+        }
         for (int i = 0; i < list.size(); i++) {
             TreeElement term = applyRule(list, i);
             if (term != null) {

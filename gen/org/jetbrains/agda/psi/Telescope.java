@@ -7,7 +7,4 @@ import com.intellij.psi.PsiElement;
 
 public interface Telescope extends PsiElement {
 
-  @NotNull
-  TypeSignature getTypeSignature();
-
 }

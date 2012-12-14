@@ -17,12 +17,6 @@ public class TelescopeImpl extends ASTWrapperPsiElement implements Telescope {
     super(node);
   }
 
-  @Override
-  @NotNull
-  public TypeSignature getTypeSignature() {
-    return findNotNullChildByClass(TypeSignature.class);
-  }
-
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof Visitor) ((Visitor)visitor).visitTelescope(this);
     else super.accept(visitor);

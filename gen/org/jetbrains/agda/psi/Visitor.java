@@ -27,6 +27,10 @@ public class Visitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitExplicitTelescope(@NotNull ExplicitTelescope o) {
+    visitTelescope(o);
+  }
+
   public void visitExpression(@NotNull Expression o) {
     visitPsiElement(o);
   }
@@ -49,6 +53,10 @@ public class Visitor extends PsiElementVisitor {
 
   public void visitFunctionTypeDeclaration(@NotNull FunctionTypeDeclaration o) {
     visitPsiElement(o);
+  }
+
+  public void visitImplicitTelescope(@NotNull ImplicitTelescope o) {
+    visitTelescope(o);
   }
 
   public void visitLambdaExpression(@NotNull LambdaExpression o) {

@@ -7,7 +7,7 @@ import com.intellij.psi.PsiElement;
 
 public interface ParenthesisExpression extends Expression {
 
-  @NotNull
+  @Nullable
   Expression getExpression();
 
 }

@@ -8,6 +8,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.agda.core.Program;
+import org.jetbrains.agda.core.ProgramBuilder;
 
 public class BuildProgram extends AnAction {
     @Override
@@ -22,7 +23,7 @@ public class BuildProgram extends AnAction {
         if (file == null) {
             return;
         }
-        Program program = Program.build(file);
+        Program program = new ProgramBuilder().build(file);
         program.printDebug();
     }
 

@@ -17,9 +17,9 @@ public class ParenthesisExpressionImpl extends ExpressionImpl implements Parenth
   }
 
   @Override
-  @NotNull
+  @Nullable
   public Expression getExpression() {
-    return findNotNullChildByClass(Expression.class);
+    return findChildByClass(Expression.class);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
