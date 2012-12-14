@@ -3,19 +3,8 @@ package org.jetbrains.agda.core
 /**
  * @author Evgeny.Kurbatsky
  */
-public open class CBinaryExpression(left : CExpression, right : CExpression) : CExpression() {
-    private val myLeft : CExpression?
-    private val myRight : CExpression?
-
-    public open fun getLeft() : CExpression? {
-        return myLeft
-    }
-    public open fun getRight() : CExpression? {
-        return myRight
-    }
+public open class CBinaryExpression(val left : CExpression, val right : CExpression) : CExpression() {
     {
-        this.myLeft = left
-        this.myRight = right
         attach(left)
         attach(right)
     }

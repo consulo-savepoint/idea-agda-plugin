@@ -3,16 +3,8 @@ package org.jetbrains.agda.core
 /**
  * @author Evgeny.Kurbatsky
  */
-public open class CImplicitArrowExpression(text : String, left : CExpression, right : CExpression) : CBinaryExpression(left, right) {
-    private val myText : String?
-    public open fun getName() : String? {
-        return myText
-    }
+public open class CImplicitArrowExpression(val name : String, left : CExpression, right : CExpression) : CBinaryExpression(left, right) {
     public fun toString() : String? {
-        return "{" + myText + ":" + getLeft() + "}->" + getRight()
+        return "{" + name + ":" + left + "}->" + right
     }
-    {
-        myText = text
-    }
-
 }

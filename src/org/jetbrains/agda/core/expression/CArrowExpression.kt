@@ -5,7 +5,7 @@ package org.jetbrains.agda.core
  */
 public open class CArrowExpression(left : CExpression, right : CExpression) : CBinaryExpression(left, right) {
     public fun toString() : String? {
-        return "(" + getLeft() + " -> " + getRight() + ')'
+        return "(" + left + " -> " + right + ')'
     }
 
 

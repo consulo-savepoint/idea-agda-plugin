@@ -27,18 +27,18 @@ import org.jetbrains.agda.psi.TypeSignature
  * @author Evgeny.Kurbatsky
  */
 
-fun buildProgram(var element : PsiElement?) : Program? {
+fun buildProgram(var element : PsiElement?) : Program<PsiElement> {
     while (!((element is PsiFile?)))
     {
         element = element?.getParent()
     }
-    val program = Program()
+    val program = Program<PsiElement>()
     buildFromRoot(program, element)
     return program
 }
 
 
-fun buildFromRoot(program : Program, element : PsiElement?) : Unit {
+fun buildFromRoot(program : Program<PsiElement>, element : PsiElement?) : Unit {
 
 
     if (element is DataDeclaration) {
@@ -49,18 +49,18 @@ fun buildFromRoot(program : Program, element : PsiElement?) : Unit {
 
     if (element is FunctionTypeDeclaration) {
         var functionDeclaration : FunctionTypeDeclaration = element;
-        var name : String? = functionDeclaration.getNameDeclaration().getText()
-        val declaration = CFunctionDeclaration(name, convertExpression(program, functionDeclaration?.getExpression()))
+        val name : String = functionDeclaration.getNameDeclaration().getText()!!
+        val declaration = CFunctionDeclaration(name, convertExpression(program, functionDeclaration.getExpression()!!))
         program.myLassDeclaration = declaration
         program.myDeclarations.put(functionDeclaration, declaration)
     }
 
     if (element is FunctionDeclaration) {
         var functionDeclaration : FunctionDeclaration = element;
-        var left : Expression? = functionDeclaration?.getExpressionList()?.get(0)
-        var right : Expression? = functionDeclaration?.getExpressionList()?.get(1)
-        var leftPart : CExpression? = convertExpression(program, left)
-        var body : CExpression? = convertExpression(program, right)
+        var left : Expression? = functionDeclaration.getExpressionList().get(0)
+        var right : Expression? = functionDeclaration.getExpressionList().get(1)
+        var leftPart : CExpression? = convertExpression(program, left!!)
+        var body : CExpression? = convertExpression(program, right!!)
         program.myLassDeclaration?.getBodyes()?.add(FunctionBody(leftPart, body))
     }
 
@@ -72,11 +72,11 @@ fun buildFromRoot(program : Program, element : PsiElement?) : Unit {
 
 }
 
-fun treeToExpression(programm : Program, treeElement : TreeElement?) : CExpression {
+fun treeToExpression(programm : Program<PsiElement>, treeElement : TreeElement?) : CExpression {
     if (treeElement?.getDeclaration() != null)
     {
         var declaration : PsiElement? = treeElement?.getDeclaration()
-        var ref : CRefExpression = CRefExpression(declaration, getDeclarationName(declaration))
+        var ref : CRefExpression = CRefExpression(declaration!!, getDeclarationName(declaration)!!)
         var children : MutableList<CExpression?>? = ArrayList<CExpression?>()
         for (child : TreeElement? in treeElement?.getChildren()!!) {
             if (! child!!.isTerm()) {
@@ -91,7 +91,7 @@ fun treeToExpression(programm : Program, treeElement : TreeElement?) : CExpressi
         return current
     } else {
         if (treeElement?.getElement() != null) {
-            return convertExpression(programm, treeElement?.getElement())
+            return convertExpression(programm, treeElement?.getElement()!!)
         }
         else {
             var children : Array<TreeElement?>? = treeElement?.getChildren()
@@ -122,7 +122,7 @@ private fun getDeclarationName(declaration : PsiElement?) : String? {
 
 
 
-fun parseExpressionImpl(program : Program, expression : PsiElement?) : CExpression {
+fun parseExpressionImpl(program : Program<PsiElement>, expression : PsiElement?) : CExpression {
     if ((expression is Application?)) {
         var treeElement : TreeElement? = Grammar.parse((expression as Application?))
         return treeToExpression(program, treeElement)
@@ -135,9 +135,9 @@ fun parseExpressionImpl(program : Program, expression : PsiElement?) : CExpressi
             return CSet()
         }
 
-        var declaration : PsiElement? = AgdaGlobalScope.findDeclaration(aName)
+        val declaration : PsiElement? = AgdaGlobalScope.findDeclaration(aName)
         if (declaration != null) {
-            return CRefExpression(declaration, aName?.getText())
+            return CRefExpression(declaration, aName.getText()!!)
         }
 
     }
@@ -150,7 +150,7 @@ fun parseExpressionImpl(program : Program, expression : PsiElement?) : CExpressi
         {
             if (telescope is ImplicitTelescope) {
                 var implicitTelescope : ImplicitTelescope? = (telescope as ImplicitTelescope?)
-                var cType : CExpression? = convertExpression(program, implicitTelescope?.getTypeSignature()?.getExpression())
+                var cType : CExpression? = convertExpression(program, implicitTelescope?.getTypeSignature()?.getExpression()!!)
                 var nameDeclarationList : MutableList<NameDeclaration?> = implicitTelescope?.getTypeSignature()?.getNameDeclarationList()!!
                 Collections.reverse(nameDeclarationList)
                 for (nameDeclaration : NameDeclaration? in nameDeclarationList)
@@ -162,7 +162,7 @@ fun parseExpressionImpl(program : Program, expression : PsiElement?) : CExpressi
             if ((telescope is ExplicitTelescope?))
             {
                 var explicitTelescope : ExplicitTelescope? = (telescope as ExplicitTelescope?)
-                var cType : CExpression = convertExpression(program, explicitTelescope?.getTypeSignature()?.getExpression())
+                var cType : CExpression = convertExpression(program, explicitTelescope?.getTypeSignature()?.getExpression()!!)
                 var nameDeclarationList : MutableList<NameDeclaration?> = explicitTelescope?.getTypeSignature()?.getNameDeclarationList()!!
                 Collections.reverse(nameDeclarationList)
                 for (nameDeclaration : NameDeclaration? in nameDeclarationList)
@@ -177,16 +177,16 @@ fun parseExpressionImpl(program : Program, expression : PsiElement?) : CExpressi
 
     if ((expression is FunctionType?)) {
         var children : Array<PsiElement?> = expression?.getChildren()!!
-        var left : CExpression = convertExpression(program, children[0])
-        var right : CExpression = convertExpression(program, children[1])
+        var left : CExpression = convertExpression(program, children[0]!!)
+        var right : CExpression = convertExpression(program, children[1]!!)
         return CArrowExpression(left, right)
     }
 
     if (expression is ParenthesisExpression) {
-        return convertExpression(program, expression.getExpression())
+        return convertExpression(program, expression.getExpression()!!)
     }
 
-    var firstChild : PsiElement? = expression?.getFirstChild()
+    val firstChild : PsiElement? = expression?.getFirstChild()
     if (firstChild != null)
     {
         return convertExpression(program, firstChild)
@@ -194,42 +194,42 @@ fun parseExpressionImpl(program : Program, expression : PsiElement?) : CExpressi
     else throw RuntimeException()
 }
 
-fun convertExpression(program : Program, expression : PsiElement?) : CExpression {
+fun convertExpression(program : Program<PsiElement>, expression : PsiElement) : CExpression {
     var result : CExpression = parseExpressionImpl(program, expression)
     program.myExpressions.put(expression, result)
     return result
 }
 
-fun convertDataDeclaration(program : Program, psiData : DataDeclaration?) : CDataDeclaration {
-    var aType : CExpression? = convertExpression(program, psiData?.getExpression())
-    var signatures : MutableList<CTypeSignature?> = ArrayList<CTypeSignature?>()
+fun convertDataDeclaration(program : Program<PsiElement>, psiData : DataDeclaration?) : CDataDeclaration {
+    var aType : CExpression? = convertExpression(program, psiData?.getExpression()!!)
+    val signatures : MutableList<CTypeSignature?> = ArrayList<CTypeSignature?>()
     for (binding : Binding? in psiData?.getBindingList()!!)
     {
-        var expression : CExpression? = convertExpression(program, binding?.getExpression())
+        var expression : CExpression? = convertExpression(program, binding?.getExpression()!!)
         for (nameDeclaration : NameDeclaration? in binding?.getNameDeclarationList()!!)
         {
-            val typeSignature = CTypeSignature(nameDeclaration?.getText(), expression)
-            signatures?.add(typeSignature)
-            program.myDeclarations?.put(nameDeclaration!!, typeSignature)
+            val typeSignature = CTypeSignature(nameDeclaration?.getText()!!, expression!!)
+            signatures.add(typeSignature)
+            program.myDeclarations.put(nameDeclaration!!, typeSignature)
         }
     }
     Collections.reverse(signatures)
     for (signature : CTypeSignature? in signatures)
     {
-        aType = CPiArrowExpression(signature?.getName()!!, signature?.getType()!!, aType!!)
+        aType = CPiArrowExpression(signature?.getName()!!, signature!!.aType, aType!!)
     }
-    var cDataDeclaration : CDataDeclaration = CDataDeclaration(psiData?.getNameDeclaration()?.getText(), aType)
+    var cDataDeclaration : CDataDeclaration = CDataDeclaration(psiData?.getNameDeclaration()?.getText()!!, aType!!)
     for (typeSignature : TypeSignature? in psiData?.getConstructors()?.getTypeSignatureList()!!)
     {
-        var ctype : CExpression? = convertExpression(program, typeSignature?.getExpression())
-        for (signature : CTypeSignature? in signatures!!)
+        var ctype : CExpression? = convertExpression(program, typeSignature?.getExpression()!!)
+        for (signature : CTypeSignature? in signatures)
         {
-            ctype = CImplicitArrowExpression(signature?.getName()!!, signature?.getType()!!, ctype!!)
+            ctype = CImplicitArrowExpression(signature?.getName()!!, signature!!.aType, ctype!!)
         }
         for (nameDeclaration : NameDeclaration? in typeSignature?.getNameDeclarationList()!!)
         {
-            val constructor : CTypeSignature = CTypeSignature(nameDeclaration?.getText(), ctype)
-            cDataDeclaration?.getConstructors()?.add(constructor)
+            val constructor : CTypeSignature = CTypeSignature(nameDeclaration?.getText()!!, ctype!!)
+            cDataDeclaration.getConstructors().add(constructor)
             program.myDeclarations.put(nameDeclaration!!, constructor)
         }
     }
@@ -237,7 +237,7 @@ fun convertDataDeclaration(program : Program, psiData : DataDeclaration?) : CDat
 }
 
 class ProgramBuilder() {
-    public fun build(element : PsiElement): Program? {
+    public fun build(element : PsiElement): Program<PsiElement>? {
         return buildProgram(element);
     }
 }

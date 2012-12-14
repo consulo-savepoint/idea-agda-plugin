@@ -15,10 +15,9 @@ import org.jetbrains.agda.psi.impl.ANameImpl
 /**
  * @author Evgeny.Kurbatsky
  */
-public open class Program() {
-    val myDeclarations : MutableMap<PsiElement, CDeclaration> = LinkedHashMap<PsiElement, CDeclaration>()
-    val myExpressions : MutableMap<PsiElement?, CExpression?> = HashMap<PsiElement?, CExpression?>()
-    val myVariables : MutableMap<String?, CExpression?> = HashMap<String?, CExpression?>()
+public open class Program<T>() {
+    val myDeclarations : MutableMap<T, CDeclaration> = LinkedHashMap<T, CDeclaration>()
+    val myExpressions : MutableMap<T, CExpression?> = HashMap<T, CExpression?>()
     var myLassDeclaration : CFunctionDeclaration? = null
 
     private open fun checkTypes() : Unit {
@@ -35,89 +34,57 @@ public open class Program() {
         }
     }
     private open fun check(functionDeclaration : CFunctionDeclaration?, body : FunctionBody?) : Unit {
-        typeCheck(body?.myRight)
+        typeCheck(body?.myRight!!)
     }
-    private open fun typeCheck(expression : CExpression?) : CExpression? {
-        expression?.setType(doTypeCheck(CContext(HashMap<String, CExpression>()), expression))
-        return expression?.getType()
+    public fun typeCheck(expression : CExpression) : CExpression? {
+        expression.setType(doTypeCheck(CContext(HashMap<String, CExpression>()), expression))
+        return expression.getType()
     }
-    private open fun doTypeCheck(context : CContext?, expression : CExpression?) : CExpression? {
-        if ((expression is CApplication?)) {
-            var application : CApplication? = (expression as CApplication?)
-            val leftType : CExpression? = typeCheck(application?.getLeft())
-            var rightType : CExpression? = typeCheck(application?.getRight())
-            if (leftType is CArrowExpression) {
-                return leftType.getRight()
-            }
-            else
-                if ((leftType is CPiArrowExpression?))
-                {
-                    var piArrowExpression : CPiArrowExpression? = (leftType as CPiArrowExpression?)
-                }
-                else
-                    if ((leftType is CImplicitArrowExpression?))
-                    {
-                        var implicitArrowExpression : CImplicitArrowExpression? = (leftType as CImplicitArrowExpression?)
-                        doTypeCheck(context?.put(implicitArrowExpression?.getName()!!, implicitArrowExpression?.getLeft()!!), implicitArrowExpression?.getRight())
-                    }
-
+    private fun doCheckApplication(context : CContext, left : CExpression, right : CExpression) : CExpression? {
+        if (left is CArrowExpression) {
+            return left.right;
+        } else if (left is CPiArrowExpression) {
+            val piArrowExpression : CPiArrowExpression = left;
+        } else if (left is CImplicitArrowExpression) {
+            val implicitArrowExpression : CImplicitArrowExpression = left;
+            context.put(implicitArrowExpression.name, implicitArrowExpression.left);
         }
-        else
-            if (expression is CRefExpression) {
-                var declaration : PsiElement? = expression.getDeclaration()
-                var cDeclaration : CDeclaration? = myDeclarations?.get(declaration)
-                if (cDeclaration != null)
-                {
-                    return cDeclaration?.getType()
-                }
-                else
-                {
-                    return deduceType(myExpressions?.get(declaration))
+        return null
+    }
+    private fun doTypeCheck(context : CContext, expression : CExpression) : CExpression? {
+        if (expression is CApplication) {
+            val application : CApplication = expression
+            val leftType : CExpression = typeCheck(application.left)!!
+            val rightType : CExpression = typeCheck(application.right)!!
+            return doCheckApplication(context, leftType, rightType);
+        } else if (expression is CRefExpression) {
+                var declaration : Any = expression.declaration
+                var cDeclaration : CDeclaration? = myDeclarations.get(declaration)
+                if (cDeclaration != null) {
+                    return cDeclaration.aType
+                } else {
+                    //return deduceType(myExpressions.get(declaration))
                 }
             }
 
         return null
     }
-    private open fun getTypeOf(expression : CExpression?) : CExpression? {
-        if ((expression is CRefExpression?))
-        {
-            var declaration : PsiElement? = ((expression as CRefExpression?))?.getDeclaration()
-            var cDeclaration : CDeclaration? = myDeclarations?.get(declaration)
-            if (cDeclaration != null)
-            {
-                return cDeclaration?.getType()
-            }
-            else
-            {
-                return deduceType(myExpressions?.get(declaration))
-            }
-        }
 
-        if ((expression is CApplication?)) {
-            val typeOf : CExpression? = getTypeOf(((expression as CApplication?))?.getLeft())
-            if (typeOf is CArrowExpression) {
-                return typeOf.getRight();
-            }
-
-        }
-
-        return null
-    }
     private open fun deduceType(expression : CExpression?) : CExpression? {
         var parent : CExpression? = expression?.getParent()
         if ((parent is CApplication?))
         {
             var application : CApplication? = (parent as CApplication?)
-            if (application?.getRight() == expression)
+            if (application!!.right == expression)
             {
-                var leftType : CExpression? = getTypeOf(application?.getLeft())
+                var leftType : CExpression? = null;
                 while ((leftType is CImplicitArrowExpression?))
                 {
-                    leftType = ((leftType as CImplicitArrowExpression?))?.getRight()
+                    leftType = ((leftType as CImplicitArrowExpression?))?.right
                 }
                 if ((leftType is CArrowExpression?))
                 {
-                    return ((leftType as CArrowExpression?))?.getLeft()
+                    return ((leftType as CArrowExpression?))?.left
                 }
 
                 return null
@@ -128,9 +95,8 @@ public open class Program() {
         return null
     }
 
-    public open fun getTypeOf(elementAt : PsiElement?) : CExpression? {
-        checkTypes()
-        var expression : CExpression? = myExpressions?.get(elementAt)
+    public fun getTypeOf(elementAt : T) : CExpression? {
+        var expression : CExpression? = myExpressions.get(elementAt)
         if (expression != null)
         {
             return expression?.getType()
@@ -139,9 +105,8 @@ public open class Program() {
         return null
     }
     public open fun printDebug() : Unit {
-        for (declaration : CDeclaration? in myDeclarations?.values())
-        {
-            System.out?.println(declaration?.toString())
+        for (declaration : CDeclaration? in myDeclarations.values()) {
+            println(declaration?.toString())
         }
     }
 }

@@ -9,7 +9,7 @@ public open class CPiArrowExpression(text : String, left : CExpression, right : 
         return myText
     }
     public fun toString() : String? {
-        return "(" + myText + ":" + getLeft() + ") -> " + getRight()
+        return "(" + myText + ":" + left + ") -> " + right
     }
     {
         myText = text

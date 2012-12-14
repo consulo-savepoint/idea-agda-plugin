@@ -5,21 +5,19 @@ import com.intellij.psi.PsiElement
 /**
  * @author Evgeny.Kurbatsky
  */
-public open class CRefExpression(declaration : PsiElement?, text : String?) : CExpression() {
-    private var myDeclaration : PsiElement? = null
-    private var myText : String? = null
-    public open fun getDeclaration() : PsiElement? {
-        return myDeclaration
+public class CRefExpression(val declaration : Any, val text : String) : CExpression() {
+
+    fun equals(other : Any) : Boolean {
+        if (other is CRefExpression) {
+            return other.declaration.equals(declaration);
+        }
+        return false;
     }
-    public open fun getText() : String? {
-        return myText
+
+    fun toString() : String {
+        return text
     }
-    public fun toString() : String? {
-        return myText
-    }
-    {
-        myDeclaration = declaration
-        myText = text
-    }
+
+
 
 }

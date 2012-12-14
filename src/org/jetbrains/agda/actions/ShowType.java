@@ -33,7 +33,7 @@ public class ShowType extends AnAction {
             }
         PsiElement elementAt = findElementAt(file, editor.getSelectionModel().getSelectionStart(), editor.getSelectionModel().getSelectionEnd());
         if (elementAt != null) {
-            Program program = new ProgramBuilder().build(file);
+            Program<PsiElement> program = new ProgramBuilder().build(file);
             CExpression typeOf = program.getTypeOf(elementAt);
             if (typeOf != null) {
                 JLabel component = new JLabel(typeOf.toString());

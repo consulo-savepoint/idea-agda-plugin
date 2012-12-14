@@ -5,7 +5,7 @@ import java.util.ArrayList
 /**
  * @author Evgeny.Kurbatsky
  */
-public open class CFunctionDeclaration(name : String?, `type` : CExpression?) : CDeclaration() {
+public open class CFunctionDeclaration(name : String, aType : CExpression) : CDeclaration(aType) {
     private var myName : String? = null
     private val myBodes : MutableList<FunctionBody?> = ArrayList<FunctionBody?>()
     public open fun getName() : String? {
@@ -16,7 +16,7 @@ public open class CFunctionDeclaration(name : String?, `type` : CExpression?) : 
     }
     public fun toString() : String? {
         var builder : StringBuilder? = StringBuilder()
-        builder?.append(myName)?.append(" : ")?.append(myType)?.append(" {\n")
+        builder?.append(myName)?.append(" : ")?.append(aType)?.append(" {\n")
         for (expression : FunctionBody? in myBodes)
         {
             builder?.append("\t")?.append(expression?.toString())?.append("\n")
@@ -26,7 +26,6 @@ public open class CFunctionDeclaration(name : String?, `type` : CExpression?) : 
     }
     {
         this.myName = name
-        this.myType = `type`
     }
 
 }
