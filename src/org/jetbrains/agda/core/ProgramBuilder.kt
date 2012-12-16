@@ -40,7 +40,6 @@ fun buildProgram(var element : PsiElement?) : Program<PsiElement> {
 
 fun buildFromRoot(program : Program<PsiElement>, element : PsiElement?) : Unit {
 
-
     if (element is DataDeclaration) {
         var psiData : DataDeclaration = element;
         var cDataDeclaration : CDataDeclaration = convertDataDeclaration(program, psiData)
@@ -57,11 +56,11 @@ fun buildFromRoot(program : Program<PsiElement>, element : PsiElement?) : Unit {
 
     if (element is FunctionDeclaration) {
         var functionDeclaration : FunctionDeclaration = element;
-        var left : Expression? = functionDeclaration.getExpressionList().get(0)
-        var right : Expression? = functionDeclaration.getExpressionList().get(1)
-        var leftPart : CExpression? = convertExpression(program, left!!)
-        var body : CExpression? = convertExpression(program, right!!)
-        program.myLassDeclaration?.getBodyes()?.add(FunctionBody(leftPart, body))
+        val left : Expression? = functionDeclaration.getExpressionList().get(0)
+        val right : Expression? = functionDeclaration.getExpressionList().get(1)
+        val leftPart : CExpression? = convertExpression(program, left!!)
+        val body : CExpression? = convertExpression(program, right!!)
+        program.myLassDeclaration?.getBodyes()?.add(FunctionBody(leftPart!!, body!!))
     }
 
     if (element is PsiFile) {
@@ -175,8 +174,8 @@ fun parseExpressionImpl(program : Program<PsiElement>, expression : PsiElement?)
         return result
     }
 
-    if ((expression is FunctionType?)) {
-        var children : Array<PsiElement?> = expression?.getChildren()!!
+    if (expression is FunctionType) {
+        var children : Array<PsiElement?> = expression.getChildren()
         var left : CExpression = convertExpression(program, children[0]!!)
         var right : CExpression = convertExpression(program, children[1]!!)
         return CArrowExpression(left, right)
@@ -187,8 +186,7 @@ fun parseExpressionImpl(program : Program<PsiElement>, expression : PsiElement?)
     }
 
     val firstChild : PsiElement? = expression?.getFirstChild()
-    if (firstChild != null)
-    {
+    if (firstChild != null) {
         return convertExpression(program, firstChild)
     }
     else throw RuntimeException()

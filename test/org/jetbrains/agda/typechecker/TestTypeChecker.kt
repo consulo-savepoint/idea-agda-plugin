@@ -46,7 +46,7 @@ class TestTypeChecker {
     test fun listTest() {
         val program = makeProgram();
         assertEquals(ref("List") app ref("Nat"), program.typeCheck(
-                (ref("cons") app ref("zero")) app ref("empty")
+                (ref("cons") app ref("zero"))
         ));
     }
 

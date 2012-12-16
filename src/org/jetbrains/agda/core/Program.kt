@@ -11,6 +11,8 @@ import org.jetbrains.agda.psi.Application
 import org.jetbrains.agda.mixfix.TreeElement
 import org.jetbrains.agda.mixfix.Grammar
 import org.jetbrains.agda.psi.impl.ANameImpl
+import java.util.Arrays
+import org.codehaus.groovy.ast.expr.ExpressionTransformer
 
 /**
  * @author Evgeny.Kurbatsky
@@ -27,27 +29,56 @@ public open class Program<T>() {
                 var functionDeclaration : CFunctionDeclaration = cDeclaration
                 for (body : FunctionBody? in functionDeclaration.getBodyes()!!)
                 {
-                    check(functionDeclaration, body)
+                    check(functionDeclaration, body!!)
                 }
             }
 
         }
     }
-    private open fun check(functionDeclaration : CFunctionDeclaration?, body : FunctionBody?) : Unit {
-        typeCheck(body?.myRight!!)
+    private open fun check(functionDeclaration : CFunctionDeclaration?, body : FunctionBody) : Unit {
+        typeCheck(body.right)
     }
     public fun typeCheck(expression : CExpression) : CExpression? {
         expression.setType(doTypeCheck(CContext(HashMap<String, CExpression>()), expression))
         return expression.getType()
     }
+
+    private fun unifyExpressions(context : CContext, left : CExpression, right : CExpression) : List<Assignment> {
+        if (left is CRefExpression) {
+            if (right is CRefExpression) {
+                if (context.map.containsKey(left.text)) {
+                    return Arrays.asList(Assignment(left.text, right))
+                }
+                if (context.map.containsKey(right.text)) {
+                    return Arrays.asList(Assignment(right.text, left))
+                }
+            }
+        }
+        throw RuntimeException();
+    }
+
+    private fun applyAssignments(expression : CExpression, assignments : List<Assignment>) : CExpression {
+        return expression.transform(object : ExpressionTransformer() {
+
+            public override fun transformRef(cref: CRefExpression): CExpression {
+                val filtered = assignments.filter { it -> it.name == cref.text }
+                if (!filtered.isEmpty()) {
+                    return filtered.first().value;
+                }
+                return cref;
+            }
+        })
+    }
+
     private fun doCheckApplication(context : CContext, left : CExpression, right : CExpression) : CExpression? {
         if (left is CArrowExpression) {
-            return left.right;
+            val assignments = unifyExpressions(context, left.left, right);
+            return applyAssignments(left.right, assignments);
         } else if (left is CPiArrowExpression) {
             val piArrowExpression : CPiArrowExpression = left;
         } else if (left is CImplicitArrowExpression) {
             val implicitArrowExpression : CImplicitArrowExpression = left;
-            context.put(implicitArrowExpression.name, implicitArrowExpression.left);
+            return doCheckApplication(context.put(implicitArrowExpression.name, implicitArrowExpression.left), implicitArrowExpression.right, right);
         }
         return null
     }
@@ -59,7 +90,7 @@ public open class Program<T>() {
             return doCheckApplication(context, leftType, rightType);
         } else if (expression is CRefExpression) {
                 var declaration : Any = expression.declaration
-                var cDeclaration : CDeclaration? = myDeclarations.get(declaration)
+                val cDeclaration : CDeclaration? = myDeclarations.get(declaration)
                 if (cDeclaration != null) {
                     return cDeclaration.aType
                 } else {

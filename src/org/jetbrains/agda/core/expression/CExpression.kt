@@ -3,21 +3,21 @@ package org.jetbrains.agda.core
 /**
  * @author Evgeny.Kurbatsky
  */
-public open class CExpression() {
+public abstract class CExpression() {
     private var myParent : CExpression? = null
     private var myType : CExpression? = null
-    public open fun getParent() : CExpression? {
+
+    public fun getParent() : CExpression? {
         return myParent
     }
-    public open fun getType() : CExpression? {
+    public fun getType() : CExpression? {
         return myType
     }
-    protected open fun attach(expression : CExpression) : Unit {
+    protected fun attach(expression : CExpression) : Unit {
         expression.myParent = this
     }
-    public open fun setType(aType : CExpression?) : Unit {
+    public fun setType(aType : CExpression?) : Unit {
         this.myType = aType
     }
-
 
 }
