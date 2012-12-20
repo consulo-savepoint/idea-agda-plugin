@@ -5,7 +5,7 @@ import com.intellij.psi.PsiElement
 /**
  * @author Evgeny.Kurbatsky
  */
-public class CRefExpression(val declaration : Any, val name: String) : CExpression() {
+public class CRefExpression(val declaration : Any, val  name: String) : CExpression() {
 
     fun equals(other : Any) : Boolean {
         if (other is CRefExpression) {

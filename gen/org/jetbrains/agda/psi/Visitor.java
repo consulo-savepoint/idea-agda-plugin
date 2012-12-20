@@ -11,6 +11,14 @@ public class Visitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitAbsurdExpression(@NotNull AbsurdExpression o) {
+    visitExpression(o);
+  }
+
+  public void visitAbsurdFunction(@NotNull AbsurdFunction o) {
+    visitPsiElement(o);
+  }
+
   public void visitApplication(@NotNull Application o) {
     visitPsiElement(o);
   }

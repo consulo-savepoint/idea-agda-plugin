@@ -46,7 +46,7 @@ fqName ::= id ('.' id) *
 name_declaration ::= id
 
 private declaration ::= module_declaration | module_import | data_declaration |
-      function_type_declaration | function_declaration | expression | VIRTUAL_SEMICOLON | VIRTUAL_RIGHT_PAREN {recoverUntil=recover}
+        function_type_declaration | function_declaration | absurd_function | VIRTUAL_SEMICOLON | VIRTUAL_RIGHT_PAREN {recoverUntil=recover}
 
 module_declaration ::= 'module' fqName bindings "where" {pin=1}
 
@@ -81,15 +81,19 @@ constructors ::= type_signature (VIRTUAL_SEMICOLON type_signature) *
 
 function_type_declaration ::= name_declaration ":" expression {pin=2}
 
-function_declaration ::= expression "=" expression {pin=2}
+function_declaration ::= expression "=" expression {pin = 2}
+
+absurd_function ::= expression VIRTUAL_SEMICOLON {pin = 2}
 
 // Expressions
 
 a_name ::= id {mixin = "org.jetbrains.agda.psi.AgdaReferenceElementImpl"}
 
+absurd_expression ::= "(" ")" {extends=expression}
+
 parenthesis_expression ::= "(" expression ")" {pin=1; extends=expression}
 
-private atom_expr ::= parenthesis_expression | ("(" ")") | "{" "!!" "}" | "." | a_name
+private atom_expr ::= absurd_expression | parenthesis_expression | "{" "!!" "}" | "." | a_name
 
 application ::= (atom_expr maybe_application)
 

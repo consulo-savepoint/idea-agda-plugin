@@ -19,13 +19,19 @@ public class AgdaAnnotator implements Annotator {
             DataDeclaration data = ((DataDeclaration)element);
             PsiElement id = data.getNameDeclaration();
             holder.createInfoAnnotation(id, null).setTextAttributes(AgdaHighlighter.TYPE);
-            for (TypeSignature typeSignature : data.getConstructors().getTypeSignatureList()) {
-                for (NameDeclaration nameDeclaration : typeSignature.getNameDeclarationList()) {
-                    holder.createInfoAnnotation(nameDeclaration, null).setTextAttributes(AgdaHighlighter.CONSTRUCTOR);
+            Constructors constructors = data.getConstructors();
+            if (constructors != null) {
+                for (TypeSignature typeSignature : constructors.getTypeSignatureList()) {
+                    for (NameDeclaration nameDeclaration : typeSignature.getNameDeclarationList()) {
+                        holder.createInfoAnnotation(nameDeclaration, null).setTextAttributes(AgdaHighlighter.CONSTRUCTOR);
+                    }
                 }
             }
         }
         if (element instanceof ANameImpl) {
+            if ("_".equals(element.getText())) {
+                return;
+            }
             if ("Set".equals(element.getText())) {
                 holder.createInfoAnnotation(element, null).setTextAttributes(AgdaHighlighter.TYPE);
                 return;

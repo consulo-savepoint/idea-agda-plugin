@@ -10,6 +10,8 @@ import org.jetbrains.agda.psi.impl.*;
 
 public interface AgdaTokenTypes {
 
+  IElementType ABSURD_EXPRESSION = new AgdaCompositeElementType("ABSURD_EXPRESSION");
+  IElementType ABSURD_FUNCTION = new AgdaCompositeElementType("ABSURD_FUNCTION");
   IElementType APPLICATION = new AgdaCompositeElementType("APPLICATION");
   IElementType A_NAME = new AgdaCompositeElementType("A_NAME");
   IElementType BINDING = new AgdaCompositeElementType("BINDING");
@@ -65,7 +67,13 @@ public interface AgdaTokenTypes {
   class Factory {
     public static PsiElement createElement(ASTNode node) {
       IElementType type = node.getElementType();
-       if (type == APPLICATION) {
+       if (type == ABSURD_EXPRESSION) {
+        return new AbsurdExpressionImpl(node);
+      }
+      else if (type == ABSURD_FUNCTION) {
+        return new AbsurdFunctionImpl(node);
+      }
+      else if (type == APPLICATION) {
         return new ApplicationImpl(node);
       }
       else if (type == A_NAME) {
