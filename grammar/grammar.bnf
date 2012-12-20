@@ -12,6 +12,8 @@
     WHERE_KEYWORD="where"
     MODULE_KEYWORD="module"
     FORALL="forall"
+    OPEN_KEYWORD="open"
+    IMPORT_KEYWORD="import"
 
     SPEC_CHARACTERS="SPEC_CHARACTERS"
     STRING="STRING"

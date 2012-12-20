@@ -73,6 +73,8 @@ public class AgdaHighlighter extends SyntaxHighlighterBase {
     keys1.put(AgdaTokenTypes.FORALL, KEYWORD_VALUE);
     keys1.put(AgdaTokenTypes.LET_KEYWORD, KEYWORD_VALUE);
     keys1.put(AgdaTokenTypes.IN_KEYWORD, KEYWORD_VALUE);
+    keys1.put(AgdaTokenTypes.OPEN_KEYWORD, KEYWORD_VALUE);
+    keys1.put(AgdaTokenTypes.IMPORT_KEYWORD, KEYWORD_VALUE);
 
     keys1.put(AgdaTokenTypes.STRING, STRING_LITERAL);
 

@@ -1015,12 +1015,14 @@ public class AgdaParser implements PsiParser {
   // 'open' ? 'import' fqName as_name? using_or_hiding? renaming?
   public static boolean module_import(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "module_import")) return false;
+    if (!nextTokenIs(builder_, IMPORT_KEYWORD) && !nextTokenIs(builder_, OPEN_KEYWORD)
+        && replaceVariants(builder_, 2, "<module import>")) return false;
     boolean result_ = false;
     boolean pinned_ = false;
     Marker marker_ = builder_.mark();
     enterErrorRecordingSection(builder_, level_, _SECTION_GENERAL_, "<module import>");
     result_ = module_import_0(builder_, level_ + 1);
-    result_ = result_ && consumeToken(builder_, "import");
+    result_ = result_ && consumeToken(builder_, IMPORT_KEYWORD);
     pinned_ = result_; // pin = 2
     result_ = result_ && report_error_(builder_, fqName(builder_, level_ + 1));
     result_ = pinned_ && report_error_(builder_, module_import_3(builder_, level_ + 1)) && result_;
@@ -1039,7 +1041,7 @@ public class AgdaParser implements PsiParser {
   // 'open' ?
   private static boolean module_import_0(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "module_import_0")) return false;
-    consumeToken(builder_, "open");
+    consumeToken(builder_, OPEN_KEYWORD);
     return true;
   }
 

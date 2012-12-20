@@ -58,7 +58,7 @@ public open class Program<T>() {
     }
 
     public fun typeCheck(expression : CExpression) : CExpression? {
-        expression.setType(doTypeCheck(CContext(HashMap<String, CExpression>()), expression))
+        expression.setType(doInferType(CContext(HashMap<String, CExpression>()), expression))
         return expression.getType()
     }
 
@@ -118,7 +118,7 @@ public open class Program<T>() {
         }
         return null
     }
-    private fun doTypeCheck(context : CContext, expression : CExpression) : CExpression? {
+    private fun doInferType(context : CContext, expression : CExpression) : CExpression? {
         if (expression is CApplication) {
             val application : CApplication = expression
             val leftType : CExpression = typeCheck(application.left)!!

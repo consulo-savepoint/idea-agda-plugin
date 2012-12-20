@@ -48,12 +48,14 @@ public interface AgdaTokenTypes {
   IElementType END_OF_LINE_COMMENT = new AgdaToken("--");
   IElementType FORALL = new AgdaToken("forall");
   IElementType ID = new AgdaToken("id");
+  IElementType IMPORT_KEYWORD = new AgdaToken("import");
   IElementType IN_KEYWORD = new AgdaToken("in");
   IElementType LAMBDA = new AgdaToken("\\");
   IElementType LEFT_BRACE = new AgdaToken("{");
   IElementType LEFT_PAREN = new AgdaToken("(");
   IElementType LET_KEYWORD = new AgdaToken("let");
   IElementType MODULE_KEYWORD = new AgdaToken("module");
+  IElementType OPEN_KEYWORD = new AgdaToken("open");
   IElementType RIGHT_BRACE = new AgdaToken("}");
   IElementType RIGHT_PAREN = new AgdaToken(")");
   IElementType SEMICOLON = new AgdaToken(";");

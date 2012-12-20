@@ -69,6 +69,8 @@ IDENTIFIER={LETTER} {IDENTIFIER_PART}*
 "data"                { return AgdaTokenTypes.DATA_KEYWORD; }
 "where"               { return AgdaTokenTypes.WHERE_KEYWORD; }
 "module"              { return AgdaTokenTypes.MODULE_KEYWORD; }
+"open"                { return AgdaTokenTypes.OPEN_KEYWORD; }
+"import"              { return AgdaTokenTypes.IMPORT_KEYWORD; }
 (forall)|(\u2200)     { return AgdaTokenTypes.FORALL; }
 
 
