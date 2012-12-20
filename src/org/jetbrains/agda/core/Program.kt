@@ -13,6 +13,8 @@ import org.jetbrains.agda.mixfix.Grammar
 import org.jetbrains.agda.psi.impl.ANameImpl
 import java.util.Arrays
 import org.codehaus.groovy.ast.expr.ExpressionTransformer
+import java.util.ArrayList
+import java.nio.charset.CoderResult
 
 /**
  * @author Evgeny.Kurbatsky
@@ -35,9 +37,26 @@ public open class Program<T>() {
 
         }
     }
-    private open fun check(functionDeclaration : CFunctionDeclaration?, body : FunctionBody) : Unit {
+    private open fun check(functionDeclaration : CFunctionDeclaration, body : FunctionBody) : Unit {
+        makeContext(body.left, null);
         typeCheck(body.right)
     }
+
+    fun makeContext(expr : CExpression, aType : CExpression?) : CContext {
+        when (expr) {
+            is CRefExpression -> {
+                expr.name
+                return CContext(HashMap<String, CExpression>())
+            }
+            is CApplication -> {
+                return makeContext(expr.right, null);
+            }
+            else -> {
+                return CContext(HashMap<String, CExpression>())
+            }
+        }
+    }
+
     public fun typeCheck(expression : CExpression) : CExpression? {
         expression.setType(doTypeCheck(CContext(HashMap<String, CExpression>()), expression))
         return expression.getType()
@@ -46,12 +65,29 @@ public open class Program<T>() {
     private fun unifyExpressions(context : CContext, left : CExpression, right : CExpression) : List<Assignment> {
         if (left is CRefExpression) {
             if (right is CRefExpression) {
-                if (context.map.containsKey(left.text)) {
-                    return Arrays.asList(Assignment(left.text, right))
+                if (context.map.containsKey(left.name)) {
+                    return Arrays.asList(Assignment(left.name, right))
                 }
-                if (context.map.containsKey(right.text)) {
-                    return Arrays.asList(Assignment(right.text, left))
+                if (context.map.containsKey(right.name)) {
+                    return Arrays.asList(Assignment(right.name, left))
                 }
+                if (left.declaration == right.declaration) {
+                    return ArrayList()
+                }
+            }
+        }
+        if (right is CImplicitArrowExpression) {
+            val implicitArrowExpression : CImplicitArrowExpression = right
+            return unifyExpressions(context.put(implicitArrowExpression.name, implicitArrowExpression.left), left, implicitArrowExpression.right)
+        }
+        if (left is CApplication) {
+            if (right is CApplication) {
+                val l1 = unifyExpressions(context, left.left, right.left)
+                val l2 = unifyExpressions(context, left.right, right.right)
+                val result = ArrayList<Assignment>()
+                result.addAll(l1)
+                result.addAll(l2)
+                return result
             }
         }
         throw RuntimeException();
@@ -61,7 +97,7 @@ public open class Program<T>() {
         return expression.transform(object : ExpressionTransformer() {
 
             public override fun transformRef(cref: CRefExpression): CExpression {
-                val filtered = assignments.filter { it -> it.name == cref.text }
+                val filtered = assignments.filter { it -> it.name == cref.name }
                 if (!filtered.isEmpty()) {
                     return filtered.first().value;
                 }
@@ -101,32 +137,8 @@ public open class Program<T>() {
         return null
     }
 
-    private open fun deduceType(expression : CExpression?) : CExpression? {
-        var parent : CExpression? = expression?.getParent()
-        if ((parent is CApplication?))
-        {
-            var application : CApplication? = (parent as CApplication?)
-            if (application!!.right == expression)
-            {
-                var leftType : CExpression? = null;
-                while ((leftType is CImplicitArrowExpression?))
-                {
-                    leftType = ((leftType as CImplicitArrowExpression?))?.right
-                }
-                if ((leftType is CArrowExpression?))
-                {
-                    return ((leftType as CArrowExpression?))?.left
-                }
-
-                return null
-            }
-
-        }
-
-        return null
-    }
-
     public fun getTypeOf(elementAt : T) : CExpression? {
+        checkTypes()
         var expression : CExpression? = myExpressions.get(elementAt)
         if (expression != null)
         {

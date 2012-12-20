@@ -22,7 +22,7 @@ class TestTypeChecker {
 
         val listData = data("List", CSet() app CSet())
         val empty = CTypeSignature("empty", CImplicitArrowExpression("A", CSet(), ref("List") app ref("A")))
-        val cons = CTypeSignature("cons", CImplicitArrowExpression("A", CSet(), CArrowExpression(ref("A") , ref("List") app ref("A"))))
+        val cons = CTypeSignature("cons", CImplicitArrowExpression("A", CSet(), CArrowExpression(ref("A") , CArrowExpression(ref("List") app ref("A"), ref("List") app ref("A")))))
         listData.getConstructors().add(empty)
         listData.getConstructors().add(cons)
 
@@ -46,7 +46,7 @@ class TestTypeChecker {
     test fun listTest() {
         val program = makeProgram();
         assertEquals(ref("List") app ref("Nat"), program.typeCheck(
-                (ref("cons") app ref("zero"))
+                (ref("cons") app ref("zero") app ref("empty"))
         ));
     }
 
