@@ -8,29 +8,16 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static org.jetbrains.agda.gen.parser.AgdaTokenTypes.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import org.jetbrains.agda.psi.*;
 
-public class RenamingImpl extends ASTWrapperPsiElement implements Renaming {
+public class AbsurdExpressionImpl extends ExpressionImpl implements AbsurdExpression {
 
-  public RenamingImpl(ASTNode node) {
+  public AbsurdExpressionImpl(ASTNode node) {
     super(node);
   }
 
-  @Override
-  @NotNull
-  public List<NewLine> getNewLineList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, NewLine.class);
-  }
-
-  @Override
-  @NotNull
-  public PsiElement getId() {
-    return findNotNullChildByType(ID);
-  }
-
   public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof Visitor) ((Visitor)visitor).visitRenaming(this);
+    if (visitor instanceof Visitor) ((Visitor)visitor).visitAbsurdExpression(this);
     else super.accept(visitor);
   }
 

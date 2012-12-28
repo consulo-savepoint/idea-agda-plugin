@@ -526,28 +526,21 @@ public class AgdaParser implements PsiParser {
   }
 
   /* ********************************************************** */
-  // module_declaration | module_import | data_declaration |
-  //         function_type_declaration | function_declaration | absurd_function | VIRTUAL_SEMICOLON | VIRTUAL_RIGHT_PAREN
+  // VIRTUAL_SEMICOLON | VIRTUAL_RIGHT_PAREN | data_declaration | recovering_declaration
   static boolean declaration(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "declaration")) return false;
     boolean result_ = false;
     Marker marker_ = builder_.mark();
-    enterErrorRecordingSection(builder_, level_, _SECTION_RECOVER_, null);
-    result_ = module_declaration(builder_, level_ + 1);
-    if (!result_) result_ = module_import(builder_, level_ + 1);
-    if (!result_) result_ = data_declaration(builder_, level_ + 1);
-    if (!result_) result_ = function_type_declaration(builder_, level_ + 1);
-    if (!result_) result_ = function_declaration(builder_, level_ + 1);
-    if (!result_) result_ = absurd_function(builder_, level_ + 1);
-    if (!result_) result_ = consumeToken(builder_, VIRTUAL_SEMICOLON);
+    result_ = consumeToken(builder_, VIRTUAL_SEMICOLON);
     if (!result_) result_ = consumeToken(builder_, VIRTUAL_RIGHT_PAREN);
+    if (!result_) result_ = data_declaration(builder_, level_ + 1);
+    if (!result_) result_ = recovering_declaration(builder_, level_ + 1);
     if (!result_) {
       marker_.rollbackTo();
     }
     else {
       marker_.drop();
     }
-    result_ = exitErrorRecordingSection(builder_, level_, result_, false, _SECTION_RECOVER_, recover_parser_);
     return result_;
   }
 
@@ -1138,7 +1131,7 @@ public class AgdaParser implements PsiParser {
   }
 
   /* ********************************************************** */
-  // ! (id | "data" | VIRTUAL_RIGHT_PAREN | VIRTUAL_SEMICOLON)
+  // ! (VIRTUAL_RIGHT_PAREN | VIRTUAL_SEMICOLON)
   static boolean recover(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "recover")) return false;
     boolean result_ = false;
@@ -1150,20 +1143,18 @@ public class AgdaParser implements PsiParser {
     return result_;
   }
 
-  // (id | "data" | VIRTUAL_RIGHT_PAREN | VIRTUAL_SEMICOLON)
+  // (VIRTUAL_RIGHT_PAREN | VIRTUAL_SEMICOLON)
   private static boolean recover_0(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "recover_0")) return false;
     return recover_0_0(builder_, level_ + 1);
   }
 
-  // id | "data" | VIRTUAL_RIGHT_PAREN | VIRTUAL_SEMICOLON
+  // VIRTUAL_RIGHT_PAREN | VIRTUAL_SEMICOLON
   private static boolean recover_0_0(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "recover_0_0")) return false;
     boolean result_ = false;
     Marker marker_ = builder_.mark();
-    result_ = consumeToken(builder_, ID);
-    if (!result_) result_ = consumeToken(builder_, DATA_KEYWORD);
-    if (!result_) result_ = consumeToken(builder_, VIRTUAL_RIGHT_PAREN);
+    result_ = consumeToken(builder_, VIRTUAL_RIGHT_PAREN);
     if (!result_) result_ = consumeToken(builder_, VIRTUAL_SEMICOLON);
     if (!result_) {
       marker_.rollbackTo();
@@ -1171,6 +1162,28 @@ public class AgdaParser implements PsiParser {
     else {
       marker_.drop();
     }
+    return result_;
+  }
+
+  /* ********************************************************** */
+  // module_declaration | module_import | function_type_declaration | function_declaration | absurd_function
+  static boolean recovering_declaration(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "recovering_declaration")) return false;
+    boolean result_ = false;
+    Marker marker_ = builder_.mark();
+    enterErrorRecordingSection(builder_, level_, _SECTION_RECOVER_, null);
+    result_ = module_declaration(builder_, level_ + 1);
+    if (!result_) result_ = module_import(builder_, level_ + 1);
+    if (!result_) result_ = function_type_declaration(builder_, level_ + 1);
+    if (!result_) result_ = function_declaration(builder_, level_ + 1);
+    if (!result_) result_ = absurd_function(builder_, level_ + 1);
+    if (!result_) {
+      marker_.rollbackTo();
+    }
+    else {
+      marker_.drop();
+    }
+    result_ = exitErrorRecordingSection(builder_, level_, result_, false, _SECTION_RECOVER_, recover_parser_);
     return result_;
   }
 

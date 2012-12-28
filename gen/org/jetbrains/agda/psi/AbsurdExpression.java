@@ -5,12 +5,6 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface Renaming extends PsiElement {
-
-  @NotNull
-  List<NewLine> getNewLineList();
-
-  @NotNull
-  PsiElement getId();
+public interface AbsurdExpression extends Expression {
 
 }

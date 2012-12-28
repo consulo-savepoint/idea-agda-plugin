@@ -41,14 +41,16 @@
 
 root ::= declaration *
 
-private recover ::= ! (id | "data" | VIRTUAL_RIGHT_PAREN | VIRTUAL_SEMICOLON)
+private recover ::= ! (VIRTUAL_RIGHT_PAREN | VIRTUAL_SEMICOLON)
 
 fqName ::= id ('.' id) *
 
 name_declaration ::= id
 
-private declaration ::= module_declaration | module_import | data_declaration |
-        function_type_declaration | function_declaration | absurd_function | VIRTUAL_SEMICOLON | VIRTUAL_RIGHT_PAREN {recoverUntil=recover}
+private recovering_declaration ::= module_declaration | module_import | function_type_declaration | function_declaration | absurd_function  {recoverUntil=recover}
+
+private declaration ::= VIRTUAL_SEMICOLON | VIRTUAL_RIGHT_PAREN | data_declaration | recovering_declaration
+
 
 module_declaration ::= 'module' fqName bindings "where" {pin=1}
 
