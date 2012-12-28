@@ -67,6 +67,10 @@ public class Visitor extends PsiElementVisitor {
     visitTelescope(o);
   }
 
+  public void visitInfix(@NotNull Infix o) {
+    visitPsiElement(o);
+  }
+
   public void visitLambdaExpression(@NotNull LambdaExpression o) {
     visitExpression(o);
   }
@@ -93,6 +97,30 @@ public class Visitor extends PsiElementVisitor {
 
   public void visitParenthesisExpression(@NotNull ParenthesisExpression o) {
     visitExpression(o);
+  }
+
+  public void visitPostulate(@NotNull Postulate o) {
+    visitPsiElement(o);
+  }
+
+  public void visitPostulateBindings(@NotNull PostulateBindings o) {
+    visitPsiElement(o);
+  }
+
+  public void visitPragma(@NotNull Pragma o) {
+    visitPsiElement(o);
+  }
+
+  public void visitRecordConstructor(@NotNull RecordConstructor o) {
+    visitPsiElement(o);
+  }
+
+  public void visitRecordDeclaration(@NotNull RecordDeclaration o) {
+    visitPsiElement(o);
+  }
+
+  public void visitRecordField(@NotNull RecordField o) {
+    visitPsiElement(o);
   }
 
   public void visitRenaming(@NotNull Renaming o) {

@@ -11,10 +11,15 @@
     DATA_KEYWORD="data"
     WHERE_KEYWORD="where"
     MODULE_KEYWORD="module"
+    RECORD_KEYWORD="record"
+    POSTULATE_KEYWORD="postulate"
+    INFIXL_KEYWORD="infixl"
+    INFIXR_KEYWORD="infixr"
     FORALL="forall"
     OPEN_KEYWORD="open"
     IMPORT_KEYWORD="import"
 
+    NUMBER="number"
     SPEC_CHARACTERS="SPEC_CHARACTERS"
     STRING="STRING"
     COMMENT="COMMENT"
@@ -28,6 +33,8 @@
     LEFT_PAREN="("
     RIGHT_PAREN=")"
     ARROW="->"
+    PRAGMA_OPEN= "{-#"
+    PRAGMA_CLOSE="#-}"
 
     LAMBDA="\\"
     VIRTUAL_LEFT_PAREN="VIRTUAL_LEFT_PAREN"
@@ -47,10 +54,26 @@ fqName ::= id ('.' id) *
 
 name_declaration ::= id
 
-private recovering_declaration ::= module_declaration | module_import | function_type_declaration | function_declaration | absurd_function  {recoverUntil=recover}
+private recovering_declaration ::= module_declaration | module_import | infix | postulate | pragma | function_type_declaration | function_declaration | absurd_function  {recoverUntil=recover}
 
-private declaration ::= VIRTUAL_SEMICOLON | VIRTUAL_RIGHT_PAREN | data_declaration | recovering_declaration
+private declaration ::= VIRTUAL_SEMICOLON | VIRTUAL_RIGHT_PAREN | data_declaration | record_declaration | recovering_declaration
 
+record_declaration ::= "record" name_declaration bindings ":" expression "where" (VIRTUAL_LEFT_PAREN record_elements VIRTUAL_RIGHT_PAREN) ? {pin=1}
+
+private record_elements ::= record_element (VIRTUAL_SEMICOLON record_element) *
+
+private record_element ::= record_constructor | record_field
+
+record_field ::= "field" type_signature {pin=1}
+record_constructor ::= "constructor" name_declaration {pin=1}
+
+pragma ::= PRAGMA_OPEN (id | "(" | ")" | "\\")* PRAGMA_CLOSE {pin=1}
+
+infix ::= ("infixl" | "infixr") NUMBER name_declaration {pin=1}
+
+postulate_bindings ::= type_signature (VIRTUAL_SEMICOLON type_signature) *
+
+postulate ::= "postulate" (VIRTUAL_LEFT_PAREN postulate_bindings VIRTUAL_RIGHT_PAREN)
 
 module_declaration ::= 'module' fqName bindings "where" {pin=1}
 

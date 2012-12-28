@@ -25,6 +25,7 @@ public interface AgdaTokenTypes {
   IElementType FUNCTION_TYPE = new AgdaCompositeElementType("FUNCTION_TYPE");
   IElementType FUNCTION_TYPE_DECLARATION = new AgdaCompositeElementType("FUNCTION_TYPE_DECLARATION");
   IElementType IMPLICIT_TELESCOPE = new AgdaCompositeElementType("IMPLICIT_TELESCOPE");
+  IElementType INFIX = new AgdaCompositeElementType("INFIX");
   IElementType LAMBDA_EXPRESSION = new AgdaCompositeElementType("LAMBDA_EXPRESSION");
   IElementType LET_EXPRESSION = new AgdaCompositeElementType("LET_EXPRESSION");
   IElementType MODULE_DECLARATION = new AgdaCompositeElementType("MODULE_DECLARATION");
@@ -32,6 +33,12 @@ public interface AgdaTokenTypes {
   IElementType NAME_DECLARATION = new AgdaCompositeElementType("NAME_DECLARATION");
   IElementType NEW_LINE = new AgdaCompositeElementType("NEW_LINE");
   IElementType PARENTHESIS_EXPRESSION = new AgdaCompositeElementType("PARENTHESIS_EXPRESSION");
+  IElementType POSTULATE = new AgdaCompositeElementType("POSTULATE");
+  IElementType POSTULATE_BINDINGS = new AgdaCompositeElementType("POSTULATE_BINDINGS");
+  IElementType PRAGMA = new AgdaCompositeElementType("PRAGMA");
+  IElementType RECORD_CONSTRUCTOR = new AgdaCompositeElementType("RECORD_CONSTRUCTOR");
+  IElementType RECORD_DECLARATION = new AgdaCompositeElementType("RECORD_DECLARATION");
+  IElementType RECORD_FIELD = new AgdaCompositeElementType("RECORD_FIELD");
   IElementType RENAMING = new AgdaCompositeElementType("RENAMING");
   IElementType TELESCOPE = new AgdaCompositeElementType("TELESCOPE");
   IElementType TELE_ARROW = new AgdaCompositeElementType("TELE_ARROW");
@@ -49,13 +56,20 @@ public interface AgdaTokenTypes {
   IElementType FORALL = new AgdaToken("forall");
   IElementType ID = new AgdaToken("id");
   IElementType IMPORT_KEYWORD = new AgdaToken("import");
+  IElementType INFIXL_KEYWORD = new AgdaToken("infixl");
+  IElementType INFIXR_KEYWORD = new AgdaToken("infixr");
   IElementType IN_KEYWORD = new AgdaToken("in");
   IElementType LAMBDA = new AgdaToken("\\");
   IElementType LEFT_BRACE = new AgdaToken("{");
   IElementType LEFT_PAREN = new AgdaToken("(");
   IElementType LET_KEYWORD = new AgdaToken("let");
   IElementType MODULE_KEYWORD = new AgdaToken("module");
+  IElementType NUMBER = new AgdaToken("number");
   IElementType OPEN_KEYWORD = new AgdaToken("open");
+  IElementType POSTULATE_KEYWORD = new AgdaToken("postulate");
+  IElementType PRAGMA_CLOSE = new AgdaToken("#-}");
+  IElementType PRAGMA_OPEN = new AgdaToken("{-#");
+  IElementType RECORD_KEYWORD = new AgdaToken("record");
   IElementType RIGHT_BRACE = new AgdaToken("}");
   IElementType RIGHT_PAREN = new AgdaToken(")");
   IElementType SEMICOLON = new AgdaToken(";");
@@ -114,6 +128,9 @@ public interface AgdaTokenTypes {
       else if (type == IMPLICIT_TELESCOPE) {
         return new ImplicitTelescopeImpl(node);
       }
+      else if (type == INFIX) {
+        return new InfixImpl(node);
+      }
       else if (type == LAMBDA_EXPRESSION) {
         return new LambdaExpressionImpl(node);
       }
@@ -134,6 +151,24 @@ public interface AgdaTokenTypes {
       }
       else if (type == PARENTHESIS_EXPRESSION) {
         return new ParenthesisExpressionImpl(node);
+      }
+      else if (type == POSTULATE) {
+        return new PostulateImpl(node);
+      }
+      else if (type == POSTULATE_BINDINGS) {
+        return new PostulateBindingsImpl(node);
+      }
+      else if (type == PRAGMA) {
+        return new PragmaImpl(node);
+      }
+      else if (type == RECORD_CONSTRUCTOR) {
+        return new RecordConstructorImpl(node);
+      }
+      else if (type == RECORD_DECLARATION) {
+        return new RecordDeclarationImpl(node);
+      }
+      else if (type == RECORD_FIELD) {
+        return new RecordFieldImpl(node);
       }
       else if (type == RENAMING) {
         return new RenamingImpl(node);

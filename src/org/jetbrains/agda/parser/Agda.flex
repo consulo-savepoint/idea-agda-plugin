@@ -71,6 +71,13 @@ IDENTIFIER={LETTER} {IDENTIFIER_PART}*
 "module"              { return AgdaTokenTypes.MODULE_KEYWORD; }
 "open"                { return AgdaTokenTypes.OPEN_KEYWORD; }
 "import"              { return AgdaTokenTypes.IMPORT_KEYWORD; }
+"record"              { return AgdaTokenTypes.RECORD_KEYWORD; }
+"postulate"           { return AgdaTokenTypes.POSTULATE_KEYWORD; }
+"infixl"              { return AgdaTokenTypes.INFIXL_KEYWORD; }
+"infixr"              { return AgdaTokenTypes.INFIXR_KEYWORD; }
+"{-#"                 { return AgdaTokenTypes.PRAGMA_OPEN; }
+"#-}"                 { return AgdaTokenTypes.PRAGMA_CLOSE; }
+({DIGIT})+              { return AgdaTokenTypes.NUMBER; }
 (forall)|(\u2200)     { return AgdaTokenTypes.FORALL; }
 
 

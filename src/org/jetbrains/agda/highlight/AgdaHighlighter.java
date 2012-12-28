@@ -67,14 +67,27 @@ public class AgdaHighlighter extends SyntaxHighlighterBase {
     keys1.put(AgdaTokenTypes.END_OF_LINE_COMMENT, COMMENT);
     keys1.put(AgdaTokenTypes.COMMENT, COMMENT);
 
-    keys1.put(AgdaTokenTypes.DATA_KEYWORD, KEYWORD_VALUE);
-    keys1.put(AgdaTokenTypes.WHERE_KEYWORD, KEYWORD_VALUE);
-    keys1.put(AgdaTokenTypes.MODULE_KEYWORD, KEYWORD_VALUE);
-    keys1.put(AgdaTokenTypes.FORALL, KEYWORD_VALUE);
-    keys1.put(AgdaTokenTypes.LET_KEYWORD, KEYWORD_VALUE);
-    keys1.put(AgdaTokenTypes.IN_KEYWORD, KEYWORD_VALUE);
-    keys1.put(AgdaTokenTypes.OPEN_KEYWORD, KEYWORD_VALUE);
-    keys1.put(AgdaTokenTypes.IMPORT_KEYWORD, KEYWORD_VALUE);
+    final IElementType[] keywords = new IElementType[]{
+            AgdaTokenTypes.DATA_KEYWORD,
+            AgdaTokenTypes.WHERE_KEYWORD,
+            AgdaTokenTypes.MODULE_KEYWORD,
+            AgdaTokenTypes.FORALL,
+            AgdaTokenTypes.LET_KEYWORD,
+            AgdaTokenTypes.IN_KEYWORD,
+            AgdaTokenTypes.OPEN_KEYWORD,
+            AgdaTokenTypes.IMPORT_KEYWORD,
+            AgdaTokenTypes.RECORD_KEYWORD,
+            AgdaTokenTypes.POSTULATE_KEYWORD,
+            AgdaTokenTypes.RECORD_KEYWORD,
+            AgdaTokenTypes.INFIXL_KEYWORD,
+            AgdaTokenTypes.INFIXR_KEYWORD,
+    };
+
+    for (IElementType keyword: keywords) {
+        keys1.put(keyword, KEYWORD_VALUE);
+    }
+
+
 
     keys1.put(AgdaTokenTypes.STRING, STRING_LITERAL);
 
