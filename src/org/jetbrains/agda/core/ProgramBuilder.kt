@@ -22,6 +22,7 @@ import java.util.Collections
 import org.jetbrains.agda.psi.Telescope
 import org.jetbrains.agda.psi.ImplicitTelescope
 import org.jetbrains.agda.psi.TypeSignature
+import org.jetbrains.agda.core.expression.CMetaVariable
 
 /**
  * @author Evgeny.Kurbatsky
@@ -133,12 +134,15 @@ fun parseExpressionImpl(program : Program<PsiElement>, expression : PsiElement?)
         {
             return CSet()
         }
-
+        if (aName.getText()?.equals("_")!!) {
+            return CMetaVariable()
+        }
         val declaration : PsiElement? = AgdaGlobalScope.findDeclaration(aName)
         if (declaration != null) {
             return CRefExpression(declaration, aName.getText()!!)
         }
 
+        throw RuntimeException();
     }
 
     if (expression is TeleArrow) {
