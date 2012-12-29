@@ -7,16 +7,13 @@ import com.intellij.psi.PsiElement;
 
 public interface FunctionType extends PsiElement {
 
-  @NotNull
-  List<AName> getANameList();
+  @Nullable
+  AName getAName();
 
-  @NotNull
-  List<Application> getApplicationList();
+  @Nullable
+  Application getApplication();
 
   @NotNull
   List<Expression> getExpressionList();
-
-  @Nullable
-  FunctionType getFunctionType();
 
 }

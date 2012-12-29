@@ -18,27 +18,21 @@ public class FunctionTypeImpl extends ASTWrapperPsiElement implements FunctionTy
   }
 
   @Override
-  @NotNull
-  public List<AName> getANameList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, AName.class);
+  @Nullable
+  public AName getAName() {
+    return findChildByClass(AName.class);
   }
 
   @Override
-  @NotNull
-  public List<Application> getApplicationList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, Application.class);
+  @Nullable
+  public Application getApplication() {
+    return findChildByClass(Application.class);
   }
 
   @Override
   @NotNull
   public List<Expression> getExpressionList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, Expression.class);
-  }
-
-  @Override
-  @Nullable
-  public FunctionType getFunctionType() {
-    return findChildByClass(FunctionType.class);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {

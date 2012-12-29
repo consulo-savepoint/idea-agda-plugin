@@ -7,8 +7,11 @@ import com.intellij.psi.PsiElement;
 
 public interface ForallExpression extends PsiElement {
 
-  @NotNull
+  @Nullable
   Expression getExpression();
+
+  @NotNull
+  List<MaybeNewLine> getMaybeNewLineList();
 
   @NotNull
   List<TypedUntypedBinding> getTypedUntypedBindingList();

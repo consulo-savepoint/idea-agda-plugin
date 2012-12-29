@@ -51,6 +51,9 @@ IDENTIFIER={LETTER} {IDENTIFIER_PART}*
         return result;
       }
 
+<BLOCK_COMMENT>([^-]|"-"[^}]) {return AgdaTokenTypes.COMMENT;}
+<BLOCK_COMMENT>("-}") {  yybegin(YYINITIAL); return AgdaTokenTypes.COMMENT; }
+
 ({WHITE_SPACE_CHAR})+ { return TokenType.WHITE_SPACE; }
 {EOL_COMMENT}         { return AgdaTokenTypes.END_OF_LINE_COMMENT; }
 "{"                   { return AgdaTokenTypes.LEFT_BRACE; }
@@ -73,11 +76,15 @@ IDENTIFIER={LETTER} {IDENTIFIER_PART}*
 "import"              { return AgdaTokenTypes.IMPORT_KEYWORD; }
 "record"              { return AgdaTokenTypes.RECORD_KEYWORD; }
 "postulate"           { return AgdaTokenTypes.POSTULATE_KEYWORD; }
+"infix"               { return AgdaTokenTypes.INFIX_KEYWORD; }
 "infixl"              { return AgdaTokenTypes.INFIXL_KEYWORD; }
 "infixr"              { return AgdaTokenTypes.INFIXR_KEYWORD; }
+"constructor"         { return AgdaTokenTypes.CONSTRUCTOR_KEYWORD; }
+"field"               { return AgdaTokenTypes.FIELD_KEYWORD; }
 "{-#"                 { return AgdaTokenTypes.PRAGMA_OPEN; }
 "#-}"                 { return AgdaTokenTypes.PRAGMA_CLOSE; }
-({DIGIT})+              { return AgdaTokenTypes.NUMBER; }
+"{-"[^#]              { yybegin(BLOCK_COMMENT); return AgdaTokenTypes.COMMENT; }
+({DIGIT})+            { return AgdaTokenTypes.NUMBER; }
 (forall)|(\u2200)     { return AgdaTokenTypes.FORALL; }
 
 

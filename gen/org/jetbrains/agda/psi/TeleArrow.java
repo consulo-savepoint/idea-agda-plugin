@@ -11,6 +11,9 @@ public interface TeleArrow extends PsiElement {
   Expression getExpression();
 
   @NotNull
+  MaybeNewLine getMaybeNewLine();
+
+  @NotNull
   List<Telescope> getTelescopeList();
 
 }

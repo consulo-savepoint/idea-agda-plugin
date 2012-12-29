@@ -31,10 +31,12 @@ public interface AgdaTokenTypes {
   IElementType INFIX = new AgdaCompositeElementType("INFIX");
   IElementType LAMBDA_EXPRESSION = new AgdaCompositeElementType("LAMBDA_EXPRESSION");
   IElementType LET_EXPRESSION = new AgdaCompositeElementType("LET_EXPRESSION");
+  IElementType MAYBE_NEW_LINE = new AgdaCompositeElementType("MAYBE_NEW_LINE");
   IElementType MODULE_DECLARATION = new AgdaCompositeElementType("MODULE_DECLARATION");
   IElementType MODULE_IMPORT = new AgdaCompositeElementType("MODULE_IMPORT");
   IElementType NAME_DECLARATION = new AgdaCompositeElementType("NAME_DECLARATION");
   IElementType NEW_LINE = new AgdaCompositeElementType("NEW_LINE");
+  IElementType OPEN = new AgdaCompositeElementType("OPEN");
   IElementType PARENTHESIS_EXPRESSION = new AgdaCompositeElementType("PARENTHESIS_EXPRESSION");
   IElementType POSTULATE = new AgdaCompositeElementType("POSTULATE");
   IElementType POSTULATE_BINDINGS = new AgdaCompositeElementType("POSTULATE_BINDINGS");
@@ -54,14 +56,17 @@ public interface AgdaTokenTypes {
   IElementType ASSIGNMENT = new AgdaToken("=");
   IElementType COLON = new AgdaToken(":");
   IElementType COMMENT = new AgdaToken("COMMENT");
+  IElementType CONSTRUCTOR_KEYWORD = new AgdaToken("constructor");
   IElementType DATA_KEYWORD = new AgdaToken("data");
   IElementType DOT = new AgdaToken(".");
   IElementType END_OF_LINE_COMMENT = new AgdaToken("--");
+  IElementType FIELD_KEYWORD = new AgdaToken("field");
   IElementType FORALL = new AgdaToken("forall");
   IElementType ID = new AgdaToken("id");
   IElementType IMPORT_KEYWORD = new AgdaToken("import");
   IElementType INFIXL_KEYWORD = new AgdaToken("infixl");
   IElementType INFIXR_KEYWORD = new AgdaToken("infixr");
+  IElementType INFIX_KEYWORD = new AgdaToken("infix");
   IElementType IN_KEYWORD = new AgdaToken("in");
   IElementType LAMBDA = new AgdaToken("\\");
   IElementType LEFT_BRACE = new AgdaToken("{");
@@ -150,6 +155,9 @@ public interface AgdaTokenTypes {
       else if (type == LET_EXPRESSION) {
         return new LetExpressionImpl(node);
       }
+      else if (type == MAYBE_NEW_LINE) {
+        return new MaybeNewLineImpl(node);
+      }
       else if (type == MODULE_DECLARATION) {
         return new ModuleDeclarationImpl(node);
       }
@@ -161,6 +169,9 @@ public interface AgdaTokenTypes {
       }
       else if (type == NEW_LINE) {
         return new NewLineImpl(node);
+      }
+      else if (type == OPEN) {
+        return new OpenImpl(node);
       }
       else if (type == PARENTHESIS_EXPRESSION) {
         return new ParenthesisExpressionImpl(node);

@@ -86,6 +86,9 @@ public class AgdaParser implements PsiParser {
     else if (root_ == LET_EXPRESSION) {
       result_ = let_expression(builder_, level_ + 1);
     }
+    else if (root_ == MAYBE_NEW_LINE) {
+      result_ = maybe_newLine(builder_, level_ + 1);
+    }
     else if (root_ == MODULE_DECLARATION) {
       result_ = module_declaration(builder_, level_ + 1);
     }
@@ -97,6 +100,9 @@ public class AgdaParser implements PsiParser {
     }
     else if (root_ == NEW_LINE) {
       result_ = new_line(builder_, level_ + 1);
+    }
+    else if (root_ == OPEN) {
+      result_ = open(builder_, level_ + 1);
     }
     else if (root_ == PARENTHESIS_EXPRESSION) {
       result_ = parenthesis_expression(builder_, level_ + 1);
@@ -663,7 +669,7 @@ public class AgdaParser implements PsiParser {
   }
 
   /* ********************************************************** */
-  // let_expression | tele_arrow | lambda_expression | maybe_function_type | forall_expression
+  // let_expression | tele_arrow | lambda_expression | function_type | maybe_application | forall_expression
   public static boolean expression(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "expression")) return false;
     boolean result_ = false;
@@ -673,7 +679,8 @@ public class AgdaParser implements PsiParser {
     result_ = let_expression(builder_, level_ + 1);
     if (!result_) result_ = tele_arrow(builder_, level_ + 1);
     if (!result_) result_ = lambda_expression(builder_, level_ + 1);
-    if (!result_) result_ = maybe_function_type(builder_, level_ + 1);
+    if (!result_) result_ = function_type(builder_, level_ + 1);
+    if (!result_) result_ = maybe_application(builder_, level_ + 1);
     if (!result_) result_ = forall_expression(builder_, level_ + 1);
     LighterASTNode last_ = result_? builder_.getLatestDoneMarker() : null;
     if (last_ != null && last_.getStartOffset() == start_ && type_extends_(last_.getTokenType(), EXPRESSION)) {
@@ -690,48 +697,28 @@ public class AgdaParser implements PsiParser {
   }
 
   /* ********************************************************** */
-  // 'forall' typed_untyped_binding+ ARROW expression
+  // 'forall' typed_untyped_bindings ARROW maybe_newLine expression
   public static boolean forall_expression(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "forall_expression")) return false;
     if (!nextTokenIs(builder_, FORALL)) return false;
     boolean result_ = false;
+    boolean pinned_ = false;
     Marker marker_ = builder_.mark();
+    enterErrorRecordingSection(builder_, level_, _SECTION_GENERAL_, null);
     result_ = consumeToken(builder_, FORALL);
-    result_ = result_ && forall_expression_1(builder_, level_ + 1);
-    result_ = result_ && consumeToken(builder_, ARROW);
-    result_ = result_ && expression(builder_, level_ + 1);
-    if (result_) {
+    pinned_ = result_; // pin = 1
+    result_ = result_ && report_error_(builder_, typed_untyped_bindings(builder_, level_ + 1));
+    result_ = pinned_ && report_error_(builder_, consumeToken(builder_, ARROW)) && result_;
+    result_ = pinned_ && report_error_(builder_, maybe_newLine(builder_, level_ + 1)) && result_;
+    result_ = pinned_ && expression(builder_, level_ + 1) && result_;
+    if (result_ || pinned_) {
       marker_.done(FORALL_EXPRESSION);
     }
     else {
       marker_.rollbackTo();
     }
-    return result_;
-  }
-
-  // typed_untyped_binding+
-  private static boolean forall_expression_1(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "forall_expression_1")) return false;
-    boolean result_ = false;
-    Marker marker_ = builder_.mark();
-    result_ = typed_untyped_binding(builder_, level_ + 1);
-    int offset_ = builder_.getCurrentOffset();
-    while (result_) {
-      if (!typed_untyped_binding(builder_, level_ + 1)) break;
-      int next_offset_ = builder_.getCurrentOffset();
-      if (offset_ == next_offset_) {
-        empty_element_parsed_guard_(builder_, offset_, "forall_expression_1");
-        break;
-      }
-      offset_ = next_offset_;
-    }
-    if (!result_) {
-      marker_.rollbackTo();
-    }
-    else {
-      marker_.drop();
-    }
-    return result_;
+    result_ = exitErrorRecordingSection(builder_, level_, result_, pinned_, _SECTION_GENERAL_, null);
+    return result_ || pinned_;
   }
 
   /* ********************************************************** */
@@ -813,7 +800,7 @@ public class AgdaParser implements PsiParser {
   }
 
   /* ********************************************************** */
-  // maybe_application ARROW maybe_function_type
+  // maybe_application ARROW expression
   public static boolean function_type(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "function_type")) return false;
     boolean result_ = false;
@@ -821,7 +808,7 @@ public class AgdaParser implements PsiParser {
     enterErrorRecordingSection(builder_, level_, _SECTION_GENERAL_, "<function type>");
     result_ = maybe_application(builder_, level_ + 1);
     result_ = result_ && consumeToken(builder_, ARROW);
-    result_ = result_ && maybe_function_type(builder_, level_ + 1);
+    result_ = result_ && expression(builder_, level_ + 1);
     if (result_) {
       marker_.done(FUNCTION_TYPE);
     }
@@ -958,11 +945,9 @@ public class AgdaParser implements PsiParser {
   }
 
   /* ********************************************************** */
-  // ("infixl" | "infixr") NUMBER name_declaration
+  // ("infix" | "infixl" | "infixr") NUMBER name_declaration *
   public static boolean infix(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "infix")) return false;
-    if (!nextTokenIs(builder_, INFIXL_KEYWORD) && !nextTokenIs(builder_, INFIXR_KEYWORD)
-        && replaceVariants(builder_, 2, "<infix>")) return false;
     boolean result_ = false;
     boolean pinned_ = false;
     Marker marker_ = builder_.mark();
@@ -970,7 +955,7 @@ public class AgdaParser implements PsiParser {
     result_ = infix_0(builder_, level_ + 1);
     pinned_ = result_; // pin = 1
     result_ = result_ && report_error_(builder_, consumeToken(builder_, NUMBER));
-    result_ = pinned_ && name_declaration(builder_, level_ + 1) && result_;
+    result_ = pinned_ && infix_2(builder_, level_ + 1) && result_;
     if (result_ || pinned_) {
       marker_.done(INFIX);
     }
@@ -981,18 +966,19 @@ public class AgdaParser implements PsiParser {
     return result_ || pinned_;
   }
 
-  // ("infixl" | "infixr")
+  // ("infix" | "infixl" | "infixr")
   private static boolean infix_0(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "infix_0")) return false;
     return infix_0_0(builder_, level_ + 1);
   }
 
-  // "infixl" | "infixr"
+  // "infix" | "infixl" | "infixr"
   private static boolean infix_0_0(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "infix_0_0")) return false;
     boolean result_ = false;
     Marker marker_ = builder_.mark();
-    result_ = consumeToken(builder_, INFIXL_KEYWORD);
+    result_ = consumeToken(builder_, INFIX_KEYWORD);
+    if (!result_) result_ = consumeToken(builder_, INFIXL_KEYWORD);
     if (!result_) result_ = consumeToken(builder_, INFIXR_KEYWORD);
     if (!result_) {
       marker_.rollbackTo();
@@ -1001,6 +987,22 @@ public class AgdaParser implements PsiParser {
       marker_.drop();
     }
     return result_;
+  }
+
+  // name_declaration *
+  private static boolean infix_2(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "infix_2")) return false;
+    int offset_ = builder_.getCurrentOffset();
+    while (true) {
+      if (!name_declaration(builder_, level_ + 1)) break;
+      int next_offset_ = builder_.getCurrentOffset();
+      if (offset_ == next_offset_) {
+        empty_element_parsed_guard_(builder_, offset_, "infix_2");
+        break;
+      }
+      offset_ = next_offset_;
+    }
+    return true;
   }
 
   /* ********************************************************** */
@@ -1109,13 +1111,30 @@ public class AgdaParser implements PsiParser {
   }
 
   /* ********************************************************** */
-  // function_type | maybe_application
-  static boolean maybe_function_type(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "maybe_function_type")) return false;
+  // (VIRTUAL_LEFT_PAREN | VIRTUAL_SEMICOLON)?
+  public static boolean maybe_newLine(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "maybe_newLine")) return false;
+    Marker marker_ = builder_.mark();
+    enterErrorRecordingSection(builder_, level_, _SECTION_GENERAL_, "<maybe new line>");
+    maybe_newLine_0(builder_, level_ + 1);
+    marker_.done(MAYBE_NEW_LINE);
+    exitErrorRecordingSection(builder_, level_, true, false, _SECTION_GENERAL_, null);
+    return true;
+  }
+
+  // (VIRTUAL_LEFT_PAREN | VIRTUAL_SEMICOLON)
+  private static boolean maybe_newLine_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "maybe_newLine_0")) return false;
+    return maybe_newLine_0_0(builder_, level_ + 1);
+  }
+
+  // VIRTUAL_LEFT_PAREN | VIRTUAL_SEMICOLON
+  private static boolean maybe_newLine_0_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "maybe_newLine_0_0")) return false;
     boolean result_ = false;
     Marker marker_ = builder_.mark();
-    result_ = function_type(builder_, level_ + 1);
-    if (!result_) result_ = maybe_application(builder_, level_ + 1);
+    result_ = consumeToken(builder_, VIRTUAL_LEFT_PAREN);
+    if (!result_) result_ = consumeToken(builder_, VIRTUAL_SEMICOLON);
     if (!result_) {
       marker_.rollbackTo();
     }
@@ -1150,7 +1169,7 @@ public class AgdaParser implements PsiParser {
   }
 
   /* ********************************************************** */
-  // 'open' ? 'import' fqName as_name? using_or_hiding? renaming?
+  // 'open' ? 'import' fqName as_name? "public"? using_or_hiding? renaming?
   public static boolean module_import(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "module_import")) return false;
     if (!nextTokenIs(builder_, IMPORT_KEYWORD) && !nextTokenIs(builder_, OPEN_KEYWORD)
@@ -1165,7 +1184,8 @@ public class AgdaParser implements PsiParser {
     result_ = result_ && report_error_(builder_, fqName(builder_, level_ + 1));
     result_ = pinned_ && report_error_(builder_, module_import_3(builder_, level_ + 1)) && result_;
     result_ = pinned_ && report_error_(builder_, module_import_4(builder_, level_ + 1)) && result_;
-    result_ = pinned_ && module_import_5(builder_, level_ + 1) && result_;
+    result_ = pinned_ && report_error_(builder_, module_import_5(builder_, level_ + 1)) && result_;
+    result_ = pinned_ && module_import_6(builder_, level_ + 1) && result_;
     if (result_ || pinned_) {
       marker_.done(MODULE_IMPORT);
     }
@@ -1190,16 +1210,23 @@ public class AgdaParser implements PsiParser {
     return true;
   }
 
-  // using_or_hiding?
+  // "public"?
   private static boolean module_import_4(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "module_import_4")) return false;
+    consumeToken(builder_, "public");
+    return true;
+  }
+
+  // using_or_hiding?
+  private static boolean module_import_5(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "module_import_5")) return false;
     using_or_hiding(builder_, level_ + 1);
     return true;
   }
 
   // renaming?
-  private static boolean module_import_5(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "module_import_5")) return false;
+  private static boolean module_import_6(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "module_import_6")) return false;
     renaming(builder_, level_ + 1);
     return true;
   }
@@ -1249,6 +1276,60 @@ public class AgdaParser implements PsiParser {
   }
 
   private static boolean new_line_3_0(PsiBuilder builder_, int level_) {
+    return true;
+  }
+
+  /* ********************************************************** */
+  // 'open' fqName as_name? "public"? using_or_hiding? renaming?
+  public static boolean open(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "open")) return false;
+    if (!nextTokenIs(builder_, OPEN_KEYWORD)) return false;
+    boolean result_ = false;
+    boolean pinned_ = false;
+    Marker marker_ = builder_.mark();
+    enterErrorRecordingSection(builder_, level_, _SECTION_GENERAL_, null);
+    result_ = consumeToken(builder_, OPEN_KEYWORD);
+    pinned_ = result_; // pin = 1
+    result_ = result_ && report_error_(builder_, fqName(builder_, level_ + 1));
+    result_ = pinned_ && report_error_(builder_, open_2(builder_, level_ + 1)) && result_;
+    result_ = pinned_ && report_error_(builder_, open_3(builder_, level_ + 1)) && result_;
+    result_ = pinned_ && report_error_(builder_, open_4(builder_, level_ + 1)) && result_;
+    result_ = pinned_ && open_5(builder_, level_ + 1) && result_;
+    if (result_ || pinned_) {
+      marker_.done(OPEN);
+    }
+    else {
+      marker_.rollbackTo();
+    }
+    result_ = exitErrorRecordingSection(builder_, level_, result_, pinned_, _SECTION_GENERAL_, null);
+    return result_ || pinned_;
+  }
+
+  // as_name?
+  private static boolean open_2(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "open_2")) return false;
+    as_name(builder_, level_ + 1);
+    return true;
+  }
+
+  // "public"?
+  private static boolean open_3(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "open_3")) return false;
+    consumeToken(builder_, "public");
+    return true;
+  }
+
+  // using_or_hiding?
+  private static boolean open_4(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "open_4")) return false;
+    using_or_hiding(builder_, level_ + 1);
+    return true;
+  }
+
+  // renaming?
+  private static boolean open_5(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "open_5")) return false;
+    renaming(builder_, level_ + 1);
     return true;
   }
 
@@ -1468,11 +1549,12 @@ public class AgdaParser implements PsiParser {
   // "constructor" name_declaration
   public static boolean record_constructor(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "record_constructor")) return false;
+    if (!nextTokenIs(builder_, CONSTRUCTOR_KEYWORD)) return false;
     boolean result_ = false;
     boolean pinned_ = false;
     Marker marker_ = builder_.mark();
-    enterErrorRecordingSection(builder_, level_, _SECTION_GENERAL_, "<record constructor>");
-    result_ = consumeToken(builder_, "constructor");
+    enterErrorRecordingSection(builder_, level_, _SECTION_GENERAL_, null);
+    result_ = consumeToken(builder_, CONSTRUCTOR_KEYWORD);
     pinned_ = result_; // pin = 1
     result_ = result_ && name_declaration(builder_, level_ + 1);
     if (result_ || pinned_) {
@@ -1546,6 +1628,7 @@ public class AgdaParser implements PsiParser {
   // record_constructor | record_field
   static boolean record_element(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "record_element")) return false;
+    if (!nextTokenIs(builder_, CONSTRUCTOR_KEYWORD) && !nextTokenIs(builder_, FIELD_KEYWORD)) return false;
     boolean result_ = false;
     Marker marker_ = builder_.mark();
     result_ = record_constructor(builder_, level_ + 1);
@@ -1563,6 +1646,7 @@ public class AgdaParser implements PsiParser {
   // record_element (VIRTUAL_SEMICOLON record_element) *
   static boolean record_elements(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "record_elements")) return false;
+    if (!nextTokenIs(builder_, CONSTRUCTOR_KEYWORD) && !nextTokenIs(builder_, FIELD_KEYWORD)) return false;
     boolean result_ = false;
     Marker marker_ = builder_.mark();
     result_ = record_element(builder_, level_ + 1);
@@ -1618,11 +1702,12 @@ public class AgdaParser implements PsiParser {
   // "field" type_signature
   public static boolean record_field(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "record_field")) return false;
+    if (!nextTokenIs(builder_, FIELD_KEYWORD)) return false;
     boolean result_ = false;
     boolean pinned_ = false;
     Marker marker_ = builder_.mark();
-    enterErrorRecordingSection(builder_, level_, _SECTION_GENERAL_, "<record field>");
-    result_ = consumeToken(builder_, "field");
+    enterErrorRecordingSection(builder_, level_, _SECTION_GENERAL_, null);
+    result_ = consumeToken(builder_, FIELD_KEYWORD);
     pinned_ = result_; // pin = 1
     result_ = result_ && type_signature(builder_, level_ + 1);
     if (result_ || pinned_) {
@@ -1671,7 +1756,7 @@ public class AgdaParser implements PsiParser {
   }
 
   /* ********************************************************** */
-  // module_declaration | module_import | infix | postulate | pragma | function_type_declaration | function_declaration | absurd_function
+  // module_declaration | module_import | open | infix | postulate | pragma | function_type_declaration | function_declaration | absurd_function
   static boolean recovering_declaration(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "recovering_declaration")) return false;
     boolean result_ = false;
@@ -1679,6 +1764,7 @@ public class AgdaParser implements PsiParser {
     enterErrorRecordingSection(builder_, level_, _SECTION_RECOVER_, null);
     result_ = module_declaration(builder_, level_ + 1);
     if (!result_) result_ = module_import(builder_, level_ + 1);
+    if (!result_) result_ = open(builder_, level_ + 1);
     if (!result_) result_ = infix(builder_, level_ + 1);
     if (!result_) result_ = postulate(builder_, level_ + 1);
     if (!result_) result_ = pragma(builder_, level_ + 1);
@@ -1796,7 +1882,7 @@ public class AgdaParser implements PsiParser {
   }
 
   /* ********************************************************** */
-  // telescope+ ARROW expression
+  // telescope+ ARROW maybe_newLine expression
   public static boolean tele_arrow(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "tele_arrow")) return false;
     if (!nextTokenIs(builder_, LEFT_PAREN) && !nextTokenIs(builder_, LEFT_BRACE)
@@ -1806,6 +1892,7 @@ public class AgdaParser implements PsiParser {
     enterErrorRecordingSection(builder_, level_, _SECTION_GENERAL_, "<tele arrow>");
     result_ = tele_arrow_0(builder_, level_ + 1);
     result_ = result_ && consumeToken(builder_, ARROW);
+    result_ = result_ && maybe_newLine(builder_, level_ + 1);
     result_ = result_ && expression(builder_, level_ + 1);
     if (result_) {
       marker_.done(TELE_ARROW);
@@ -1963,6 +2050,55 @@ public class AgdaParser implements PsiParser {
     result_ = consumeToken(builder_, LEFT_PAREN);
     result_ = result_ && type_signature(builder_, level_ + 1);
     result_ = result_ && consumeToken(builder_, RIGHT_PAREN);
+    if (!result_) {
+      marker_.rollbackTo();
+    }
+    else {
+      marker_.drop();
+    }
+    return result_;
+  }
+
+  /* ********************************************************** */
+  // (typed_untyped_binding maybe_newLine)+
+  static boolean typed_untyped_bindings(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "typed_untyped_bindings")) return false;
+    if (!nextTokenIs(builder_, LEFT_PAREN) && !nextTokenIs(builder_, LEFT_BRACE)) return false;
+    boolean result_ = false;
+    Marker marker_ = builder_.mark();
+    result_ = typed_untyped_bindings_0(builder_, level_ + 1);
+    int offset_ = builder_.getCurrentOffset();
+    while (result_) {
+      if (!typed_untyped_bindings_0(builder_, level_ + 1)) break;
+      int next_offset_ = builder_.getCurrentOffset();
+      if (offset_ == next_offset_) {
+        empty_element_parsed_guard_(builder_, offset_, "typed_untyped_bindings");
+        break;
+      }
+      offset_ = next_offset_;
+    }
+    if (!result_) {
+      marker_.rollbackTo();
+    }
+    else {
+      marker_.drop();
+    }
+    return result_;
+  }
+
+  // (typed_untyped_binding maybe_newLine)
+  private static boolean typed_untyped_bindings_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "typed_untyped_bindings_0")) return false;
+    return typed_untyped_bindings_0_0(builder_, level_ + 1);
+  }
+
+  // typed_untyped_binding maybe_newLine
+  private static boolean typed_untyped_bindings_0_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "typed_untyped_bindings_0_0")) return false;
+    boolean result_ = false;
+    Marker marker_ = builder_.mark();
+    result_ = typed_untyped_binding(builder_, level_ + 1);
+    result_ = result_ && maybe_newLine(builder_, level_ + 1);
     if (!result_) {
       marker_.rollbackTo();
     }

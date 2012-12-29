@@ -41,23 +41,21 @@ public class AgdaExpressionScope(val element : PsiElement) {
             var declaration = (current as FunctionDeclaration?)
             addFunctionParameters(declaration?.getExpressionList()?.get(0), declarations, Grammar.getOperationParts(declarations as Map<String?, PsiElement?>))
         }
-
-        if ((current is TeleArrow?)) {
-            for (telescope : Telescope? in ((current as TeleArrow?))!!.getTelescopeList()) {
-                var typeSignature : TypeSignature? = null
-                if ((telescope is ImplicitTelescope?)) {
-                    typeSignature = ((telescope as ImplicitTelescope?))!!.getTypeSignature()
+        if (element is TeleArrow) {
+            for (telescope in element.getTelescopeList()) {
+                val typeSignature : TypeSignature
+                if (telescope is ImplicitTelescope) {
+                    typeSignature = (telescope as ImplicitTelescope).getTypeSignature()
                 } else {
-                    typeSignature = ((telescope as ExplicitTelescope?))!!.getTypeSignature()
+                    typeSignature = (telescope as ExplicitTelescope).getTypeSignature()
                 }
-                for (element : PsiElement? in typeSignature?.getNameDeclarationList()!!) {
-                    declarations.put(element?.getText()!!, element!!)
+                for (element in typeSignature.getNameDeclarationList()) {
+                    declarations.put(element!!.getText()!!, element)
                 }
             }
         }
 
-            if ((current is LambdaExpression?))
-            {
+        if ((current is LambdaExpression?)) {
                 var expression : LambdaExpression? = (current as LambdaExpression?)
                 for (nameDeclaration : NameDeclaration? in expression?.getNameDeclarationList()!!)
                 {
@@ -103,7 +101,20 @@ public class AgdaExpressionScope(val element : PsiElement) {
             }
 
 
-
+        val parent = element.getParent()
+        if (parent is ForallExpression && parent.getExpression() == element) {
+            for (binding in parent.getTypedUntypedBindingList()) {
+                for (nameDeclaration in binding!!.getNameDeclarationList()) {
+                    declarations.put(nameDeclaration!!.getText()!!, nameDeclaration)
+                }
+                val typeSignature = binding.getTypeSignature()
+                if (typeSignature != null) {
+                    for (nameDeclaration in typeSignature.getNameDeclarationList()) {
+                        declarations.put(nameDeclaration!!.getText()!!, nameDeclaration)
+                    }
+                }
+            }
+        }
         return declarations
     }
     private fun addFunctionParameters(expression : PsiElement?, declarations : MutableMap<String, PsiElement>, operationParts : Set<String?>?) : Unit {

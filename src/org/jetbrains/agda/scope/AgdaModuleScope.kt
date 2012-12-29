@@ -17,6 +17,8 @@ import org.jetbrains.agda.AgdaFileImpl
 import com.intellij.psi.PsiFile
 import com.intellij.util.containers.hash.HashMap
 import org.jetbrains.agda.psi.Postulate
+import org.jetbrains.agda.psi.FqName
+import org.jetbrains.agda.psi.impl.FqNameImpl
 
 /**
  * @author Evgeny.Kurbatsky
@@ -42,7 +44,7 @@ class ModuleScope(val module : PsiElement) {
             {
                 for (nameDeclaration : NameDeclaration? in constructor?.getNameDeclarationList()!!)
                 {
-                    map?.put(nameDeclaration?.getText()!!, nameDeclaration!!)
+                    map.put(nameDeclaration?.getText()!!, nameDeclaration!!)
                 }
             }
         }
@@ -66,7 +68,7 @@ class ModuleScope(val module : PsiElement) {
 
         if ((element is AgdaFileImpl?))
         {
-            for (child : PsiElement? in element?.getChildren()!!)
+            for (child : PsiElement? in element.getChildren())
             {
                 getDeclarations(child!!, map)
             }
@@ -76,8 +78,6 @@ class ModuleScope(val module : PsiElement) {
 
 
 }
-
-
 
 
 
@@ -109,6 +109,14 @@ public fun findDeclaration(element : AgdaReferenceElementImpl) : PsiElement? {
     }
 
     var declarations : Map<String, PsiElement> = AgdaExpressionScope(element).getVisibleDeclarations()
-    var text : String? = (element as AName).getId().getText()
-    return declarations.get(text)
+    if (element is AName) {
+        val text = element.getId().getText()
+        return declarations.get(text)
+    }
+    if (element is FqNameImpl) {
+        val text = element.getText()
+        return declarations.get(text)
+    }
+
+    throw RuntimeException()
 }

@@ -18,9 +18,15 @@ public class ForallExpressionImpl extends ASTWrapperPsiElement implements Forall
   }
 
   @Override
-  @NotNull
+  @Nullable
   public Expression getExpression() {
-    return findNotNullChildByClass(Expression.class);
+    return findChildByClass(Expression.class);
+  }
+
+  @Override
+  @NotNull
+  public List<MaybeNewLine> getMaybeNewLineList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, MaybeNewLine.class);
   }
 
   @Override

@@ -18,9 +18,9 @@ public class InfixImpl extends ASTWrapperPsiElement implements Infix {
   }
 
   @Override
-  @Nullable
-  public NameDeclaration getNameDeclaration() {
-    return findChildByClass(NameDeclaration.class);
+  @NotNull
+  public List<NameDeclaration> getNameDeclarationList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, NameDeclaration.class);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {

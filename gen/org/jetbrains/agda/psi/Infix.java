@@ -7,7 +7,7 @@ import com.intellij.psi.PsiElement;
 
 public interface Infix extends PsiElement {
 
-  @Nullable
-  NameDeclaration getNameDeclaration();
+  @NotNull
+  List<NameDeclaration> getNameDeclarationList();
 
 }
