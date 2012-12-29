@@ -50,7 +50,7 @@ root ::= declaration *
 
 private recover ::= ! (VIRTUAL_RIGHT_PAREN | VIRTUAL_SEMICOLON)
 
-fqName ::= id ('.' id) *
+fqName ::= id ('.' id) * {mixin = "org.jetbrains.agda.psi.AgdaReferenceElementImpl"}
 
 name_declaration ::= id
 
@@ -67,7 +67,13 @@ private record_element ::= record_constructor | record_field
 record_field ::= "field" type_signature {pin=1}
 record_constructor ::= "constructor" name_declaration {pin=1}
 
-pragma ::= PRAGMA_OPEN (id | "(" | ")" | "\\")* PRAGMA_CLOSE {pin=1}
+pragma_string ::= (id | "(" | ")" | "\\" | "->") *
+
+pragma ::= PRAGMA_OPEN (build_in_pragma | compiled_type_pragma | compiled_pragma) PRAGMA_CLOSE {pin=1}
+
+build_in_pragma ::= "BUILTIN" name_declaration name_declaration {pin=1}
+compiled_type_pragma ::= "COMPILED_TYPE" name_declaration pragma_string {pin=1}
+compiled_pragma ::= "COMPILED" name_declaration pragma_string {pin=1}
 
 infix ::= ("infixl" | "infixr") NUMBER name_declaration {pin=1}
 
@@ -120,7 +126,7 @@ absurd_expression ::= "(" ")" {extends=expression}
 
 parenthesis_expression ::= "(" expression ")" {pin=1; extends=expression}
 
-private atom_expr ::= absurd_expression | parenthesis_expression | "{" "!!" "}" | "." | a_name
+private atom_expr ::= absurd_expression | parenthesis_expression | "{" "!!" "}" | a_name
 
 application ::= (atom_expr maybe_application)
 

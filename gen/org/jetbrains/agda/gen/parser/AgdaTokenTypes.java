@@ -15,6 +15,9 @@ public interface AgdaTokenTypes {
   IElementType APPLICATION = new AgdaCompositeElementType("APPLICATION");
   IElementType A_NAME = new AgdaCompositeElementType("A_NAME");
   IElementType BINDING = new AgdaCompositeElementType("BINDING");
+  IElementType BUILD_IN_PRAGMA = new AgdaCompositeElementType("BUILD_IN_PRAGMA");
+  IElementType COMPILED_PRAGMA = new AgdaCompositeElementType("COMPILED_PRAGMA");
+  IElementType COMPILED_TYPE_PRAGMA = new AgdaCompositeElementType("COMPILED_TYPE_PRAGMA");
   IElementType CONSTRUCTORS = new AgdaCompositeElementType("CONSTRUCTORS");
   IElementType DATA_DECLARATION = new AgdaCompositeElementType("DATA_DECLARATION");
   IElementType EXPLICIT_TELESCOPE = new AgdaCompositeElementType("EXPLICIT_TELESCOPE");
@@ -36,6 +39,7 @@ public interface AgdaTokenTypes {
   IElementType POSTULATE = new AgdaCompositeElementType("POSTULATE");
   IElementType POSTULATE_BINDINGS = new AgdaCompositeElementType("POSTULATE_BINDINGS");
   IElementType PRAGMA = new AgdaCompositeElementType("PRAGMA");
+  IElementType PRAGMA_STRING = new AgdaCompositeElementType("PRAGMA_STRING");
   IElementType RECORD_CONSTRUCTOR = new AgdaCompositeElementType("RECORD_CONSTRUCTOR");
   IElementType RECORD_DECLARATION = new AgdaCompositeElementType("RECORD_DECLARATION");
   IElementType RECORD_FIELD = new AgdaCompositeElementType("RECORD_FIELD");
@@ -97,6 +101,15 @@ public interface AgdaTokenTypes {
       }
       else if (type == BINDING) {
         return new BindingImpl(node);
+      }
+      else if (type == BUILD_IN_PRAGMA) {
+        return new BuildInPragmaImpl(node);
+      }
+      else if (type == COMPILED_PRAGMA) {
+        return new CompiledPragmaImpl(node);
+      }
+      else if (type == COMPILED_TYPE_PRAGMA) {
+        return new CompiledTypePragmaImpl(node);
       }
       else if (type == CONSTRUCTORS) {
         return new ConstructorsImpl(node);
@@ -160,6 +173,9 @@ public interface AgdaTokenTypes {
       }
       else if (type == PRAGMA) {
         return new PragmaImpl(node);
+      }
+      else if (type == PRAGMA_STRING) {
+        return new PragmaStringImpl(node);
       }
       else if (type == RECORD_CONSTRUCTOR) {
         return new RecordConstructorImpl(node);

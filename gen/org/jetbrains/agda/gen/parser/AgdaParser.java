@@ -38,6 +38,15 @@ public class AgdaParser implements PsiParser {
     else if (root_ == BINDING) {
       result_ = binding(builder_, level_ + 1);
     }
+    else if (root_ == BUILD_IN_PRAGMA) {
+      result_ = build_in_pragma(builder_, level_ + 1);
+    }
+    else if (root_ == COMPILED_PRAGMA) {
+      result_ = compiled_pragma(builder_, level_ + 1);
+    }
+    else if (root_ == COMPILED_TYPE_PRAGMA) {
+      result_ = compiled_type_pragma(builder_, level_ + 1);
+    }
     else if (root_ == CONSTRUCTORS) {
       result_ = constructors(builder_, level_ + 1);
     }
@@ -100,6 +109,9 @@ public class AgdaParser implements PsiParser {
     }
     else if (root_ == PRAGMA) {
       result_ = pragma(builder_, level_ + 1);
+    }
+    else if (root_ == PRAGMA_STRING) {
+      result_ = pragma_string(builder_, level_ + 1);
     }
     else if (root_ == RECORD_CONSTRUCTOR) {
       result_ = record_constructor(builder_, level_ + 1);
@@ -253,7 +265,7 @@ public class AgdaParser implements PsiParser {
   }
 
   /* ********************************************************** */
-  // absurd_expression | parenthesis_expression | "{" "!!" "}" | "." | a_name
+  // absurd_expression | parenthesis_expression | "{" "!!" "}" | a_name
   static boolean atom_expr(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "atom_expr")) return false;
     boolean result_ = false;
@@ -261,7 +273,6 @@ public class AgdaParser implements PsiParser {
     result_ = absurd_expression(builder_, level_ + 1);
     if (!result_) result_ = parenthesis_expression(builder_, level_ + 1);
     if (!result_) result_ = atom_expr_2(builder_, level_ + 1);
-    if (!result_) result_ = consumeToken(builder_, DOT);
     if (!result_) result_ = a_name(builder_, level_ + 1);
     if (!result_) {
       marker_.rollbackTo();
@@ -431,6 +442,72 @@ public class AgdaParser implements PsiParser {
       offset_ = next_offset_;
     }
     return true;
+  }
+
+  /* ********************************************************** */
+  // "BUILTIN" name_declaration name_declaration
+  public static boolean build_in_pragma(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "build_in_pragma")) return false;
+    boolean result_ = false;
+    boolean pinned_ = false;
+    Marker marker_ = builder_.mark();
+    enterErrorRecordingSection(builder_, level_, _SECTION_GENERAL_, "<build in pragma>");
+    result_ = consumeToken(builder_, "BUILTIN");
+    pinned_ = result_; // pin = 1
+    result_ = result_ && report_error_(builder_, name_declaration(builder_, level_ + 1));
+    result_ = pinned_ && name_declaration(builder_, level_ + 1) && result_;
+    if (result_ || pinned_) {
+      marker_.done(BUILD_IN_PRAGMA);
+    }
+    else {
+      marker_.rollbackTo();
+    }
+    result_ = exitErrorRecordingSection(builder_, level_, result_, pinned_, _SECTION_GENERAL_, null);
+    return result_ || pinned_;
+  }
+
+  /* ********************************************************** */
+  // "COMPILED" name_declaration pragma_string
+  public static boolean compiled_pragma(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "compiled_pragma")) return false;
+    boolean result_ = false;
+    boolean pinned_ = false;
+    Marker marker_ = builder_.mark();
+    enterErrorRecordingSection(builder_, level_, _SECTION_GENERAL_, "<compiled pragma>");
+    result_ = consumeToken(builder_, "COMPILED");
+    pinned_ = result_; // pin = 1
+    result_ = result_ && report_error_(builder_, name_declaration(builder_, level_ + 1));
+    result_ = pinned_ && pragma_string(builder_, level_ + 1) && result_;
+    if (result_ || pinned_) {
+      marker_.done(COMPILED_PRAGMA);
+    }
+    else {
+      marker_.rollbackTo();
+    }
+    result_ = exitErrorRecordingSection(builder_, level_, result_, pinned_, _SECTION_GENERAL_, null);
+    return result_ || pinned_;
+  }
+
+  /* ********************************************************** */
+  // "COMPILED_TYPE" name_declaration pragma_string
+  public static boolean compiled_type_pragma(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "compiled_type_pragma")) return false;
+    boolean result_ = false;
+    boolean pinned_ = false;
+    Marker marker_ = builder_.mark();
+    enterErrorRecordingSection(builder_, level_, _SECTION_GENERAL_, "<compiled type pragma>");
+    result_ = consumeToken(builder_, "COMPILED_TYPE");
+    pinned_ = result_; // pin = 1
+    result_ = result_ && report_error_(builder_, name_declaration(builder_, level_ + 1));
+    result_ = pinned_ && pragma_string(builder_, level_ + 1) && result_;
+    if (result_ || pinned_) {
+      marker_.done(COMPILED_TYPE_PRAGMA);
+    }
+    else {
+      marker_.rollbackTo();
+    }
+    result_ = exitErrorRecordingSection(builder_, level_, result_, pinned_, _SECTION_GENERAL_, null);
+    return result_ || pinned_;
   }
 
   /* ********************************************************** */
@@ -1296,7 +1373,7 @@ public class AgdaParser implements PsiParser {
   }
 
   /* ********************************************************** */
-  // PRAGMA_OPEN (id | "(" | ")" | "\\")* PRAGMA_CLOSE
+  // PRAGMA_OPEN (build_in_pragma | compiled_type_pragma | compiled_pragma) PRAGMA_CLOSE
   public static boolean pragma(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "pragma")) return false;
     if (!nextTokenIs(builder_, PRAGMA_OPEN)) return false;
@@ -1318,37 +1395,66 @@ public class AgdaParser implements PsiParser {
     return result_ || pinned_;
   }
 
-  // (id | "(" | ")" | "\\")*
+  // (build_in_pragma | compiled_type_pragma | compiled_pragma)
   private static boolean pragma_1(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "pragma_1")) return false;
+    return pragma_1_0(builder_, level_ + 1);
+  }
+
+  // build_in_pragma | compiled_type_pragma | compiled_pragma
+  private static boolean pragma_1_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "pragma_1_0")) return false;
+    boolean result_ = false;
+    Marker marker_ = builder_.mark();
+    result_ = build_in_pragma(builder_, level_ + 1);
+    if (!result_) result_ = compiled_type_pragma(builder_, level_ + 1);
+    if (!result_) result_ = compiled_pragma(builder_, level_ + 1);
+    if (!result_) {
+      marker_.rollbackTo();
+    }
+    else {
+      marker_.drop();
+    }
+    return result_;
+  }
+
+  /* ********************************************************** */
+  // (id | "(" | ")" | "\\" | "->") *
+  public static boolean pragma_string(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "pragma_string")) return false;
+    Marker marker_ = builder_.mark();
+    enterErrorRecordingSection(builder_, level_, _SECTION_GENERAL_, "<pragma string>");
     int offset_ = builder_.getCurrentOffset();
     while (true) {
-      if (!pragma_1_0(builder_, level_ + 1)) break;
+      if (!pragma_string_0(builder_, level_ + 1)) break;
       int next_offset_ = builder_.getCurrentOffset();
       if (offset_ == next_offset_) {
-        empty_element_parsed_guard_(builder_, offset_, "pragma_1");
+        empty_element_parsed_guard_(builder_, offset_, "pragma_string");
         break;
       }
       offset_ = next_offset_;
     }
+    marker_.done(PRAGMA_STRING);
+    exitErrorRecordingSection(builder_, level_, true, false, _SECTION_GENERAL_, null);
     return true;
   }
 
-  // (id | "(" | ")" | "\\")
-  private static boolean pragma_1_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "pragma_1_0")) return false;
-    return pragma_1_0_0(builder_, level_ + 1);
+  // (id | "(" | ")" | "\\" | "->")
+  private static boolean pragma_string_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "pragma_string_0")) return false;
+    return pragma_string_0_0(builder_, level_ + 1);
   }
 
-  // id | "(" | ")" | "\\"
-  private static boolean pragma_1_0_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "pragma_1_0_0")) return false;
+  // id | "(" | ")" | "\\" | "->"
+  private static boolean pragma_string_0_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "pragma_string_0_0")) return false;
     boolean result_ = false;
     Marker marker_ = builder_.mark();
     result_ = consumeToken(builder_, ID);
     if (!result_) result_ = consumeToken(builder_, LEFT_PAREN);
     if (!result_) result_ = consumeToken(builder_, RIGHT_PAREN);
     if (!result_) result_ = consumeToken(builder_, LAMBDA);
+    if (!result_) result_ = consumeToken(builder_, ARROW);
     if (!result_) {
       marker_.rollbackTo();
     }

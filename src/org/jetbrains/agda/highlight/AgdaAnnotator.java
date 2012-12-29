@@ -9,7 +9,6 @@ import org.jetbrains.agda.psi.DataDeclaration;
 import org.jetbrains.agda.psi.NameDeclaration;
 import org.jetbrains.agda.psi.TypeSignature;
 import org.jetbrains.agda.psi.impl.ANameImpl;
-import org.jetbrains.agda.scope.AgdaGlobalScope;
 import org.jetbrains.annotations.NotNull;
 
 public class AgdaAnnotator implements Annotator {
@@ -36,7 +35,7 @@ public class AgdaAnnotator implements Annotator {
                 holder.createInfoAnnotation(element, null).setTextAttributes(AgdaHighlighter.TYPE);
                 return;
             }
-            PsiElement declaration = AgdaGlobalScope.findDeclaration((ANameImpl) element);
+            PsiElement declaration = org.jetbrains.agda.scope.namespace.findDeclaration((ANameImpl) element);
             if (declaration != null) {
                 if (declaration instanceof DataDeclaration) {
                     holder.createInfoAnnotation(element, null).setTextAttributes(AgdaHighlighter.TYPE);

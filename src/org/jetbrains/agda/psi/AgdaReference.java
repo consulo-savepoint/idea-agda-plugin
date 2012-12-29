@@ -27,7 +27,12 @@ public class AgdaReference implements PsiReference {
 
     @Override
     public PsiElement resolve() {
-        return AgdaGlobalScope.findDeclaration(getElement());
+        if (getElement() instanceof FqName) {
+            if (getElement().getParent() instanceof ModuleImport) {
+                return new AgdaGlobalScope().find((FqName) getElement());
+            }
+        }
+        return org.jetbrains.agda.scope.namespace.findDeclaration(getElement());
     }
 
     @NotNull

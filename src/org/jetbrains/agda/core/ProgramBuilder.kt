@@ -12,7 +12,6 @@ import org.jetbrains.agda.psi.Expression
 import org.jetbrains.agda.mixfix.TreeElement
 import org.jetbrains.agda.psi.NameDeclaration
 import org.jetbrains.agda.psi.impl.ANameImpl
-import org.jetbrains.agda.scope.AgdaGlobalScope
 import org.jetbrains.agda.psi.TeleArrow
 import org.jetbrains.agda.psi.ExplicitTelescope
 import org.jetbrains.agda.psi.FunctionType
@@ -23,6 +22,7 @@ import org.jetbrains.agda.psi.Telescope
 import org.jetbrains.agda.psi.ImplicitTelescope
 import org.jetbrains.agda.psi.TypeSignature
 import org.jetbrains.agda.core.expression.CMetaVariable
+import org.jetbrains.agda.scope.findDeclaration
 
 /**
  * @author Evgeny.Kurbatsky
@@ -137,7 +137,7 @@ fun parseExpressionImpl(program : Program<PsiElement>, expression : PsiElement?)
         if (aName.getText()?.equals("_")!!) {
             return CMetaVariable()
         }
-        val declaration : PsiElement? = AgdaGlobalScope.findDeclaration(aName)
+        val declaration : PsiElement? = findDeclaration(aName)
         if (declaration != null) {
             return CRefExpression(declaration, aName.getText()!!)
         }

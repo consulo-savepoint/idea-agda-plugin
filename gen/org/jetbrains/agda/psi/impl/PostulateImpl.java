@@ -8,23 +8,23 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static org.jetbrains.agda.gen.parser.AgdaTokenTypes.*;
-import org.jetbrains.agda.psi.AgdaReferenceElementImpl;
+import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import org.jetbrains.agda.psi.*;
 
-public class FqNameImpl extends AgdaReferenceElementImpl implements FqName {
+public class PostulateImpl extends ASTWrapperPsiElement implements Postulate {
 
-  public FqNameImpl(ASTNode node) {
+  public PostulateImpl(ASTNode node) {
     super(node);
   }
 
   @Override
   @NotNull
-  public PsiElement getId() {
-    return findNotNullChildByType(ID);
+  public PostulateBindings getPostulateBindings() {
+    return findNotNullChildByClass(PostulateBindings.class);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof Visitor) ((Visitor)visitor).visitFqName(this);
+    if (visitor instanceof Visitor) ((Visitor)visitor).visitPostulate(this);
     else super.accept(visitor);
   }
 

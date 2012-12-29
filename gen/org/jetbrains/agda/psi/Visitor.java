@@ -27,6 +27,18 @@ public class Visitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitBuildInPragma(@NotNull BuildInPragma o) {
+    visitPsiElement(o);
+  }
+
+  public void visitCompiledPragma(@NotNull CompiledPragma o) {
+    visitPsiElement(o);
+  }
+
+  public void visitCompiledTypePragma(@NotNull CompiledTypePragma o) {
+    visitPsiElement(o);
+  }
+
   public void visitConstructors(@NotNull Constructors o) {
     visitPsiElement(o);
   }
@@ -108,6 +120,10 @@ public class Visitor extends PsiElementVisitor {
   }
 
   public void visitPragma(@NotNull Pragma o) {
+    visitPsiElement(o);
+  }
+
+  public void visitPragmaString(@NotNull PragmaString o) {
     visitPsiElement(o);
   }
 
