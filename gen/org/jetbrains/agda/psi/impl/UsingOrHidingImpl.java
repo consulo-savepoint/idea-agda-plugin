@@ -19,8 +19,14 @@ public class UsingOrHidingImpl extends ASTWrapperPsiElement implements UsingOrHi
 
   @Override
   @NotNull
-  public List<FqName> getFqNameList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, FqName.class);
+  public List<ImportName> getImportNameList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, ImportName.class);
+  }
+
+  @Override
+  @NotNull
+  public List<MaybeNewLine> getMaybeNewLineList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, MaybeNewLine.class);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {

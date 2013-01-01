@@ -11,26 +11,26 @@ import static org.jetbrains.agda.gen.parser.AgdaTokenTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import org.jetbrains.agda.psi.*;
 
-public class RecordConstructorImpl extends ASTWrapperPsiElement implements RecordConstructor {
+public class TypeSignaturesImpl extends ASTWrapperPsiElement implements TypeSignatures {
 
-  public RecordConstructorImpl(ASTNode node) {
+  public TypeSignaturesImpl(ASTNode node) {
     super(node);
   }
 
   @Override
-  @Nullable
-  public MaybeNewLine getMaybeNewLine() {
-    return findChildByClass(MaybeNewLine.class);
+  @NotNull
+  public TypeSignature getTypeSignature() {
+    return findNotNullChildByClass(TypeSignature.class);
   }
 
   @Override
   @Nullable
-  public NameDeclaration getNameDeclaration() {
-    return findChildByClass(NameDeclaration.class);
+  public TypeSignatures getTypeSignatures() {
+    return findChildByClass(TypeSignatures.class);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof Visitor) ((Visitor)visitor).visitRecordConstructor(this);
+    if (visitor instanceof Visitor) ((Visitor)visitor).visitTypeSignatures(this);
     else super.accept(visitor);
   }
 

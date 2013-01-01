@@ -11,26 +11,38 @@ import static org.jetbrains.agda.gen.parser.AgdaTokenTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import org.jetbrains.agda.psi.*;
 
-public class RecordConstructorImpl extends ASTWrapperPsiElement implements RecordConstructor {
+public class OpenImpl extends ASTWrapperPsiElement implements Open {
 
-  public RecordConstructorImpl(ASTNode node) {
+  public OpenImpl(ASTNode node) {
     super(node);
   }
 
   @Override
   @Nullable
-  public MaybeNewLine getMaybeNewLine() {
-    return findChildByClass(MaybeNewLine.class);
+  public Expression getExpression() {
+    return findChildByClass(Expression.class);
   }
 
   @Override
   @Nullable
-  public NameDeclaration getNameDeclaration() {
-    return findChildByClass(NameDeclaration.class);
+  public Renaming getRenaming() {
+    return findChildByClass(Renaming.class);
+  }
+
+  @Override
+  @Nullable
+  public UsingOrHiding getUsingOrHiding() {
+    return findChildByClass(UsingOrHiding.class);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getId() {
+    return findChildByType(ID);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof Visitor) ((Visitor)visitor).visitRecordConstructor(this);
+    if (visitor instanceof Visitor) ((Visitor)visitor).visitOpen(this);
     else super.accept(visitor);
   }
 

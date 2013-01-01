@@ -19,14 +19,92 @@ public class ModuleDeclarationImpl extends ASTWrapperPsiElement implements Modul
 
   @Override
   @NotNull
+  public List<AbsurdFunction> getAbsurdFunctionList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, AbsurdFunction.class);
+  }
+
+  @Override
+  @NotNull
   public List<Binding> getBindingList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, Binding.class);
+  }
+
+  @Override
+  @NotNull
+  public List<DataDeclaration> getDataDeclarationList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, DataDeclaration.class);
   }
 
   @Override
   @Nullable
   public FqName getFqName() {
     return findChildByClass(FqName.class);
+  }
+
+  @Override
+  @NotNull
+  public List<FunctionDeclaration> getFunctionDeclarationList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, FunctionDeclaration.class);
+  }
+
+  @Override
+  @NotNull
+  public List<FunctionTypeDeclaration> getFunctionTypeDeclarationList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, FunctionTypeDeclaration.class);
+  }
+
+  @Override
+  @NotNull
+  public List<Infix> getInfixList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, Infix.class);
+  }
+
+  @Override
+  @NotNull
+  public List<ModuleDeclaration> getModuleDeclarationList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, ModuleDeclaration.class);
+  }
+
+  @Override
+  @NotNull
+  public List<ModuleImport> getModuleImportList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, ModuleImport.class);
+  }
+
+  @Override
+  @NotNull
+  public List<Open> getOpenList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, Open.class);
+  }
+
+  @Override
+  @NotNull
+  public List<Postulate> getPostulateList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, Postulate.class);
+  }
+
+  @Override
+  @NotNull
+  public List<Pragma> getPragmaList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, Pragma.class);
+  }
+
+  @Override
+  @NotNull
+  public List<RecordConstructor> getRecordConstructorList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, RecordConstructor.class);
+  }
+
+  @Override
+  @NotNull
+  public List<RecordDeclaration> getRecordDeclarationList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, RecordDeclaration.class);
+  }
+
+  @Override
+  @NotNull
+  public List<RecordField> getRecordFieldList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, RecordField.class);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {

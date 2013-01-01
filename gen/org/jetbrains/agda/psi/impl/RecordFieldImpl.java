@@ -23,6 +23,12 @@ public class RecordFieldImpl extends ASTWrapperPsiElement implements RecordField
     return findChildByClass(TypeSignature.class);
   }
 
+  @Override
+  @Nullable
+  public TypeSignatures getTypeSignatures() {
+    return findChildByClass(TypeSignatures.class);
+  }
+
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof Visitor) ((Visitor)visitor).visitRecordField(this);
     else super.accept(visitor);

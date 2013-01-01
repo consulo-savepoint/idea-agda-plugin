@@ -76,7 +76,7 @@ public class AgdaExpressionScope(val element : PsiElement) {
             }
             if (element is RecordDeclaration) {
                 var recordDeclaration : RecordDeclaration = element
-                for (binding in recordDeclaration.getBindingList()) {
+                for (binding in recordDeclaration.getTypedUntypedBindingList()) {
                     for (declaration in binding!!.getNameDeclarationList()) {
                         declarations.put(declaration?.getText()!!, declaration!!)
                     }
@@ -102,18 +102,27 @@ public class AgdaExpressionScope(val element : PsiElement) {
 
 
         val parent = element.getParent()
-        if (parent is ForallExpression && parent.getExpression() == element) {
-            for (binding in parent.getTypedUntypedBindingList()) {
-                for (nameDeclaration in binding!!.getNameDeclarationList()) {
-                    declarations.put(nameDeclaration!!.getText()!!, nameDeclaration)
-                }
+        if (parent is ForallExpression) {
+
+            val bindingsList = parent.getTypedUntypedBindingList()
+
+            for (binding in bindingsList) {
+              if (parent.getExpression() != element && bindingsList.indexOf(element) <= bindingsList.indexOf(binding)) {
+                  continue;
+              }
+              for (nameDeclaration in binding!!.getNameDeclarationList()) {
+                declarations.put(nameDeclaration!!.getText()!!, nameDeclaration)
+
                 val typeSignature = binding.getTypeSignature()
                 if (typeSignature != null) {
                     for (nameDeclaration in typeSignature.getNameDeclarationList()) {
                         declarations.put(nameDeclaration!!.getText()!!, nameDeclaration)
                     }
                 }
+              }
             }
+
+
         }
         return declarations
     }

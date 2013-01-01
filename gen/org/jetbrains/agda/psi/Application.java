@@ -7,13 +7,19 @@ import com.intellij.psi.PsiElement;
 
 public interface Application extends PsiElement {
 
-  @NotNull
-  List<AName> getANameList();
-
   @Nullable
   Application getApplication();
 
   @NotNull
   List<Expression> getExpressionList();
+
+  @NotNull
+  List<FqName> getFqNameList();
+
+  @NotNull
+  List<NumberExpression> getNumberExpressionList();
+
+  @NotNull
+  List<SubstituteImplisit> getSubstituteImplisitList();
 
 }

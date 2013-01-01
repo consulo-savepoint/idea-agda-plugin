@@ -79,6 +79,10 @@ public class Visitor extends PsiElementVisitor {
     visitTelescope(o);
   }
 
+  public void visitImportName(@NotNull ImportName o) {
+    visitPsiElement(o);
+  }
+
   public void visitInfix(@NotNull Infix o) {
     visitPsiElement(o);
   }
@@ -108,6 +112,10 @@ public class Visitor extends PsiElementVisitor {
   }
 
   public void visitNewLine(@NotNull NewLine o) {
+    visitPsiElement(o);
+  }
+
+  public void visitNumberExpression(@NotNull NumberExpression o) {
     visitPsiElement(o);
   }
 
@@ -151,6 +159,10 @@ public class Visitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitSubstituteImplisit(@NotNull SubstituteImplisit o) {
+    visitPsiElement(o);
+  }
+
   public void visitTeleArrow(@NotNull TeleArrow o) {
     visitPsiElement(o);
   }
@@ -160,6 +172,10 @@ public class Visitor extends PsiElementVisitor {
   }
 
   public void visitTypeSignature(@NotNull TypeSignature o) {
+    visitPsiElement(o);
+  }
+
+  public void visitTypeSignatures(@NotNull TypeSignatures o) {
     visitPsiElement(o);
   }
 

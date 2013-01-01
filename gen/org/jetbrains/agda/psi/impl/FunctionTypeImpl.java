@@ -19,12 +19,6 @@ public class FunctionTypeImpl extends ASTWrapperPsiElement implements FunctionTy
 
   @Override
   @Nullable
-  public AName getAName() {
-    return findChildByClass(AName.class);
-  }
-
-  @Override
-  @Nullable
   public Application getApplication() {
     return findChildByClass(Application.class);
   }
@@ -33,6 +27,30 @@ public class FunctionTypeImpl extends ASTWrapperPsiElement implements FunctionTy
   @NotNull
   public List<Expression> getExpressionList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, Expression.class);
+  }
+
+  @Override
+  @Nullable
+  public FqName getFqName() {
+    return findChildByClass(FqName.class);
+  }
+
+  @Override
+  @NotNull
+  public MaybeNewLine getMaybeNewLine() {
+    return findNotNullChildByClass(MaybeNewLine.class);
+  }
+
+  @Override
+  @Nullable
+  public NumberExpression getNumberExpression() {
+    return findChildByClass(NumberExpression.class);
+  }
+
+  @Override
+  @Nullable
+  public SubstituteImplisit getSubstituteImplisit() {
+    return findChildByClass(SubstituteImplisit.class);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {

@@ -8,19 +8,25 @@ import com.intellij.psi.PsiElement;
 public interface Expression extends PsiElement {
 
   @Nullable
-  AName getAName();
-
-  @Nullable
   Application getApplication();
 
   @Nullable
   ForallExpression getForallExpression();
 
   @Nullable
+  FqName getFqName();
+
+  @Nullable
   FunctionType getFunctionType();
 
   @Nullable
   LetExpression getLetExpression();
+
+  @Nullable
+  NumberExpression getNumberExpression();
+
+  @Nullable
+  SubstituteImplisit getSubstituteImplisit();
 
   @Nullable
   TeleArrow getTeleArrow();

@@ -8,9 +8,48 @@ import com.intellij.psi.PsiElement;
 public interface ModuleDeclaration extends PsiElement {
 
   @NotNull
+  List<AbsurdFunction> getAbsurdFunctionList();
+
+  @NotNull
   List<Binding> getBindingList();
+
+  @NotNull
+  List<DataDeclaration> getDataDeclarationList();
 
   @Nullable
   FqName getFqName();
+
+  @NotNull
+  List<FunctionDeclaration> getFunctionDeclarationList();
+
+  @NotNull
+  List<FunctionTypeDeclaration> getFunctionTypeDeclarationList();
+
+  @NotNull
+  List<Infix> getInfixList();
+
+  @NotNull
+  List<ModuleDeclaration> getModuleDeclarationList();
+
+  @NotNull
+  List<ModuleImport> getModuleImportList();
+
+  @NotNull
+  List<Open> getOpenList();
+
+  @NotNull
+  List<Postulate> getPostulateList();
+
+  @NotNull
+  List<Pragma> getPragmaList();
+
+  @NotNull
+  List<RecordConstructor> getRecordConstructorList();
+
+  @NotNull
+  List<RecordDeclaration> getRecordDeclarationList();
+
+  @NotNull
+  List<RecordField> getRecordFieldList();
 
 }

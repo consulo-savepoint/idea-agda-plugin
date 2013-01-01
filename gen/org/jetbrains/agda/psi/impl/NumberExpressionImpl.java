@@ -11,26 +11,20 @@ import static org.jetbrains.agda.gen.parser.AgdaTokenTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import org.jetbrains.agda.psi.*;
 
-public class RecordConstructorImpl extends ASTWrapperPsiElement implements RecordConstructor {
+public class NumberExpressionImpl extends ASTWrapperPsiElement implements NumberExpression {
 
-  public RecordConstructorImpl(ASTNode node) {
+  public NumberExpressionImpl(ASTNode node) {
     super(node);
   }
 
   @Override
-  @Nullable
-  public MaybeNewLine getMaybeNewLine() {
-    return findChildByClass(MaybeNewLine.class);
-  }
-
-  @Override
-  @Nullable
-  public NameDeclaration getNameDeclaration() {
-    return findChildByClass(NameDeclaration.class);
+  @NotNull
+  public PsiElement getNumber() {
+    return findNotNullChildByType(NUMBER);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof Visitor) ((Visitor)visitor).visitRecordConstructor(this);
+    if (visitor instanceof Visitor) ((Visitor)visitor).visitNumberExpression(this);
     else super.accept(visitor);
   }
 

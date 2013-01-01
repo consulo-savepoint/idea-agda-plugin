@@ -18,12 +18,6 @@ public class ApplicationImpl extends ASTWrapperPsiElement implements Application
   }
 
   @Override
-  @NotNull
-  public List<AName> getANameList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, AName.class);
-  }
-
-  @Override
   @Nullable
   public Application getApplication() {
     return findChildByClass(Application.class);
@@ -33,6 +27,24 @@ public class ApplicationImpl extends ASTWrapperPsiElement implements Application
   @NotNull
   public List<Expression> getExpressionList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, Expression.class);
+  }
+
+  @Override
+  @NotNull
+  public List<FqName> getFqNameList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, FqName.class);
+  }
+
+  @Override
+  @NotNull
+  public List<NumberExpression> getNumberExpressionList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, NumberExpression.class);
+  }
+
+  @Override
+  @NotNull
+  public List<SubstituteImplisit> getSubstituteImplisitList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, SubstituteImplisit.class);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {

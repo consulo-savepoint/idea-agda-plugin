@@ -37,8 +37,13 @@ IDENTIFIER={LETTER} {IDENTIFIER_PART}*
 
 
 {INDENT} { yybegin(YYINITIAL);
-        int indentSize = yytext().length() - 2;
+        CharSequence yytext = yytext();
+        int indentSize = yytext.length() - 2;
         yypushback(1);
+        if (yytext.charAt(yytext.length() - 1) == '\n') {
+            return TokenType.WHITE_SPACE;
+        }
+
         IElementType result;
         if (indentSize > prevIndentSize) {
           result = AgdaTokenTypes.VIRTUAL_LEFT_PAREN;

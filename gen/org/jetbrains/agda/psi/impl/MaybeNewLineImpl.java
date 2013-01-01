@@ -11,26 +11,14 @@ import static org.jetbrains.agda.gen.parser.AgdaTokenTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import org.jetbrains.agda.psi.*;
 
-public class RecordConstructorImpl extends ASTWrapperPsiElement implements RecordConstructor {
+public class MaybeNewLineImpl extends ASTWrapperPsiElement implements MaybeNewLine {
 
-  public RecordConstructorImpl(ASTNode node) {
+  public MaybeNewLineImpl(ASTNode node) {
     super(node);
   }
 
-  @Override
-  @Nullable
-  public MaybeNewLine getMaybeNewLine() {
-    return findChildByClass(MaybeNewLine.class);
-  }
-
-  @Override
-  @Nullable
-  public NameDeclaration getNameDeclaration() {
-    return findChildByClass(NameDeclaration.class);
-  }
-
   public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof Visitor) ((Visitor)visitor).visitRecordConstructor(this);
+    if (visitor instanceof Visitor) ((Visitor)visitor).visitMaybeNewLine(this);
     else super.accept(visitor);
   }
 

@@ -28,6 +28,7 @@ public interface AgdaTokenTypes {
   IElementType FUNCTION_TYPE = new AgdaCompositeElementType("FUNCTION_TYPE");
   IElementType FUNCTION_TYPE_DECLARATION = new AgdaCompositeElementType("FUNCTION_TYPE_DECLARATION");
   IElementType IMPLICIT_TELESCOPE = new AgdaCompositeElementType("IMPLICIT_TELESCOPE");
+  IElementType IMPORT_NAME = new AgdaCompositeElementType("IMPORT_NAME");
   IElementType INFIX = new AgdaCompositeElementType("INFIX");
   IElementType LAMBDA_EXPRESSION = new AgdaCompositeElementType("LAMBDA_EXPRESSION");
   IElementType LET_EXPRESSION = new AgdaCompositeElementType("LET_EXPRESSION");
@@ -36,6 +37,7 @@ public interface AgdaTokenTypes {
   IElementType MODULE_IMPORT = new AgdaCompositeElementType("MODULE_IMPORT");
   IElementType NAME_DECLARATION = new AgdaCompositeElementType("NAME_DECLARATION");
   IElementType NEW_LINE = new AgdaCompositeElementType("NEW_LINE");
+  IElementType NUMBER_EXPRESSION = new AgdaCompositeElementType("NUMBER_EXPRESSION");
   IElementType OPEN = new AgdaCompositeElementType("OPEN");
   IElementType PARENTHESIS_EXPRESSION = new AgdaCompositeElementType("PARENTHESIS_EXPRESSION");
   IElementType POSTULATE = new AgdaCompositeElementType("POSTULATE");
@@ -46,10 +48,12 @@ public interface AgdaTokenTypes {
   IElementType RECORD_DECLARATION = new AgdaCompositeElementType("RECORD_DECLARATION");
   IElementType RECORD_FIELD = new AgdaCompositeElementType("RECORD_FIELD");
   IElementType RENAMING = new AgdaCompositeElementType("RENAMING");
+  IElementType SUBSTITUTE_IMPLISIT = new AgdaCompositeElementType("SUBSTITUTE_IMPLISIT");
   IElementType TELESCOPE = new AgdaCompositeElementType("TELESCOPE");
   IElementType TELE_ARROW = new AgdaCompositeElementType("TELE_ARROW");
   IElementType TYPED_UNTYPED_BINDING = new AgdaCompositeElementType("TYPED_UNTYPED_BINDING");
   IElementType TYPE_SIGNATURE = new AgdaCompositeElementType("TYPE_SIGNATURE");
+  IElementType TYPE_SIGNATURES = new AgdaCompositeElementType("TYPE_SIGNATURES");
   IElementType USING_OR_HIDING = new AgdaCompositeElementType("USING_OR_HIDING");
 
   IElementType ARROW = new AgdaToken("->");
@@ -146,6 +150,9 @@ public interface AgdaTokenTypes {
       else if (type == IMPLICIT_TELESCOPE) {
         return new ImplicitTelescopeImpl(node);
       }
+      else if (type == IMPORT_NAME) {
+        return new ImportNameImpl(node);
+      }
       else if (type == INFIX) {
         return new InfixImpl(node);
       }
@@ -169,6 +176,9 @@ public interface AgdaTokenTypes {
       }
       else if (type == NEW_LINE) {
         return new NewLineImpl(node);
+      }
+      else if (type == NUMBER_EXPRESSION) {
+        return new NumberExpressionImpl(node);
       }
       else if (type == OPEN) {
         return new OpenImpl(node);
@@ -200,6 +210,9 @@ public interface AgdaTokenTypes {
       else if (type == RENAMING) {
         return new RenamingImpl(node);
       }
+      else if (type == SUBSTITUTE_IMPLISIT) {
+        return new SubstituteImplisitImpl(node);
+      }
       else if (type == TELESCOPE) {
         return new TelescopeImpl(node);
       }
@@ -211,6 +224,9 @@ public interface AgdaTokenTypes {
       }
       else if (type == TYPE_SIGNATURE) {
         return new TypeSignatureImpl(node);
+      }
+      else if (type == TYPE_SIGNATURES) {
+        return new TypeSignaturesImpl(node);
       }
       else if (type == USING_OR_HIDING) {
         return new UsingOrHidingImpl(node);

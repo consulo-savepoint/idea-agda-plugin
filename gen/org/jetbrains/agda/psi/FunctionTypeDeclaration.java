@@ -10,6 +10,9 @@ public interface FunctionTypeDeclaration extends PsiElement {
   @Nullable
   Expression getExpression();
 
+  @Nullable
+  MaybeNewLine getMaybeNewLine();
+
   @NotNull
   NameDeclaration getNameDeclaration();
 

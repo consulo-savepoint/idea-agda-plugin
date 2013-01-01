@@ -8,12 +8,21 @@ import com.intellij.psi.PsiElement;
 public interface FunctionType extends PsiElement {
 
   @Nullable
-  AName getAName();
-
-  @Nullable
   Application getApplication();
 
   @NotNull
   List<Expression> getExpressionList();
+
+  @Nullable
+  FqName getFqName();
+
+  @NotNull
+  MaybeNewLine getMaybeNewLine();
+
+  @Nullable
+  NumberExpression getNumberExpression();
+
+  @Nullable
+  SubstituteImplisit getSubstituteImplisit();
 
 }

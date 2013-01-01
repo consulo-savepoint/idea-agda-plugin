@@ -5,9 +5,9 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface RecordField extends PsiElement {
+public interface TypeSignatures extends PsiElement {
 
-  @Nullable
+  @NotNull
   TypeSignature getTypeSignature();
 
   @Nullable

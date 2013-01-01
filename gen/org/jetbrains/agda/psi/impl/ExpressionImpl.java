@@ -19,12 +19,6 @@ public class ExpressionImpl extends ASTWrapperPsiElement implements Expression {
 
   @Override
   @Nullable
-  public AName getAName() {
-    return findChildByClass(AName.class);
-  }
-
-  @Override
-  @Nullable
   public Application getApplication() {
     return findChildByClass(Application.class);
   }
@@ -37,6 +31,12 @@ public class ExpressionImpl extends ASTWrapperPsiElement implements Expression {
 
   @Override
   @Nullable
+  public FqName getFqName() {
+    return findChildByClass(FqName.class);
+  }
+
+  @Override
+  @Nullable
   public FunctionType getFunctionType() {
     return findChildByClass(FunctionType.class);
   }
@@ -45,6 +45,18 @@ public class ExpressionImpl extends ASTWrapperPsiElement implements Expression {
   @Nullable
   public LetExpression getLetExpression() {
     return findChildByClass(LetExpression.class);
+  }
+
+  @Override
+  @Nullable
+  public NumberExpression getNumberExpression() {
+    return findChildByClass(NumberExpression.class);
+  }
+
+  @Override
+  @Nullable
+  public SubstituteImplisit getSubstituteImplisit() {
+    return findChildByClass(SubstituteImplisit.class);
   }
 
   @Override
