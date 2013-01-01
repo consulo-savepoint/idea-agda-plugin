@@ -13,7 +13,7 @@ import com.intellij.psi.tree.IElementType;
 %implements FlexLexer
 
 %{
-    private int prevIndentSize;
+    private LinkedList<Integer> prevIndentSize = new LinkedList<Integer>(Collections.singleton(0));
 %}
 
 
@@ -45,14 +45,19 @@ IDENTIFIER={LETTER} {IDENTIFIER_PART}*
         }
 
         IElementType result;
-        if (indentSize > prevIndentSize) {
+        if (indentSize > prevIndentSize.getLast()) {
           result = AgdaTokenTypes.VIRTUAL_LEFT_PAREN;
-        } else if (indentSize < prevIndentSize) {
+          prevIndentSize.addLast(indentSize);
+        } else if (indentSize < prevIndentSize.getLast()) {
           result = AgdaTokenTypes.VIRTUAL_RIGHT_PAREN;
+          prevIndentSize.removeLast();
+          if (indentSize < prevIndentSize.getLast()) {
+            yypushback(yytext.length() - 1);
+          }
         } else {
           result = AgdaTokenTypes.VIRTUAL_SEMICOLON;
         }
-        prevIndentSize = indentSize;
+
         return result;
       }
 

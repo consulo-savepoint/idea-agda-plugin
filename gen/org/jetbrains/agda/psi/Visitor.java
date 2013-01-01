@@ -95,6 +95,10 @@ public class Visitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitLhs(@NotNull Lhs o) {
+    visitPsiElement(o);
+  }
+
   public void visitMaybeNewLine(@NotNull MaybeNewLine o) {
     visitPsiElement(o);
   }

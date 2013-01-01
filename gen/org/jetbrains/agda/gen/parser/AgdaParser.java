@@ -89,6 +89,9 @@ public class AgdaParser implements PsiParser {
     else if (root_ == LET_EXPRESSION) {
       result_ = let_expression(builder_, level_ + 1);
     }
+    else if (root_ == LHS) {
+      result_ = lhs(builder_, level_ + 1);
+    }
     else if (root_ == MAYBE_NEW_LINE) {
       result_ = maybe_newLine(builder_, level_ + 1);
     }
@@ -641,15 +644,16 @@ public class AgdaParser implements PsiParser {
   }
 
   /* ********************************************************** */
-  // VIRTUAL_SEMICOLON | VIRTUAL_RIGHT_PAREN | data_declaration | record_declaration | recovering_declaration
+  // VIRTUAL_SEMICOLON | data_declaration | record_declaration | record_field | record_constructor | recovering_declaration
   static boolean declaration(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "declaration")) return false;
     boolean result_ = false;
     Marker marker_ = builder_.mark();
     result_ = consumeToken(builder_, VIRTUAL_SEMICOLON);
-    if (!result_) result_ = consumeToken(builder_, VIRTUAL_RIGHT_PAREN);
     if (!result_) result_ = data_declaration(builder_, level_ + 1);
     if (!result_) result_ = record_declaration(builder_, level_ + 1);
+    if (!result_) result_ = record_field(builder_, level_ + 1);
+    if (!result_) result_ = record_constructor(builder_, level_ + 1);
     if (!result_) result_ = recovering_declaration(builder_, level_ + 1);
     if (!result_) {
       marker_.rollbackTo();
@@ -789,14 +793,14 @@ public class AgdaParser implements PsiParser {
   }
 
   /* ********************************************************** */
-  // expression "=" expression
+  // lhs "=" expression
   public static boolean function_declaration(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "function_declaration")) return false;
     boolean result_ = false;
     boolean pinned_ = false;
     Marker marker_ = builder_.mark();
     enterErrorRecordingSection(builder_, level_, _SECTION_GENERAL_, "<function declaration>");
-    result_ = expression(builder_, level_ + 1);
+    result_ = lhs(builder_, level_ + 1);
     result_ = result_ && consumeToken(builder_, ASSIGNMENT);
     pinned_ = result_; // pin = 2
     result_ = result_ && expression(builder_, level_ + 1);
@@ -1136,6 +1140,48 @@ public class AgdaParser implements PsiParser {
     }
     else {
       marker_.rollbackTo();
+    }
+    return result_;
+  }
+
+  /* ********************************************************** */
+  // ("..." "|" expression) | expression
+  public static boolean lhs(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "lhs")) return false;
+    boolean result_ = false;
+    Marker marker_ = builder_.mark();
+    enterErrorRecordingSection(builder_, level_, _SECTION_GENERAL_, "<lhs>");
+    result_ = lhs_0(builder_, level_ + 1);
+    if (!result_) result_ = expression(builder_, level_ + 1);
+    if (result_) {
+      marker_.done(LHS);
+    }
+    else {
+      marker_.rollbackTo();
+    }
+    result_ = exitErrorRecordingSection(builder_, level_, result_, false, _SECTION_GENERAL_, null);
+    return result_;
+  }
+
+  // ("..." "|" expression)
+  private static boolean lhs_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "lhs_0")) return false;
+    return lhs_0_0(builder_, level_ + 1);
+  }
+
+  // "..." "|" expression
+  private static boolean lhs_0_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "lhs_0_0")) return false;
+    boolean result_ = false;
+    Marker marker_ = builder_.mark();
+    result_ = consumeToken(builder_, "...");
+    result_ = result_ && consumeToken(builder_, "|");
+    result_ = result_ && expression(builder_, level_ + 1);
+    if (!result_) {
+      marker_.rollbackTo();
+    }
+    else {
+      marker_.drop();
     }
     return result_;
   }
@@ -1852,7 +1898,7 @@ public class AgdaParser implements PsiParser {
   }
 
   /* ********************************************************** */
-  // module_declaration | module_import | open | infix | postulate | pragma | record_field | record_constructor | function_type_declaration | function_declaration | absurd_function
+  // module_declaration | module_import | open | infix | postulate | pragma | function_type_declaration | function_declaration | absurd_function
   static boolean recovering_declaration(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "recovering_declaration")) return false;
     boolean result_ = false;
@@ -1864,8 +1910,6 @@ public class AgdaParser implements PsiParser {
     if (!result_) result_ = infix(builder_, level_ + 1);
     if (!result_) result_ = postulate(builder_, level_ + 1);
     if (!result_) result_ = pragma(builder_, level_ + 1);
-    if (!result_) result_ = record_field(builder_, level_ + 1);
-    if (!result_) result_ = record_constructor(builder_, level_ + 1);
     if (!result_) result_ = function_type_declaration(builder_, level_ + 1);
     if (!result_) result_ = function_declaration(builder_, level_ + 1);
     if (!result_) result_ = absurd_function(builder_, level_ + 1);

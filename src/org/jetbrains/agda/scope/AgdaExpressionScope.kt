@@ -39,7 +39,7 @@ public class AgdaExpressionScope(val element : PsiElement) {
 
         if (current is FunctionDeclaration) {
             var declaration = (current as FunctionDeclaration?)
-            addFunctionParameters(declaration?.getExpressionList()?.get(0), declarations, Grammar.getOperationParts(declarations as Map<String?, PsiElement?>))
+            addFunctionParameters(declaration?.getLhs()!!.getExpression(), declarations, Grammar.getOperationParts(declarations as Map<String?, PsiElement?>))
         }
         if (element is TeleArrow) {
             for (telescope in element.getTelescopeList()) {
