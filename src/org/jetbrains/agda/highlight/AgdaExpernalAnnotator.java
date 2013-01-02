@@ -12,10 +12,6 @@ import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
 import org.jetbrains.agda.external.*;
-import org.jetbrains.agda.parser.AgdaCompositeElementType;
-import org.jetbrains.agda.psi.AgdaASTWrapper;
-import org.jetbrains.agda.psi.Expression;
-import org.jetbrains.agda.psi.FunctionTypeDeclaration;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -97,20 +93,6 @@ public final class AgdaExpernalAnnotator extends ExternalAnnotator<PsiFile, Anno
                 }
             }
         }
-
-        ApplicationManager.getApplication().runReadAction(new Runnable() {
-            @Override
-            public void run() {
-                visitAll(file, new PsiElementVisitor() {
-                    @Override
-                    public void visitElement(PsiElement element) {
-                        if (element instanceof AgdaASTWrapper) {
-                            ((AgdaASTWrapper) element).isLoaded = true;
-                        }
-                    }
-                });
-            }
-        });
     }
 
     private static void visitAll(PsiElement element, PsiElementVisitor psiElementVisitor) {

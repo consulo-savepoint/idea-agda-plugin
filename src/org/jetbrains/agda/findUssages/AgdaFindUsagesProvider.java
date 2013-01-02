@@ -4,13 +4,12 @@ import com.intellij.lang.findUsages.FindUsagesProvider;
 import com.intellij.lang.cacheBuilder.WordsScanner;
 import com.intellij.psi.PsiElement;
 import com.intellij.find.impl.HelpID;
-import org.jetbrains.agda.psi.AgdaASTWrapper;
 import org.jetbrains.annotations.NotNull;
 
 
 public class AgdaFindUsagesProvider implements FindUsagesProvider {
   public boolean canFindUsagesFor(@NotNull PsiElement psiElement) {
-    return psiElement instanceof AgdaASTWrapper;
+    return false;
   }
 
   public String getHelpId(@NotNull PsiElement psiElement) {

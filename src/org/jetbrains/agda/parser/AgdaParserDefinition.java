@@ -13,7 +13,6 @@ import com.intellij.psi.tree.IFileElementType;
 import org.jetbrains.agda.AgdaFileImpl;
 import org.jetbrains.agda.AgdaLanguage;
 import org.jetbrains.agda.gen.parser.*;
-import org.jetbrains.agda.psi.AgdaPsiBuilder;
 import org.jetbrains.annotations.NotNull;
 
 public class AgdaParserDefinition implements ParserDefinition {
