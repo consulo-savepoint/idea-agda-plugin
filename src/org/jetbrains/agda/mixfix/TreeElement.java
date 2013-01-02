@@ -2,7 +2,7 @@ package org.jetbrains.agda.mixfix;
 
 
 import com.intellij.psi.PsiElement;
-import org.jetbrains.agda.psi.AName;
+import org.jetbrains.agda.psi.FqName;
 
 public class TreeElement {
     private final TreeElement[] myChildren;
@@ -16,7 +16,7 @@ public class TreeElement {
     }
 
     public String getText() {
-        if (myElement instanceof AName) {
+        if (myElement instanceof FqName) {
             return myElement.getText();
         }
         return null;
@@ -31,7 +31,7 @@ public class TreeElement {
     }
 
     public boolean isTerm() {
-        return myElement instanceof AName;
+        return myElement instanceof FqName;
     }
 
     public PsiElement getDeclaration() {

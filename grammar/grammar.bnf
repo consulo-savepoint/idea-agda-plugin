@@ -134,8 +134,6 @@ absurd_function ::= expression
 
 // Expressions
 
-a_name ::= id {mixin = "org.jetbrains.agda.psi.AgdaReferenceElementImpl"}
-
 absurd_expression ::= "(" ")" {extends=expression}
 
 parenthesis_expression ::= "(" expression ")" {pin=1; extends=expression}

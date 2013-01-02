@@ -11,7 +11,6 @@ import org.jetbrains.agda.psi.FunctionDeclaration
 import org.jetbrains.agda.psi.Expression
 import org.jetbrains.agda.mixfix.TreeElement
 import org.jetbrains.agda.psi.NameDeclaration
-import org.jetbrains.agda.psi.impl.ANameImpl
 import org.jetbrains.agda.psi.TeleArrow
 import org.jetbrains.agda.psi.ExplicitTelescope
 import org.jetbrains.agda.psi.FunctionType
@@ -23,6 +22,8 @@ import org.jetbrains.agda.psi.ImplicitTelescope
 import org.jetbrains.agda.psi.TypeSignature
 import org.jetbrains.agda.core.expression.CMetaVariable
 import org.jetbrains.agda.scope.findDeclaration
+import org.jetbrains.agda.psi.FqName
+import org.jetbrains.agda.psi.impl.FqNameImpl
 
 /**
  * @author Evgeny.Kurbatsky
@@ -128,8 +129,8 @@ fun parseExpressionImpl(program : Program<PsiElement>, expression : PsiElement?)
         return treeToExpression(program, treeElement)
     }
 
-    if (expression is ANameImpl) {
-        var aName : ANameImpl = expression
+    if (expression is FqNameImpl) {
+        var aName : FqNameImpl = expression
         if (aName.getText()?.equals("Set")!!)
         {
             return CSet()

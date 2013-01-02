@@ -54,7 +54,7 @@ public final class AgdaExpernalAnnotator extends ExternalAnnotator<PsiFile, Anno
 
         System.out.println("Annotations");
         AgdaProjectComponent component = psiFile.getProject().getComponent(AgdaProjectComponent.class);
-        List<AgdaExternalAnnotation> agdaExternalAnnotations = new ArrayList<AgdaExternalAnnotation>();//component.load(file.getPath());
+        List<AgdaExternalAnnotation> agdaExternalAnnotations = component.load(file.getPath());
 
         return new AnnotationResult(file, agdaExternalAnnotations);
     }
@@ -76,7 +76,6 @@ public final class AgdaExpernalAnnotator extends ExternalAnnotator<PsiFile, Anno
                       continue;
                     }
                     ASTWrapperPsiElement astWrapper = (ASTWrapperPsiElement) element;
-                    //astWrapper.isLoaded = true;
 
                     astWrapper.putUserData(AgdaSyntaxAnnotation.SYNTAX, syntaxAnnotation);
                     /*
@@ -95,14 +94,6 @@ public final class AgdaExpernalAnnotator extends ExternalAnnotator<PsiFile, Anno
         }
     }
 
-    private static void visitAll(PsiElement element, PsiElementVisitor psiElementVisitor) {
-        PsiElement[] children = element.getChildren();
-        psiElementVisitor.visitElement(element);
-        for (PsiElement child : children) {
-            visitAll(child, psiElementVisitor);
-        }
-    }
-
     @Override
     public void apply(@NotNull PsiFile file, AnnotationResult result, @NotNull AnnotationHolder holder) {
         if (result == null)
@@ -114,7 +105,9 @@ public final class AgdaExpernalAnnotator extends ExternalAnnotator<PsiFile, Anno
 
         List<Integer> goals = new ArrayList<Integer>();
         findGoals(file, goals);
-        applySyntax(file, holder);
+
+        //applySyntax(file, holder);
+
         if (result.myAnnotations != null) {
             for (AgdaExternalAnnotation annotation : result.myAnnotations) {
 

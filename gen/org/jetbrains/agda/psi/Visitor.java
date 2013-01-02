@@ -7,10 +7,6 @@ import com.intellij.psi.PsiElement;
 
 public class Visitor extends PsiElementVisitor {
 
-  public void visitAName(@NotNull AName o) {
-    visitPsiElement(o);
-  }
-
   public void visitAbsurdExpression(@NotNull AbsurdExpression o) {
     visitExpression(o);
   }

@@ -19,9 +19,9 @@ import org.jetbrains.agda.psi.TypedUntypedBinding
 import org.jetbrains.agda.psi.DataDeclaration
 import org.jetbrains.agda.psi.Binding
 import org.jetbrains.agda.psi.LetExpression
-import org.jetbrains.agda.psi.AName
 import java.util.HashMap
 import org.jetbrains.agda.psi.RecordDeclaration
+import org.jetbrains.agda.psi.FqName
 
 
 public class AgdaExpressionScope(val element : PsiElement) {
@@ -126,10 +126,9 @@ public class AgdaExpressionScope(val element : PsiElement) {
         }
         return declarations
     }
-    private fun addFunctionParameters(expression : PsiElement?, declarations : MutableMap<String, PsiElement>, operationParts : Set<String?>?) : Unit {
-        if ((expression is AName?))
-        {
-            var text : String? = ((expression as AName)).getText()
+    private fun addFunctionParameters(expression : PsiElement, declarations : MutableMap<String, PsiElement>, operationParts : Set<String?>?) : Unit {
+        if (expression is FqName) {
+            var text : String? = expression.getText();
             if (!declarations.containsKey(text) && !operationParts!!.contains(text))
             {
                 declarations.put(text!!, expression)
@@ -138,9 +137,9 @@ public class AgdaExpressionScope(val element : PsiElement) {
         }
         else
         {
-            for (child : PsiElement? in expression?.getChildren()!!)
+            for (child : PsiElement? in expression.getChildren())
             {
-                addFunctionParameters(child, declarations, operationParts)
+                addFunctionParameters(child!!, declarations, operationParts)
             }
         }
     }

@@ -5,7 +5,6 @@ import com.intellij.psi.PsiElement
 import org.jetbrains.agda.psi.Application
 import org.jetbrains.agda.mixfix.Grammar
 import org.jetbrains.agda.mixfix.TreeElement
-import org.jetbrains.agda.psi.AName
 import org.jetbrains.agda.psi.DataDeclaration
 import org.jetbrains.agda.psi.Constructors
 import org.jetbrains.agda.psi.TypeSignature
@@ -109,10 +108,6 @@ public fun findDeclaration(element : AgdaReferenceElementImpl) : PsiElement? {
     }
 
     var declarations : Map<String, PsiElement> = AgdaExpressionScope(element).getVisibleDeclarations()
-    if (element is AName) {
-        val text = element.getId().getText()
-        return declarations.get(text)
-    }
     if (element is FqNameImpl) {
         val text = element.getText()
         return declarations.get(text)

@@ -23,10 +23,7 @@ public class AgdaParser implements PsiParser {
     int level_ = 0;
     boolean result_;
     builder_ = adapt_builder_(root_, builder_, this);
-    if (root_ == A_NAME) {
-      result_ = a_name(builder_, level_ + 1);
-    }
-    else if (root_ == ABSURD_EXPRESSION) {
+    if (root_ == ABSURD_EXPRESSION) {
       result_ = absurd_expression(builder_, level_ + 1);
     }
     else if (root_ == ABSURD_FUNCTION) {
@@ -185,23 +182,6 @@ public class AgdaParser implements PsiParser {
       if (set.contains(child_) && set.contains(parent_)) return true;
     }
     return false;
-  }
-
-  /* ********************************************************** */
-  // id
-  public static boolean a_name(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "a_name")) return false;
-    if (!nextTokenIs(builder_, ID)) return false;
-    boolean result_ = false;
-    Marker marker_ = builder_.mark();
-    result_ = consumeToken(builder_, ID);
-    if (result_) {
-      marker_.done(A_NAME);
-    }
-    else {
-      marker_.rollbackTo();
-    }
-    return result_;
   }
 
   /* ********************************************************** */

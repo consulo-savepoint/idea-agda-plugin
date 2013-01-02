@@ -10,7 +10,6 @@ import org.jetbrains.agda.psi.FunctionDeclaration
 import org.jetbrains.agda.psi.Application
 import org.jetbrains.agda.mixfix.TreeElement
 import org.jetbrains.agda.mixfix.Grammar
-import org.jetbrains.agda.psi.impl.ANameImpl
 import java.util.Arrays
 import org.codehaus.groovy.ast.expr.ExpressionTransformer
 import java.util.ArrayList
