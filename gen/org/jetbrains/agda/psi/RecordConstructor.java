@@ -8,9 +8,6 @@ import com.intellij.psi.PsiElement;
 public interface RecordConstructor extends PsiElement {
 
   @Nullable
-  MaybeNewLine getMaybeNewLine();
-
-  @Nullable
   NameDeclaration getNameDeclaration();
 
 }

@@ -89,9 +89,6 @@ public class AgdaParser implements PsiParser {
     else if (root_ == LHS) {
       result_ = lhs(builder_, level_ + 1);
     }
-    else if (root_ == MAYBE_NEW_LINE) {
-      result_ = maybe_newLine(builder_, level_ + 1);
-    }
     else if (root_ == MODULE_DECLARATION) {
       result_ = module_declaration(builder_, level_ + 1);
     }
@@ -1185,13 +1182,9 @@ public class AgdaParser implements PsiParser {
 
   /* ********************************************************** */
   // (VIRTUAL_LEFT_PAREN | VIRTUAL_RIGHT_PAREN | VIRTUAL_SEMICOLON)?
-  public static boolean maybe_newLine(PsiBuilder builder_, int level_) {
+  static boolean maybe_newLine(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "maybe_newLine")) return false;
-    Marker marker_ = builder_.mark();
-    enterErrorRecordingSection(builder_, level_, _SECTION_GENERAL_, "<maybe new line>");
     maybe_newLine_0(builder_, level_ + 1);
-    marker_.done(MAYBE_NEW_LINE);
-    exitErrorRecordingSection(builder_, level_, true, false, _SECTION_GENERAL_, null);
     return true;
   }
 
@@ -2146,7 +2139,7 @@ public class AgdaParser implements PsiParser {
   }
 
   /* ********************************************************** */
-  // type_signature (VIRTUAL_SEMICOLON type_signatures)?
+  // type_signature (VIRTUAL_SEMICOLON type_signature)*
   public static boolean type_signatures(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "type_signatures")) return false;
     if (!nextTokenIs(builder_, ID)) return false;
@@ -2163,26 +2156,35 @@ public class AgdaParser implements PsiParser {
     return result_;
   }
 
-  // (VIRTUAL_SEMICOLON type_signatures)?
+  // (VIRTUAL_SEMICOLON type_signature)*
   private static boolean type_signatures_1(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "type_signatures_1")) return false;
-    type_signatures_1_0(builder_, level_ + 1);
+    int offset_ = builder_.getCurrentOffset();
+    while (true) {
+      if (!type_signatures_1_0(builder_, level_ + 1)) break;
+      int next_offset_ = builder_.getCurrentOffset();
+      if (offset_ == next_offset_) {
+        empty_element_parsed_guard_(builder_, offset_, "type_signatures_1");
+        break;
+      }
+      offset_ = next_offset_;
+    }
     return true;
   }
 
-  // (VIRTUAL_SEMICOLON type_signatures)
+  // (VIRTUAL_SEMICOLON type_signature)
   private static boolean type_signatures_1_0(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "type_signatures_1_0")) return false;
     return type_signatures_1_0_0(builder_, level_ + 1);
   }
 
-  // VIRTUAL_SEMICOLON type_signatures
+  // VIRTUAL_SEMICOLON type_signature
   private static boolean type_signatures_1_0_0(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "type_signatures_1_0_0")) return false;
     boolean result_ = false;
     Marker marker_ = builder_.mark();
     result_ = consumeToken(builder_, VIRTUAL_SEMICOLON);
-    result_ = result_ && type_signatures(builder_, level_ + 1);
+    result_ = result_ && type_signature(builder_, level_ + 1);
     if (!result_) {
       marker_.rollbackTo();
     }
@@ -2302,14 +2304,11 @@ public class AgdaParser implements PsiParser {
   }
 
   /* ********************************************************** */
-  // (typed_untyped_binding maybe_newLine)+
+  // (typed_untyped_binding maybe_newLine)*
   static boolean typed_untyped_bindings(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "typed_untyped_bindings")) return false;
-    boolean result_ = false;
-    Marker marker_ = builder_.mark();
-    result_ = typed_untyped_bindings_0(builder_, level_ + 1);
     int offset_ = builder_.getCurrentOffset();
-    while (result_) {
+    while (true) {
       if (!typed_untyped_bindings_0(builder_, level_ + 1)) break;
       int next_offset_ = builder_.getCurrentOffset();
       if (offset_ == next_offset_) {
@@ -2318,13 +2317,7 @@ public class AgdaParser implements PsiParser {
       }
       offset_ = next_offset_;
     }
-    if (!result_) {
-      marker_.rollbackTo();
-    }
-    else {
-      marker_.drop();
-    }
-    return result_;
+    return true;
   }
 
   // (typed_untyped_binding maybe_newLine)

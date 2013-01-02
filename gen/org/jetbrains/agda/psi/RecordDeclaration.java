@@ -26,9 +26,6 @@ public interface RecordDeclaration extends PsiElement {
   List<Infix> getInfixList();
 
   @NotNull
-  List<MaybeNewLine> getMaybeNewLineList();
-
-  @NotNull
   List<ModuleDeclaration> getModuleDeclarationList();
 
   @NotNull

@@ -8,9 +8,6 @@ import com.intellij.psi.PsiElement;
 public interface TypeSignatures extends PsiElement {
 
   @NotNull
-  TypeSignature getTypeSignature();
-
-  @Nullable
-  TypeSignatures getTypeSignatures();
+  List<TypeSignature> getTypeSignatureList();
 
 }

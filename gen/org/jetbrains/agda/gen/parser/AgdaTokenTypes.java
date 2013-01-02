@@ -32,7 +32,6 @@ public interface AgdaTokenTypes {
   IElementType LAMBDA_EXPRESSION = new AgdaCompositeElementType("LAMBDA_EXPRESSION");
   IElementType LET_EXPRESSION = new AgdaCompositeElementType("LET_EXPRESSION");
   IElementType LHS = new AgdaCompositeElementType("LHS");
-  IElementType MAYBE_NEW_LINE = new AgdaCompositeElementType("MAYBE_NEW_LINE");
   IElementType MODULE_DECLARATION = new AgdaCompositeElementType("MODULE_DECLARATION");
   IElementType MODULE_IMPORT = new AgdaCompositeElementType("MODULE_IMPORT");
   IElementType NAME_DECLARATION = new AgdaCompositeElementType("NAME_DECLARATION");
@@ -164,9 +163,6 @@ public interface AgdaTokenTypes {
       }
       else if (type == LHS) {
         return new LhsImpl(node);
-      }
-      else if (type == MAYBE_NEW_LINE) {
-        return new MaybeNewLineImpl(node);
       }
       else if (type == MODULE_DECLARATION) {
         return new ModuleDeclarationImpl(node);

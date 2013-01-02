@@ -10,7 +10,4 @@ public interface UsingOrHiding extends PsiElement {
   @NotNull
   List<ImportName> getImportNameList();
 
-  @NotNull
-  List<MaybeNewLine> getMaybeNewLineList();
-
 }

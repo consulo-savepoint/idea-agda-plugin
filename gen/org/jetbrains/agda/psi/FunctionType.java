@@ -16,9 +16,6 @@ public interface FunctionType extends PsiElement {
   @Nullable
   FqName getFqName();
 
-  @NotNull
-  MaybeNewLine getMaybeNewLine();
-
   @Nullable
   NumberExpression getNumberExpression();
 

@@ -56,7 +56,7 @@ root ::= declaration *
 
 private recover ::= ! (VIRTUAL_RIGHT_PAREN | VIRTUAL_SEMICOLON)
 
-maybe_newLine ::= (VIRTUAL_LEFT_PAREN | VIRTUAL_RIGHT_PAREN | VIRTUAL_SEMICOLON)?
+private maybe_newLine ::= (VIRTUAL_LEFT_PAREN | VIRTUAL_RIGHT_PAREN | VIRTUAL_SEMICOLON)?
 
 fqName ::= id ('.' id) * {mixin = "org.jetbrains.agda.psi.AgdaReferenceElementImpl"}
 
@@ -70,7 +70,7 @@ open ::= 'open' expression as_name? "public"? using_or_hiding? renaming? {pin=1}
 
 record_declaration ::= "record" name_declaration typed_untyped_bindings ":" expression "where" VIRTUAL_LEFT_PAREN (declaration +) VIRTUAL_RIGHT_PAREN {pin=1}
 
-type_signatures ::= type_signature (VIRTUAL_SEMICOLON type_signatures)?
+type_signatures ::= type_signature (VIRTUAL_SEMICOLON type_signature)*
 
 record_field ::= "field" ((VIRTUAL_LEFT_PAREN type_signatures VIRTUAL_RIGHT_PAREN) | type_signature) {pin=1}
 record_constructor ::= "constructor" maybe_newLine name_declaration {pin=1}
@@ -154,7 +154,7 @@ let_expression ::= "let" name_declaration "=" expression "in" new_line expressio
 
 typed_untyped_binding ::= name_declaration+  | '{' ids '}' | ("{" type_signature "}") | ("(" type_signature ")")
 
-private typed_untyped_bindings ::= (typed_untyped_binding maybe_newLine)+
+private typed_untyped_bindings ::= (typed_untyped_binding maybe_newLine)*
 
 forall_expression ::= 'forall' typed_untyped_bindings ARROW maybe_newLine expression {pin=1}
 

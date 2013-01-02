@@ -36,12 +36,6 @@ public class FunctionTypeImpl extends ASTWrapperPsiElement implements FunctionTy
   }
 
   @Override
-  @NotNull
-  public MaybeNewLine getMaybeNewLine() {
-    return findNotNullChildByClass(MaybeNewLine.class);
-  }
-
-  @Override
   @Nullable
   public NumberExpression getNumberExpression() {
     return findChildByClass(NumberExpression.class);

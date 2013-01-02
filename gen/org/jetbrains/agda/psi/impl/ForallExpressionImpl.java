@@ -25,12 +25,6 @@ public class ForallExpressionImpl extends ASTWrapperPsiElement implements Forall
 
   @Override
   @NotNull
-  public List<MaybeNewLine> getMaybeNewLineList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, MaybeNewLine.class);
-  }
-
-  @Override
-  @NotNull
   public List<TypedUntypedBinding> getTypedUntypedBindingList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, TypedUntypedBinding.class);
   }

@@ -55,12 +55,6 @@ public class RecordDeclarationImpl extends ASTWrapperPsiElement implements Recor
 
   @Override
   @NotNull
-  public List<MaybeNewLine> getMaybeNewLineList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, MaybeNewLine.class);
-  }
-
-  @Override
-  @NotNull
   public List<ModuleDeclaration> getModuleDeclarationList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, ModuleDeclaration.class);
   }

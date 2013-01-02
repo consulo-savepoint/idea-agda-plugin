@@ -19,14 +19,8 @@ public class TypeSignaturesImpl extends ASTWrapperPsiElement implements TypeSign
 
   @Override
   @NotNull
-  public TypeSignature getTypeSignature() {
-    return findNotNullChildByClass(TypeSignature.class);
-  }
-
-  @Override
-  @Nullable
-  public TypeSignatures getTypeSignatures() {
-    return findChildByClass(TypeSignatures.class);
+  public List<TypeSignature> getTypeSignatureList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, TypeSignature.class);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {

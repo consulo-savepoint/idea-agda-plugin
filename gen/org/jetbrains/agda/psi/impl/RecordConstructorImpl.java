@@ -19,12 +19,6 @@ public class RecordConstructorImpl extends ASTWrapperPsiElement implements Recor
 
   @Override
   @Nullable
-  public MaybeNewLine getMaybeNewLine() {
-    return findChildByClass(MaybeNewLine.class);
-  }
-
-  @Override
-  @Nullable
   public NameDeclaration getNameDeclaration() {
     return findChildByClass(NameDeclaration.class);
   }

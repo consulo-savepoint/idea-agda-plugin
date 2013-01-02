@@ -24,12 +24,6 @@ public class FunctionTypeDeclarationImpl extends ASTWrapperPsiElement implements
   }
 
   @Override
-  @Nullable
-  public MaybeNewLine getMaybeNewLine() {
-    return findChildByClass(MaybeNewLine.class);
-  }
-
-  @Override
   @NotNull
   public NameDeclaration getNameDeclaration() {
     return findNotNullChildByClass(NameDeclaration.class);

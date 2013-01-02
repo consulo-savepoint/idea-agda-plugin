@@ -25,6 +25,12 @@ public class AgdaAnnotator implements Annotator {
             }
         }
         if (element instanceof FqNameImpl) {
+            if (element.getParent() instanceof ModuleDeclaration) {
+                return;
+            }
+            if (element.getParent() instanceof ModuleImport) {
+                return;
+            }
             if ("_".equals(element.getText())) {
                 return;
             }

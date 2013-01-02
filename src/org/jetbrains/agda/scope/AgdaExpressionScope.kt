@@ -22,6 +22,9 @@ import org.jetbrains.agda.psi.LetExpression
 import java.util.HashMap
 import org.jetbrains.agda.psi.RecordDeclaration
 import org.jetbrains.agda.psi.FqName
+import org.eclipse.jdt.internal.compiler.ast.FieldDeclaration
+import org.jetbrains.agda.psi.RecordField
+import org.jetbrains.agda.psi.TypeSignatures
 
 
 public class AgdaExpressionScope(val element : PsiElement) {
@@ -29,7 +32,7 @@ public class AgdaExpressionScope(val element : PsiElement) {
     public fun getVisibleDeclarations() : MutableMap<String, PsiElement> {
 
         if (element is PsiFile) {
-            return getGlobalDeclarations(element);
+            return AgdaModuleScope(element).getDeclarations();
         }
         val declarations : MutableMap<String, PsiElement> = HashMap<String, PsiElement>()
 
@@ -102,6 +105,17 @@ public class AgdaExpressionScope(val element : PsiElement) {
 
 
         val parent = element.getParent()
+        if (parent is TypeSignatures) {
+            val typeSignatures = parent.getTypeSignatureList();
+            for (typeSignature in typeSignatures) {
+                if (typeSignature == element) {
+                    break;
+                }
+                for (nameDeclaration in typeSignature!!.getNameDeclarationList()) {
+                    declarations.put(nameDeclaration!!.getText()!!, nameDeclaration)
+                }
+            }
+        }
         if (parent is ForallExpression) {
 
             val bindingsList = parent.getTypedUntypedBindingList()

@@ -95,10 +95,6 @@ public class Visitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
-  public void visitMaybeNewLine(@NotNull MaybeNewLine o) {
-    visitPsiElement(o);
-  }
-
   public void visitModuleDeclaration(@NotNull ModuleDeclaration o) {
     visitPsiElement(o);
   }

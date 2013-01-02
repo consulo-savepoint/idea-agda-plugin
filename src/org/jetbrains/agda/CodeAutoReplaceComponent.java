@@ -23,11 +23,11 @@ public class CodeAutoReplaceComponent implements ProjectComponent {
 
     public CodeAutoReplaceComponent(Project project) {
         this.myProject = project;
-        mySubstitutionsRules.put("\\to", "→");
-        mySubstitutionsRules.put("\\::", "∷");
-        mySubstitutionsRules.put("\\bn", "ℕ");
-        mySubstitutionsRules.put("\\all", "∀");
-        mySubstitutionsRules.put("\\==", "≡");
+        mySubstitutionsRules.put("to", "→");
+        mySubstitutionsRules.put("::", "∷");
+        mySubstitutionsRules.put("bn", "ℕ");
+        mySubstitutionsRules.put("all", "∀");
+        mySubstitutionsRules.put("==", "≡");
     }
 
     @Override
@@ -59,6 +59,10 @@ public class CodeAutoReplaceComponent implements ProjectComponent {
 
                 final ASTNode node = newChild.getNode();
                 if (node instanceof LeafElement) {
+                    ASTNode treePrev = node.getTreePrev();
+                    if (treePrev == null || !treePrev.getText().equals("\\")) {
+                        return;
+                    }
                     final String replace = mySubstitutionsRules.get(newChild.getText());
                     if (replace != null) {
                         if (UndoManager.getInstance(myProject).isUndoInProgress()) {
@@ -87,6 +91,8 @@ public class CodeAutoReplaceComponent implements ProjectComponent {
                     @Override
                     public void run() {
                         TreeElement newNode = new LeafPsiElement(AgdaTokenTypes.ID, replace);
+                        ASTNode treePrev = node.getTreePrev();
+                        treePrev.getTreeParent().removeChild(treePrev);
                         node.getTreeParent().replaceChild(node, newNode);
                     }
                 }, "Auto Rename", null);

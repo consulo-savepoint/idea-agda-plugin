@@ -25,12 +25,6 @@ public class TeleArrowImpl extends ASTWrapperPsiElement implements TeleArrow {
 
   @Override
   @NotNull
-  public MaybeNewLine getMaybeNewLine() {
-    return findNotNullChildByClass(MaybeNewLine.class);
-  }
-
-  @Override
-  @NotNull
   public List<Telescope> getTelescopeList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, Telescope.class);
   }

@@ -11,9 +11,6 @@ public interface ForallExpression extends PsiElement {
   Expression getExpression();
 
   @NotNull
-  List<MaybeNewLine> getMaybeNewLineList();
-
-  @NotNull
   List<TypedUntypedBinding> getTypedUntypedBindingList();
 
 }
