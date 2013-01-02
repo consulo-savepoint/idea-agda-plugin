@@ -91,6 +91,9 @@ IDENTIFIER={LETTER} {IDENTIFIER_PART}*
 "infixr"              { return AgdaTokenTypes.INFIXR_KEYWORD; }
 "constructor"         { return AgdaTokenTypes.CONSTRUCTOR_KEYWORD; }
 "field"               { return AgdaTokenTypes.FIELD_KEYWORD; }
+"public"              { return AgdaTokenTypes.PUBLIC_KEYWORD; }
+"using"               { return AgdaTokenTypes.USING_KEYWORD; }
+"hiding"              { return AgdaTokenTypes.HIDING_KEYWORD; }
 "{-#"                 { return AgdaTokenTypes.PRAGMA_OPEN; }
 "#-}"                 { return AgdaTokenTypes.PRAGMA_CLOSE; }
 "{-"[^#]              { yybegin(BLOCK_COMMENT); return AgdaTokenTypes.COMMENT; }

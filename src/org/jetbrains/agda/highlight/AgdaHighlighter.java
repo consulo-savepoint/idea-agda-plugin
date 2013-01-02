@@ -83,7 +83,10 @@ public class AgdaHighlighter extends SyntaxHighlighterBase {
             AgdaTokenTypes.INFIXL_KEYWORD,
             AgdaTokenTypes.INFIXR_KEYWORD,
             AgdaTokenTypes.CONSTRUCTOR_KEYWORD,
-            AgdaTokenTypes.FIELD_KEYWORD
+            AgdaTokenTypes.FIELD_KEYWORD,
+            AgdaTokenTypes.PUBLIC_KEYWORD,
+            AgdaTokenTypes.USING_KEYWORD,
+            AgdaTokenTypes.HIDING_KEYWORD
     };
 
     for (IElementType keyword: keywords) {

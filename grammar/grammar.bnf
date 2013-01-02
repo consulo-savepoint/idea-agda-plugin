@@ -21,6 +21,9 @@
     IMPORT_KEYWORD="import"
     CONSTRUCTOR_KEYWORD="constructor"
     FIELD_KEYWORD="field"
+    PUBLIC_KEYWORD="public"
+    USING_KEYWORD="using"
+    HIDING_KEYWORD="hiding"
 
     NUMBER="number"
     SPEC_CHARACTERS="SPEC_CHARACTERS"
@@ -99,7 +102,7 @@ binding ::= (new_line "{" ids (":" expression)? "}") | (new_line "(" ids (":" ex
 
 import_name ::= ("module"? fqName)
 
-private import_names ::= import_name (';' import_name) *
+private import_names ::= import_name (";" import_name) *
 
 module_import ::= 'open' ? 'import' fqName as_name? "public"? using_or_hiding? renaming?  {pin=2}
 

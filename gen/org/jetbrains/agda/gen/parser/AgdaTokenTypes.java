@@ -67,6 +67,7 @@ public interface AgdaTokenTypes {
   IElementType END_OF_LINE_COMMENT = new AgdaToken("--");
   IElementType FIELD_KEYWORD = new AgdaToken("field");
   IElementType FORALL = new AgdaToken("forall");
+  IElementType HIDING_KEYWORD = new AgdaToken("hiding");
   IElementType ID = new AgdaToken("id");
   IElementType IMPORT_KEYWORD = new AgdaToken("import");
   IElementType INFIXL_KEYWORD = new AgdaToken("infixl");
@@ -83,12 +84,14 @@ public interface AgdaTokenTypes {
   IElementType POSTULATE_KEYWORD = new AgdaToken("postulate");
   IElementType PRAGMA_CLOSE = new AgdaToken("#-}");
   IElementType PRAGMA_OPEN = new AgdaToken("{-#");
+  IElementType PUBLIC_KEYWORD = new AgdaToken("public");
   IElementType RECORD_KEYWORD = new AgdaToken("record");
   IElementType RIGHT_BRACE = new AgdaToken("}");
   IElementType RIGHT_PAREN = new AgdaToken(")");
   IElementType SEMICOLON = new AgdaToken(";");
   IElementType SPEC_CHARACTERS = new AgdaToken("SPEC_CHARACTERS");
   IElementType STRING = new AgdaToken("STRING");
+  IElementType USING_KEYWORD = new AgdaToken("using");
   IElementType VIRTUAL_LEFT_PAREN = new AgdaToken("VIRTUAL_LEFT_PAREN");
   IElementType VIRTUAL_RIGHT_PAREN = new AgdaToken("VIRTUAL_RIGHT_PAREN");
   IElementType VIRTUAL_SEMICOLON = new AgdaToken("VIRTUAL_SEMICOLON");
