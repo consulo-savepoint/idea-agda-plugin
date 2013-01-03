@@ -5,12 +5,12 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface FunctionDeclaration extends PsiElement {
+public interface WhereEpression extends PsiElement {
 
   @NotNull
-  Lhs getLhs();
+  Expression getExpression();
 
   @Nullable
-  WhereEpression getWhereEpression();
+  WherePart getWherePart();
 
 }

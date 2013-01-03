@@ -3,6 +3,7 @@ package org.jetbrains.agda.mixfix;
 
 import com.intellij.psi.PsiElement;
 import org.jetbrains.agda.psi.Application;
+import org.jetbrains.agda.scope.AgdaExpressionScope;
 
 import java.util.*;
 
@@ -58,7 +59,8 @@ public class Grammar {
 
     public static TreeElement parse(Application application) {
         List<PsiElement> listOfTerminals = getListOfTerminals(application);
-        Map<String, PsiElement> declarations = org.jetbrains.agda.scope.namespace.getGlobalDeclarations(application);
+        AgdaExpressionScope scope = new AgdaExpressionScope(application);
+        Map<String, PsiElement> declarations = scope.getVisibleDeclarations();
 
         return new Grammar(declarations).parse(listOfTerminals);
     }

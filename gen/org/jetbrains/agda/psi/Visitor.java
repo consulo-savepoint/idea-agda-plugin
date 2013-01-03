@@ -183,6 +183,14 @@ public class Visitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitWhereEpression(@NotNull WhereEpression o) {
+    visitPsiElement(o);
+  }
+
+  public void visitWherePart(@NotNull WherePart o) {
+    visitPsiElement(o);
+  }
+
   public void visitPsiElement(@NotNull PsiElement o) {
     visitElement(o);
   }

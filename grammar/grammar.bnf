@@ -62,7 +62,7 @@ fqName ::= id ('.' id) * {mixin = "org.jetbrains.agda.psi.AgdaReferenceElementIm
 
 name_declaration ::= id
 
-private recovering_declaration ::= module_declaration | module_import | open | infix | postulate | pragma | function_type_declaration | function_declaration | absurd_function   {recoverUntil=recover}
+private recovering_declaration ::= module_declaration | module_import | open | infix | postulate | pragma | function_type_declaration | function_declaration | absurd_function {recoverUntil=recover}
 
 private declaration ::= VIRTUAL_SEMICOLON | data_declaration | record_declaration | record_field | record_constructor | recovering_declaration
 
@@ -128,7 +128,7 @@ function_type_declaration ::= name_declaration ":" maybe_newLine expression {pin
 
 lhs ::= ("..." "|" expression) | expression
 
-function_declaration ::= lhs "=" expression {pin = 2}
+function_declaration ::= lhs "=" where_epression {pin = 2}
 
 absurd_function ::= expression
 
@@ -145,6 +145,10 @@ application ::= (atom_expr maybe_application)
 private maybe_application ::= application | atom_expr
 
 expression ::= let_expression | tele_arrow | lambda_expression | function_type | maybe_application | forall_expression
+
+where_part ::= "where" ((VIRTUAL_LEFT_PAREN (declaration +) VIRTUAL_RIGHT_PAREN) | declaration)
+
+where_epression ::= expression where_part?
 
 number_expression ::= number
 

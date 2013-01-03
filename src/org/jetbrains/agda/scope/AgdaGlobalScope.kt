@@ -14,7 +14,10 @@ public class AgdaGlobalScope() {
         public fun find(element : FqName) : PsiElement? {
             val text : String = element.getText()!!
             val path : Array<String> = text.split("\\.")
-            val containingDirectory : PsiDirectory? = element.getContainingFile()?.getContainingDirectory()?.getParent()
+            var containingDirectory : PsiDirectory? = element.getContainingFile()?.getContainingDirectory();
+            while (containingDirectory!!.getName() != "src") {
+                containingDirectory = containingDirectory?.getParent();
+            }
             val file : PsiFile? = findPath(containingDirectory, path, 0)
             return file
         }

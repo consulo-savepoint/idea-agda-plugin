@@ -54,6 +54,8 @@ public interface AgdaTokenTypes {
   IElementType TYPE_SIGNATURE = new AgdaCompositeElementType("TYPE_SIGNATURE");
   IElementType TYPE_SIGNATURES = new AgdaCompositeElementType("TYPE_SIGNATURES");
   IElementType USING_OR_HIDING = new AgdaCompositeElementType("USING_OR_HIDING");
+  IElementType WHERE_EPRESSION = new AgdaCompositeElementType("WHERE_EPRESSION");
+  IElementType WHERE_PART = new AgdaCompositeElementType("WHERE_PART");
 
   IElementType ARROW = new AgdaToken("->");
   IElementType ASSIGNMENT = new AgdaToken("=");
@@ -229,6 +231,12 @@ public interface AgdaTokenTypes {
       }
       else if (type == USING_OR_HIDING) {
         return new UsingOrHidingImpl(node);
+      }
+      else if (type == WHERE_EPRESSION) {
+        return new WhereEpressionImpl(node);
+      }
+      else if (type == WHERE_PART) {
+        return new WherePartImpl(node);
       }
       throw new AssertionError("Unknown element type: " + type);
     }

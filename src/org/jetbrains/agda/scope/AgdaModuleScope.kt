@@ -20,6 +20,7 @@ import org.jetbrains.agda.psi.FqName
 import org.jetbrains.agda.psi.impl.FqNameImpl
 import org.jetbrains.agda.psi.ImportName
 import org.jetbrains.agda.psi.ModuleImport
+import org.jetbrains.agda.psi.RecordDeclaration
 
 /**
  * @author Evgeny.Kurbatsky
@@ -55,10 +56,14 @@ class AgdaModuleScope(val module : PsiElement) {
                 }
             }
         }
+        if (element is RecordDeclaration) {
+            val nameDeclaration = element.getNameDeclaration()
+            map.put(nameDeclaration!!.getText()!!, nameDeclaration)
+        }
 
-        if ((element is FunctionTypeDeclaration?)) {
-            var text : String? = ((element as FunctionTypeDeclaration?))!!.getFirstChild()?.getText()
-            map.put(text!!, element)
+        if (element is FunctionTypeDeclaration) {
+            val text = element.getFirstChild()!!.getText()!!
+            map.put(text, element)
         }
 
         if (element is Postulate) {
@@ -73,9 +78,20 @@ class AgdaModuleScope(val module : PsiElement) {
         }
 
         if (element is ModuleImport) {
-            val file = AgdaGlobalScope().find(element.getFqName()!!);
-            if (file != null) {
-                map.putAll(AgdaModuleScope(file).getDeclarations())
+            val node = element.getNode()
+            val fqName = element.getFqName()
+            if (fqName != null) {
+                val file = AgdaGlobalScope().find(fqName);
+                if (file != null) {
+                    val mutableMap = AgdaModuleScope(file).getDeclarations()
+                    if (node!!.getFirstChildNode()!!.getText() == "open") {
+                        map.putAll(mutableMap)
+                    } else {
+                        for ((key, value) in mutableMap) {
+                            map.put(fqName.getText() + "." + key, value)
+                        }
+                    }
+                }
             }
         }
 
@@ -90,18 +106,6 @@ class AgdaModuleScope(val module : PsiElement) {
 
 }
 
-
-
-public fun getGlobalDeclarations(element : PsiElement?) : MutableMap<String, PsiElement> {
-    var root : PsiElement? = element
-    while (!((root is PsiFile?)))
-    {
-        root = root?.getParent()
-    }
-    var map : MutableMap<String, PsiElement> = HashMap<String, PsiElement>()
-    AgdaModuleScope(root!!).getDeclarations(map)
-    return map
-}
 
 public fun findDeclaration(element : AgdaReferenceElementImpl) : PsiElement? {
     if ((element.getParent() is Application?))

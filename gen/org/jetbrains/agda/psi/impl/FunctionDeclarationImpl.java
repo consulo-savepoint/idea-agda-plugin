@@ -18,15 +18,15 @@ public class FunctionDeclarationImpl extends ASTWrapperPsiElement implements Fun
   }
 
   @Override
-  @Nullable
-  public Expression getExpression() {
-    return findChildByClass(Expression.class);
-  }
-
-  @Override
   @NotNull
   public Lhs getLhs() {
     return findNotNullChildByClass(Lhs.class);
+  }
+
+  @Override
+  @Nullable
+  public WhereEpression getWhereEpression() {
+    return findChildByClass(WhereEpression.class);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {

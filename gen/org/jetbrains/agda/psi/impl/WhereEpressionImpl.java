@@ -11,26 +11,26 @@ import static org.jetbrains.agda.gen.parser.AgdaTokenTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import org.jetbrains.agda.psi.*;
 
-public class RenamingImpl extends ASTWrapperPsiElement implements Renaming {
+public class WhereEpressionImpl extends ASTWrapperPsiElement implements WhereEpression {
 
-  public RenamingImpl(ASTNode node) {
+  public WhereEpressionImpl(ASTNode node) {
     super(node);
   }
 
   @Override
   @NotNull
-  public List<NewLine> getNewLineList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, NewLine.class);
+  public Expression getExpression() {
+    return findNotNullChildByClass(Expression.class);
   }
 
   @Override
-  @NotNull
-  public PsiElement getId() {
-    return findNotNullChildByType(ID);
+  @Nullable
+  public WherePart getWherePart() {
+    return findChildByClass(WherePart.class);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof Visitor) ((Visitor)visitor).visitRenaming(this);
+    if (visitor instanceof Visitor) ((Visitor)visitor).visitWhereEpression(this);
     else super.accept(visitor);
   }
 

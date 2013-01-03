@@ -59,7 +59,7 @@ fun buildFromRoot(program : Program<PsiElement>, element : PsiElement?) : Unit {
     if (element is FunctionDeclaration) {
         var functionDeclaration : FunctionDeclaration = element;
         val left : Expression? = functionDeclaration.getLhs().getExpression()
-        val right : Expression? = functionDeclaration.getExpression()
+        val right : Expression? = functionDeclaration.getWhereEpression()!!.getExpression();
         val leftPart : CExpression? = convertExpression(program, left!!)
         val body : CExpression? = convertExpression(program, right!!)
         program.myLassDeclaration?.getBodyes()?.add(FunctionBody(leftPart!!, body!!))

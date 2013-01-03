@@ -23,7 +23,7 @@ import com.intellij.psi.tree.IElementType;
   return;
 %eof}
 
-%xstate STRING, BLOCK_COMMENT
+%xstate STRING, BLOCK_COMMENT, INDENT
 
 DIGIT=[0-9]
 WHITE_SPACE_CHAR=[\ \t\f]
@@ -35,6 +35,26 @@ IDENTIFIER={LETTER} {IDENTIFIER_PART}*
 
 %%
 
+<BLOCK_COMMENT>([^-]|"-"[^}]) {return AgdaTokenTypes.COMMENT;}
+<BLOCK_COMMENT>("-}") {  yybegin(YYINITIAL); return AgdaTokenTypes.COMMENT; }
+<INDENT> {WHITE_SPACE_CHAR}+ {
+     yybegin(YYINITIAL);
+     return TokenType.WHITE_SPACE;
+}
+
+<INDENT> ({WHITE_SPACE_CHAR}|[\n])+ {
+     yybegin(YYINITIAL);
+     CharSequence yytext = yytext();
+     int indentSize = yytext.length() - yytext.toString().lastIndexOf("\n") - 1;
+     if (prevIndentSize.getLast() < indentSize) {
+        prevIndentSize.addLast(indentSize);
+        return AgdaTokenTypes.VIRTUAL_LEFT_PAREN;
+     } else if (prevIndentSize.getLast() == indentSize) {
+        return AgdaTokenTypes.VIRTUAL_SEMICOLON;
+     } else {
+        return TokenType.WHITE_SPACE;
+     }
+}
 
 {INDENT} { yybegin(YYINITIAL);
         CharSequence yytext = yytext();
@@ -44,25 +64,17 @@ IDENTIFIER={LETTER} {IDENTIFIER_PART}*
             return TokenType.WHITE_SPACE;
         }
 
-        IElementType result;
         if (indentSize > prevIndentSize.getLast()) {
-          result = AgdaTokenTypes.VIRTUAL_LEFT_PAREN;
-          prevIndentSize.addLast(indentSize);
+          return TokenType.WHITE_SPACE;
         } else if (indentSize < prevIndentSize.getLast()) {
-          result = AgdaTokenTypes.VIRTUAL_RIGHT_PAREN;
           prevIndentSize.removeLast();
-          if (indentSize < prevIndentSize.getLast()) {
-            yypushback(yytext.length() - 1);
-          }
+          yypushback(yytext.length() - 1);
+          return AgdaTokenTypes.VIRTUAL_RIGHT_PAREN;
         } else {
-          result = AgdaTokenTypes.VIRTUAL_SEMICOLON;
+          return AgdaTokenTypes.VIRTUAL_SEMICOLON;
         }
-
-        return result;
       }
 
-<BLOCK_COMMENT>([^-]|"-"[^}]) {return AgdaTokenTypes.COMMENT;}
-<BLOCK_COMMENT>("-}") {  yybegin(YYINITIAL); return AgdaTokenTypes.COMMENT; }
 
 ({WHITE_SPACE_CHAR})+ { return TokenType.WHITE_SPACE; }
 {EOL_COMMENT}         { return AgdaTokenTypes.END_OF_LINE_COMMENT; }
@@ -80,7 +92,8 @@ IDENTIFIER={LETTER} {IDENTIFIER_PART}*
 "let"                 { return AgdaTokenTypes.LET_KEYWORD; }
 "in"                  { return AgdaTokenTypes.IN_KEYWORD; }
 "data"                { return AgdaTokenTypes.DATA_KEYWORD; }
-"where"               { return AgdaTokenTypes.WHERE_KEYWORD; }
+"where"               { yybegin(INDENT);
+                        return AgdaTokenTypes.WHERE_KEYWORD; }
 "module"              { return AgdaTokenTypes.MODULE_KEYWORD; }
 "open"                { return AgdaTokenTypes.OPEN_KEYWORD; }
 "import"              { return AgdaTokenTypes.IMPORT_KEYWORD; }

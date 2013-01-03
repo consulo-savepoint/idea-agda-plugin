@@ -126,9 +126,9 @@ public final class AgdaProjectComponent implements ProjectComponent {
                             e.printStackTrace();
                         }
                     }
-                    if (!command.contains("*Type-checking*") && !command.contains("agda2-highlight-add-annotations")) {
+                    //if (!command.contains("*Type-checking*") && !command.contains("agda2-highlight-add-annotations")) {
                         System.out.println("[" + command + "]");
-                    }
+                    //}
                     return true;
                 }
             });
