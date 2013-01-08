@@ -12,6 +12,7 @@ import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
 import org.jetbrains.agda.external.*;
+import org.jetbrains.agda.psi.GoalExpression;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -75,9 +76,7 @@ public final class AgdaExpernalAnnotator extends ExternalAnnotator<PsiFile, Anno
                     if (!(element instanceof ASTWrapperPsiElement)) {
                       continue;
                     }
-                    ASTWrapperPsiElement astWrapper = (ASTWrapperPsiElement) element;
 
-                    astWrapper.putUserData(AgdaSyntaxAnnotation.SYNTAX, syntaxAnnotation);
                     /*
                     if (syntaxAnnotation.getReference() != null) {
                         VirtualFile virtualFile = LocalFileSystem.getInstance().findFileByIoFile(new File(syntaxAnnotation.getReference()));
@@ -103,7 +102,7 @@ public final class AgdaExpernalAnnotator extends ExternalAnnotator<PsiFile, Anno
             applyAnnotations(file, result.myAnnotations);
         }
 
-        List<Integer> goals = new ArrayList<Integer>();
+        List<GoalExpression> goals = new ArrayList<GoalExpression>();
         findGoals(file, goals);
 
         //applySyntax(file, holder);
@@ -122,8 +121,8 @@ public final class AgdaExpernalAnnotator extends ExternalAnnotator<PsiFile, Anno
                     GoalAnnotation goalAnnotation = (GoalAnnotation) annotation;
                     int index = goalAnnotation.getIndex();
                     if (index < goals.size()) {
-                        Integer startOffset = goals.get(index);
-                        holder.createWarningAnnotation(new TextRange(startOffset, startOffset + 2), goalAnnotation.getText());
+                        GoalExpression expression = goals.get(index);
+                        holder.createWarningAnnotation(expression, goalAnnotation.getText());
                     }
                 }
             }
@@ -134,17 +133,7 @@ public final class AgdaExpernalAnnotator extends ExternalAnnotator<PsiFile, Anno
     private void applySyntax(PsiElement element, AnnotationHolder holder) {
         PsiElement[] children = element.getChildren();
         if (children.length == 0) {
-            AgdaSyntaxAnnotation annotation = element.getUserData(AgdaSyntaxAnnotation.SYNTAX);
-            if (annotation != null) {
-                if ("datatype".equals(annotation.getType())) {
-                    Annotation infoAnnotation = holder.createInfoAnnotation(element, null);
-                    infoAnnotation.setTextAttributes(AgdaHighlighter.TYPE);
-                }
-                if ("inductiveconstructor".equals(annotation.getType())) {
-                    Annotation infoAnnotation = holder.createInfoAnnotation(element, null);
-                    infoAnnotation.setTextAttributes(AgdaHighlighter.CONSTRUCTOR);
-                }
-            }
+
         } else {
             for (PsiElement child : children) {
                 applySyntax(child, holder);
@@ -152,16 +141,13 @@ public final class AgdaExpernalAnnotator extends ExternalAnnotator<PsiFile, Anno
         }
     }
 
-    private void findGoals(PsiElement element, List<Integer> goals) {
+    private void findGoals(PsiElement element, List<GoalExpression> goals) {
         PsiElement[] children = element.getChildren();
-        if (children.length == 0) {
-            if (element.getText().equals("!!")) {
-                goals.add(element.getTextOffset());
-            }
-        } else {
-            for (PsiElement child : children) {
-                findGoals(child, goals);
-            }
+        if (element instanceof GoalExpression) {
+            goals.add((GoalExpression)element);
+        }
+        for (PsiElement child : children) {
+            findGoals(child, goals);
         }
     }
 

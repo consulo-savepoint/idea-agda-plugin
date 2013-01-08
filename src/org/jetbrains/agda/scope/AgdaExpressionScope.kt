@@ -25,6 +25,7 @@ import org.jetbrains.agda.psi.FqName
 import org.eclipse.jdt.internal.compiler.ast.FieldDeclaration
 import org.jetbrains.agda.psi.RecordField
 import org.jetbrains.agda.psi.TypeSignatures
+import org.jetbrains.agda.psi.WhereEpression
 
 
 public class AgdaExpressionScope(val element : PsiElement) {
@@ -39,11 +40,6 @@ public class AgdaExpressionScope(val element : PsiElement) {
         declarations.putAll(AgdaExpressionScope(element.getParent()!!).getVisibleDeclarations());
 
         val current : PsiElement = element
-
-        if (current is FunctionDeclaration) {
-            var declaration = (current as FunctionDeclaration?)
-            addFunctionParameters(declaration?.getLhs()!!.getExpression(), declarations, Grammar.getOperationParts(declarations as Map<String?, PsiElement?>))
-        }
         if (element is TeleArrow) {
             for (telescope in element.getTelescopeList()) {
                 val typeSignature : TypeSignature
@@ -64,10 +60,9 @@ public class AgdaExpressionScope(val element : PsiElement) {
                 {
                     declarations.put(nameDeclaration?.getText()!!, nameDeclaration!!)
                 }
-            }
+        }
 
-            if ((current is ForallExpression?))
-            {
+        if ((current is ForallExpression?)) {
                 var expression : ForallExpression? = (current as ForallExpression?)
                 for (typedUntypedBinding : TypedUntypedBinding? in expression?.getTypedUntypedBindingList()!!)
                 {
@@ -76,15 +71,7 @@ public class AgdaExpressionScope(val element : PsiElement) {
                         declarations.put(nameDeclaration?.getText()!!, nameDeclaration!!)
                     }
                 }
-            }
-            if (element is RecordDeclaration) {
-                var recordDeclaration : RecordDeclaration = element
-                for (binding in recordDeclaration.getTypedUntypedBindingList()) {
-                    for (declaration in binding!!.getNameDeclarationList()) {
-                        declarations.put(declaration?.getText()!!, declaration!!)
-                    }
-                }
-            }
+        }
             if (current is DataDeclaration) {
                 var dataDeclaration : DataDeclaration? = (current as DataDeclaration?)
                 for (binding : Binding? in dataDeclaration?.getBindingList()!!)
@@ -96,7 +83,7 @@ public class AgdaExpressionScope(val element : PsiElement) {
                 }
             }
 
-            if ((current is LetExpression?))
+        if ((current is LetExpression?))
             {
                 var letExpression : LetExpression? = (current as LetExpression?)
                 var nameDeclaration : NameDeclaration? = letExpression?.getNameDeclaration()
@@ -105,6 +92,28 @@ public class AgdaExpressionScope(val element : PsiElement) {
 
 
         val parent = element.getParent()
+
+        if (parent is RecordDeclaration) {
+            val recordDeclaration = parent as RecordDeclaration
+            val typedUntypedBindingList = recordDeclaration.getTypedUntypedBindingList()
+            for (binding in typedUntypedBindingList) {
+                val typeSignature = binding!!.getTypeSignature()
+                if (typeSignature != null) {
+                    for (declaration in typeSignature.getNameDeclarationList()) {
+                        declarations.put(declaration?.getText()!!, declaration!!)
+                    }
+                }
+                for (declaration in binding.getNameDeclarationList()) {
+                    declarations.put(declaration?.getText()!!, declaration!!)
+                }
+            }
+        }
+
+        if (parent is FunctionDeclaration) {
+            val declaration = parent as FunctionDeclaration
+            addFunctionParameters(declaration.getLhs().getExpression(), declarations, Grammar.getOperationParts(declarations as Map<String?, PsiElement?>))
+        }
+
         if (parent is TypeSignatures) {
             val typeSignatures = parent.getTypeSignatureList();
             for (typeSignature in typeSignatures) {

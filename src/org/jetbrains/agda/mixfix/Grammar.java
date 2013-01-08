@@ -131,6 +131,9 @@ public class Grammar {
 
     private TreeElement applyRule(List<TreeElement> list, int i) {
         for (String rule: myDeclarations.keySet()) {
+            if (rule.equals("_")) {
+                continue;
+            }
             String[] ruleCode = decode(rule);
             int length = ruleCode.length - 1;
             if (i >= length) {

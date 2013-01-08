@@ -12,13 +12,13 @@ public class CDataDeclaration(val name : String, aType : CExpression) : CDeclara
         return myConstructors
     }
     public fun toString() : String? {
-        var builder : StringBuilder? = StringBuilder()
-        builder?.append("data ")?.append(name)?.append(" : ")?.append(aType)?.append(" {\n")
+        val builder = StringBuilder()
+        builder.append("data ").append(name).append(" : ").append(aType).append(" {\n")
         for (cConstructor : CTypeSignature? in myConstructors)
         {
-            builder?.append("\t")?.append(cConstructor)?.append("\n")
+            builder.append("\t").append(cConstructor).append("\n")
         }
-        builder?.append("}")
-        return builder?.toString()
+        builder.append("}")
+        return builder.toString()
     }
 }

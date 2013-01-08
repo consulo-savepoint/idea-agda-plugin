@@ -37,6 +37,12 @@ public class FunctionTypeImpl extends ASTWrapperPsiElement implements FunctionTy
 
   @Override
   @Nullable
+  public GoalExpression getGoalExpression() {
+    return findChildByClass(GoalExpression.class);
+  }
+
+  @Override
+  @Nullable
   public NumberExpression getNumberExpression() {
     return findChildByClass(NumberExpression.class);
   }

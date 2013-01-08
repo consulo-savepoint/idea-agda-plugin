@@ -18,20 +18,14 @@ public class LambdaExpressionImpl extends ExpressionImpl implements LambdaExpres
 
   @Override
   @NotNull
-  public Expression getExpression() {
-    return findNotNullChildByClass(Expression.class);
+  public List<Expression> getExpressionList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, Expression.class);
   }
 
   @Override
   @NotNull
   public List<NameDeclaration> getNameDeclarationList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, NameDeclaration.class);
-  }
-
-  @Override
-  @Nullable
-  public TypeSignature getTypeSignature() {
-    return findChildByClass(TypeSignature.class);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {

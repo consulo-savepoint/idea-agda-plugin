@@ -26,6 +26,7 @@ public interface AgdaTokenTypes {
   IElementType FUNCTION_DECLARATION = new AgdaCompositeElementType("FUNCTION_DECLARATION");
   IElementType FUNCTION_TYPE = new AgdaCompositeElementType("FUNCTION_TYPE");
   IElementType FUNCTION_TYPE_DECLARATION = new AgdaCompositeElementType("FUNCTION_TYPE_DECLARATION");
+  IElementType GOAL_EXPRESSION = new AgdaCompositeElementType("GOAL_EXPRESSION");
   IElementType IMPLICIT_TELESCOPE = new AgdaCompositeElementType("IMPLICIT_TELESCOPE");
   IElementType IMPORT_NAME = new AgdaCompositeElementType("IMPORT_NAME");
   IElementType INFIX = new AgdaCompositeElementType("INFIX");
@@ -147,6 +148,9 @@ public interface AgdaTokenTypes {
       }
       else if (type == FUNCTION_TYPE_DECLARATION) {
         return new FunctionTypeDeclarationImpl(node);
+      }
+      else if (type == GOAL_EXPRESSION) {
+        return new GoalExpressionImpl(node);
       }
       else if (type == IMPLICIT_TELESCOPE) {
         return new ImplicitTelescopeImpl(node);

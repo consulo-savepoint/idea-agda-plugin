@@ -37,6 +37,12 @@ public class ApplicationImpl extends ASTWrapperPsiElement implements Application
 
   @Override
   @NotNull
+  public List<GoalExpression> getGoalExpressionList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, GoalExpression.class);
+  }
+
+  @Override
+  @NotNull
   public List<NumberExpression> getNumberExpressionList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, NumberExpression.class);
   }

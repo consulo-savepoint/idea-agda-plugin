@@ -43,6 +43,12 @@ public class ExpressionImpl extends ASTWrapperPsiElement implements Expression {
 
   @Override
   @Nullable
+  public GoalExpression getGoalExpression() {
+    return findChildByClass(GoalExpression.class);
+  }
+
+  @Override
+  @Nullable
   public LetExpression getLetExpression() {
     return findChildByClass(LetExpression.class);
   }

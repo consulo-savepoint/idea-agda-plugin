@@ -98,12 +98,15 @@ IDENTIFIER={LETTER} {IDENTIFIER_PART}*
 "open"                { return AgdaTokenTypes.OPEN_KEYWORD; }
 "import"              { return AgdaTokenTypes.IMPORT_KEYWORD; }
 "record"              { return AgdaTokenTypes.RECORD_KEYWORD; }
-"postulate"           { return AgdaTokenTypes.POSTULATE_KEYWORD; }
+"postulate"           { yybegin(INDENT);
+                        return AgdaTokenTypes.POSTULATE_KEYWORD; }
 "infix"               { return AgdaTokenTypes.INFIX_KEYWORD; }
 "infixl"              { return AgdaTokenTypes.INFIXL_KEYWORD; }
 "infixr"              { return AgdaTokenTypes.INFIXR_KEYWORD; }
-"constructor"         { return AgdaTokenTypes.CONSTRUCTOR_KEYWORD; }
-"field"               { return AgdaTokenTypes.FIELD_KEYWORD; }
+"constructor"         { yybegin(INDENT);
+                        return AgdaTokenTypes.CONSTRUCTOR_KEYWORD; }
+"field"               { yybegin(INDENT);
+                        return AgdaTokenTypes.FIELD_KEYWORD; }
 "public"              { return AgdaTokenTypes.PUBLIC_KEYWORD; }
 "using"               { return AgdaTokenTypes.USING_KEYWORD; }
 "hiding"              { return AgdaTokenTypes.HIDING_KEYWORD; }

@@ -138,7 +138,9 @@ absurd_expression ::= "(" ")" {extends=expression}
 
 parenthesis_expression ::= "(" expression ")" {pin=1; extends=expression}
 
-private atom_expr ::= absurd_expression | parenthesis_expression | "{" "!!" "}" | substitute_implisit | fqName | number_expression
+goal_expression ::= "{" "!!" "}"
+
+private atom_expr ::= absurd_expression | parenthesis_expression | goal_expression | substitute_implisit | fqName | number_expression
 
 application ::= (atom_expr maybe_application)
 
@@ -169,6 +171,6 @@ explicit_telescope ::= "(" type_signature ")" {extends=telescope}
 
 type_signature ::= ids ":" expression
 
-lambda_expression ::= "\\" (("(" type_signature ")" ) | ids) ARROW expression {extends=expression}
+lambda_expression ::= "\\" (("(" ids ":" expression ")") | ids) ARROW expression {extends=expression}
 
 function_type ::= maybe_application ARROW maybe_newLine expression

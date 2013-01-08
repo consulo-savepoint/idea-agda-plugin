@@ -17,6 +17,9 @@ public interface FunctionType extends PsiElement {
   FqName getFqName();
 
   @Nullable
+  GoalExpression getGoalExpression();
+
+  @Nullable
   NumberExpression getNumberExpression();
 
   @Nullable

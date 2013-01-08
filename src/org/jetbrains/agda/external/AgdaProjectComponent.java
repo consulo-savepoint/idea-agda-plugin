@@ -66,29 +66,6 @@ public final class AgdaProjectComponent implements ProjectComponent {
         }
     }
 
-    public static void parseExpression(SExpression expression, List<AgdaExternalAnnotation> messages) {
-        String errorMessage = null;
-
-        if ("*Error*".equals(expression.get(1).getValue())) {
-            errorMessage = expression.get(2).getValue();
-            messages.add(new AgdaCompilerMessage(errorMessage));
-        }
-        if ("*All Goals*".equals(expression.getValue(1))) {
-            messages.addAll(getGoals(expression.getValue(2)));
-        }
-    }
-
-    private static List<AgdaExternalAnnotation> getGoals(String data) {
-        List<AgdaExternalAnnotation> annotations = new ArrayList<AgdaExternalAnnotation>();
-        int index = 0;
-        for (String str : Pattern.compile("\\?[\\d]+ :").split(data)) {
-            if (str.length() > 0) {
-             annotations.add(new GoalAnnotation(index, str));
-             index++;
-            }
-        }
-        return annotations;
-    }
 
     private static String esc(String path) {
         return path.replace("\\", "\\\\");
@@ -101,39 +78,16 @@ public final class AgdaProjectComponent implements ProjectComponent {
             String cmd = "IOTCM \"" + esc(agdaFile.getPath()) + "\" Interactive Direct ( Cmd_load \"" + esc(agdaFile.getPath()) + "\" [\".\"] )\n";
             System.out.println(cmd);
 
-            final List<AgdaExternalAnnotation> messages = new ArrayList<AgdaExternalAnnotation>();
+            final AgdaOutputProcessor agdaOutputProcessor = new AgdaOutputProcessor();
             execute(cmd, new AgdaProcess.Callback() {
 
                 @Override
                 public boolean call(String command) {
-                    SExpression cmdExpression = new LispParser(command).parseExpression();
-                    if (cmdExpression.get(1) != null) {
-                        parseExpression(cmdExpression, messages);
-                    }
-                    if (command.contains("agda2-highlight-add-annotations")) {
-                        SExpression expr = new LispParser(command).parseExpression();
-                        messages.addAll(AgdaSyntaxAnnotation.parse(expr));
-                    }
-                    if (command.contains("agda2-highlight-load-and-delete-action")) {
-                        SExpression expr = new LispParser(command).parseExpression();
-                        try {
-                            File file = new File(expr.getValue(1));
-                            String data = FileUtil.readFile(file);
-                            file.delete();
-                            SExpression expression = new LispParser(data).parseExpression();
-                            messages.addAll(AgdaSyntaxAnnotation.parse(expression));
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    //if (!command.contains("*Type-checking*") && !command.contains("agda2-highlight-add-annotations")) {
-                        System.out.println("[" + command + "]");
-                    //}
-                    return true;
+                    return agdaOutputProcessor.processCmd(command);
                 }
             });
 
-            return messages;
+            return agdaOutputProcessor.getMessages();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -141,4 +95,5 @@ public final class AgdaProjectComponent implements ProjectComponent {
         return null;
 
     }
+
 }

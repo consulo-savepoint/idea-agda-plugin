@@ -71,6 +71,10 @@ public class Visitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitGoalExpression(@NotNull GoalExpression o) {
+    visitPsiElement(o);
+  }
+
   public void visitImplicitTelescope(@NotNull ImplicitTelescope o) {
     visitTelescope(o);
   }

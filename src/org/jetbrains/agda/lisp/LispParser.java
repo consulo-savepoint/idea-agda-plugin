@@ -1,5 +1,7 @@
 package org.jetbrains.agda.lisp;
 
+import org.jetbrains.annotations.NotNull;
+
 public class LispParser {
     private String myText;
     private int myIndex = 0;
@@ -18,6 +20,7 @@ public class LispParser {
         }
     }
 
+    @NotNull
     public SExpression parseExpression() {
         skipWhitespace();
         if (ch() == '\'') {

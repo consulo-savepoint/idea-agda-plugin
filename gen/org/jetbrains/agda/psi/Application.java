@@ -17,6 +17,9 @@ public interface Application extends PsiElement {
   List<FqName> getFqNameList();
 
   @NotNull
+  List<GoalExpression> getGoalExpressionList();
+
+  @NotNull
   List<NumberExpression> getNumberExpressionList();
 
   @NotNull

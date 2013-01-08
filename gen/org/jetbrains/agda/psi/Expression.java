@@ -20,6 +20,9 @@ public interface Expression extends PsiElement {
   FunctionType getFunctionType();
 
   @Nullable
+  GoalExpression getGoalExpression();
+
+  @Nullable
   LetExpression getLetExpression();
 
   @Nullable
