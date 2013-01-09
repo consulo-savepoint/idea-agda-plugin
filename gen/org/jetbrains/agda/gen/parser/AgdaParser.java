@@ -35,6 +35,9 @@ public class AgdaParser implements PsiParser {
     else if (root_ == BINDING) {
       result_ = binding(builder_, level_ + 1);
     }
+    else if (root_ == BINDINGS) {
+      result_ = bindings(builder_, level_ + 1);
+    }
     else if (root_ == BUILD_IN_PRAGMA) {
       result_ = build_in_pragma(builder_, level_ + 1);
     }
@@ -418,8 +421,10 @@ public class AgdaParser implements PsiParser {
 
   /* ********************************************************** */
   // binding *
-  static boolean bindings(PsiBuilder builder_, int level_) {
+  public static boolean bindings(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "bindings")) return false;
+    Marker marker_ = builder_.mark();
+    enterErrorRecordingSection(builder_, level_, _SECTION_GENERAL_, "<bindings>");
     int offset_ = builder_.getCurrentOffset();
     while (true) {
       if (!binding(builder_, level_ + 1)) break;
@@ -430,6 +435,8 @@ public class AgdaParser implements PsiParser {
       }
       offset_ = next_offset_;
     }
+    marker_.done(BINDINGS);
+    exitErrorRecordingSection(builder_, level_, true, false, _SECTION_GENERAL_, null);
     return true;
   }
 

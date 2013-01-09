@@ -5,9 +5,6 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface FqName extends PsiElement {
-
-  @NotNull
-  PsiElement getId();
+public interface GoalExpression extends PsiElement {
 
 }

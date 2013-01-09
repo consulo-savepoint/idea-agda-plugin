@@ -14,6 +14,7 @@ public interface AgdaTokenTypes {
   IElementType ABSURD_FUNCTION = new AgdaCompositeElementType("ABSURD_FUNCTION");
   IElementType APPLICATION = new AgdaCompositeElementType("APPLICATION");
   IElementType BINDING = new AgdaCompositeElementType("BINDING");
+  IElementType BINDINGS = new AgdaCompositeElementType("BINDINGS");
   IElementType BUILD_IN_PRAGMA = new AgdaCompositeElementType("BUILD_IN_PRAGMA");
   IElementType COMPILED_PRAGMA = new AgdaCompositeElementType("COMPILED_PRAGMA");
   IElementType COMPILED_TYPE_PRAGMA = new AgdaCompositeElementType("COMPILED_TYPE_PRAGMA");
@@ -112,6 +113,9 @@ public interface AgdaTokenTypes {
       }
       else if (type == BINDING) {
         return new BindingImpl(node);
+      }
+      else if (type == BINDINGS) {
+        return new BindingsImpl(node);
       }
       else if (type == BUILD_IN_PRAGMA) {
         return new BuildInPragmaImpl(node);

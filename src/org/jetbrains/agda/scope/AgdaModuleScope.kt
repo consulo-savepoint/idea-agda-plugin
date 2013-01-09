@@ -21,6 +21,7 @@ import org.jetbrains.agda.psi.impl.FqNameImpl
 import org.jetbrains.agda.psi.ImportName
 import org.jetbrains.agda.psi.ModuleImport
 import org.jetbrains.agda.psi.RecordDeclaration
+import org.jetbrains.agda.psi.ModuleDeclaration
 
 /**
  * @author Evgeny.Kurbatsky
@@ -34,28 +35,23 @@ class AgdaModuleScope(val module : PsiElement) {
         return map
     }
 
-    public fun getDeclarations(map : MutableMap<String, PsiElement>) : Unit {
-        getDeclarations(module, map)
-    }
-
-    private fun getDeclarations(element : PsiElement, map : MutableMap<String, PsiElement>) : Unit {
+    private fun getElementDeclarations(element : PsiElement, map : MutableMap<String, PsiElement>) : Unit {
         if (element is DataDeclaration) {
-            var dataDeclaration : DataDeclaration = element as DataDeclaration
-            map.put(dataDeclaration.getNameDeclaration()!!.getText()!!, element)
+            val dataDeclaration : DataDeclaration = element as DataDeclaration
+            val nameDeclaration = dataDeclaration.getNameDeclaration()
+            if (nameDeclaration != null) {
+                map.putAll(nameDeclaration.getPair())
+            }
             val constructors = dataDeclaration.getConstructors()
             if (constructors != null) {
-                getDeclarations(constructors, map)
-            }
-        }
-
-        if (element is Constructors) {
-            val constructors : Constructors = element
-            for (constructor : TypeSignature? in constructors.getTypeSignatureList()) {
-                for (nameDeclaration : NameDeclaration? in constructor!!.getNameDeclarationList()) {
-                    map.put(nameDeclaration!!.getText()!!, nameDeclaration)
+                for (constructor : TypeSignature? in constructors.getTypeSignatureList()) {
+                    for (nameDeclaration2 in constructor!!.getNameDeclarationList()) {
+                        map.putAll(nameDeclaration2!!.getPair())
+                    }
                 }
             }
         }
+
         if (element is RecordDeclaration) {
             val nameDeclaration = element.getNameDeclaration()
             map.put(nameDeclaration!!.getText()!!, nameDeclaration)
@@ -94,13 +90,21 @@ class AgdaModuleScope(val module : PsiElement) {
                 }
             }
         }
+    }
 
-        if (element is AgdaFileImpl) {
+    private fun getDeclarations(element : PsiElement, map : MutableMap<String, PsiElement>) : Unit {
+        if (element is ModuleDeclaration) {
             for (child in element.getChildren()) {
-                getDeclarations(child!!, map)
+                getElementDeclarations(child!!, map)
             }
         }
 
+
+        if (element is AgdaFileImpl) {
+            for (child in element.getChildren()) {
+                getElementDeclarations(child!!, map)
+            }
+        }
     }
 
 
@@ -108,9 +112,9 @@ class AgdaModuleScope(val module : PsiElement) {
 
 
 public fun findDeclaration(element : AgdaReferenceElementImpl) : PsiElement? {
-    if ((element.getParent() is Application?))
+    if (element.getParent() is Application)
     {
-        var term : TreeElement? = Grammar.parse((element.getParent() as Application?))
+        var term : TreeElement? = Grammar.parse(element.getParent() as Application)
         if (term != null)
         {
             var declaration : PsiElement? = term?.getDeclaration(element)

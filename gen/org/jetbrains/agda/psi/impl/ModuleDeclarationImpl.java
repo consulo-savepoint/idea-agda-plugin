@@ -24,9 +24,9 @@ public class ModuleDeclarationImpl extends ASTWrapperPsiElement implements Modul
   }
 
   @Override
-  @NotNull
-  public List<Binding> getBindingList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, Binding.class);
+  @Nullable
+  public Bindings getBindings() {
+    return findChildByClass(Bindings.class);
   }
 
   @Override

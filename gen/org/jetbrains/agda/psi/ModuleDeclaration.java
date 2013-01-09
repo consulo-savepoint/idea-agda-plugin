@@ -10,8 +10,8 @@ public interface ModuleDeclaration extends PsiElement {
   @NotNull
   List<AbsurdFunction> getAbsurdFunctionList();
 
-  @NotNull
-  List<Binding> getBindingList();
+  @Nullable
+  Bindings getBindings();
 
   @NotNull
   List<DataDeclaration> getDataDeclarationList();

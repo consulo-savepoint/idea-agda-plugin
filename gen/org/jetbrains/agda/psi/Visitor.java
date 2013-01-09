@@ -23,6 +23,10 @@ public class Visitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitBindings(@NotNull Bindings o) {
+    visitPsiElement(o);
+  }
+
   public void visitBuildInPragma(@NotNull BuildInPragma o) {
     visitPsiElement(o);
   }

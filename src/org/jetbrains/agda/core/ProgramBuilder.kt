@@ -95,11 +95,11 @@ fun treeToExpression(programm : Program<PsiElement>, treeElement : TreeElement?)
             return convertExpression(programm, treeElement?.getElement()!!)
         }
         else {
-            var children : Array<TreeElement?>? = treeElement?.getChildren()
+            var children : List<TreeElement>? = treeElement?.getChildren()
             if ((children?.size)!! == 1) {
                 return treeToExpression(programm, children!![0])
             } else if ((children?.size)!! == 2) {
-                return CApplication(treeToExpression(programm, children!![0]!!), treeToExpression(programm, children!![1]!!))
+                return CApplication(treeToExpression(programm, children!![0]), treeToExpression(programm, children!![1]))
             }
         }
     }
@@ -124,8 +124,8 @@ private fun getDeclarationName(declaration : PsiElement?) : String? {
 
 
 fun parseExpressionImpl(program : Program<PsiElement>, expression : PsiElement?) : CExpression {
-    if ((expression is Application?)) {
-        var treeElement : TreeElement? = Grammar.parse((expression as Application?))
+    if (expression is Application) {
+        var treeElement : TreeElement? = Grammar.parse(expression)
         return treeToExpression(program, treeElement)
     }
 
@@ -206,8 +206,7 @@ fun convertExpression(program : Program<PsiElement>, expression : PsiElement) : 
 fun convertDataDeclaration(program : Program<PsiElement>, psiData : DataDeclaration?) : CDataDeclaration {
     var aType : CExpression? = convertExpression(program, psiData?.getExpression()!!)
     val signatures : MutableList<CTypeSignature?> = ArrayList<CTypeSignature?>()
-    for (binding : Binding? in psiData?.getBindingList()!!)
-    {
+    for (binding : Binding? in psiData?.getBindings()!!.getBindingList()) {
         var expression : CExpression? = convertExpression(program, binding?.getExpression()!!)
         for (nameDeclaration : NameDeclaration? in binding?.getNameDeclarationList()!!)
         {

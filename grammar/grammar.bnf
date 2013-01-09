@@ -91,7 +91,7 @@ postulate ::= "postulate" (VIRTUAL_LEFT_PAREN postulate_bindings VIRTUAL_RIGHT_P
 
 module_declaration ::= 'module' fqName bindings "where" (VIRTUAL_LEFT_PAREN declaration+ VIRTUAL_RIGHT_PAREN)? {pin=1}
 
-private bindings ::= binding *
+bindings ::= binding *
 
 new_line ::= VIRTUAL_LEFT_PAREN | VIRTUAL_RIGHT_PAREN | VIRTUAL_SEMICOLON | ()
 

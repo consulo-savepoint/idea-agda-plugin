@@ -5,36 +5,23 @@ package org.jetbrains.agda.scope
  */
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import org.jetbrains.agda.psi.FunctionDeclaration
-import org.jetbrains.agda.psi.TeleArrow
 import org.jetbrains.agda.mixfix.Grammar
-import org.jetbrains.agda.psi.TypeSignature
-import org.jetbrains.agda.psi.ImplicitTelescope
-import org.jetbrains.agda.psi.Telescope
-import org.jetbrains.agda.psi.ExplicitTelescope
-import org.jetbrains.agda.psi.ForallExpression
-import org.jetbrains.agda.psi.LambdaExpression
-import org.jetbrains.agda.psi.NameDeclaration
-import org.jetbrains.agda.psi.TypedUntypedBinding
-import org.jetbrains.agda.psi.DataDeclaration
-import org.jetbrains.agda.psi.Binding
-import org.jetbrains.agda.psi.LetExpression
 import java.util.HashMap
-import org.jetbrains.agda.psi.RecordDeclaration
-import org.jetbrains.agda.psi.FqName
 import org.eclipse.jdt.internal.compiler.ast.FieldDeclaration
-import org.jetbrains.agda.psi.RecordField
-import org.jetbrains.agda.psi.TypeSignatures
-import org.jetbrains.agda.psi.WhereEpression
+import org.jetbrains.agda.psi.*
+import java.util.Collections
+import java.util.ArrayList
 
 
 public class AgdaExpressionScope(val element : PsiElement) {
+    fun NameDeclaration.getPair() =  Pair<String, PsiElement>(this.getText()!!, this)
 
     public fun getVisibleDeclarations() : MutableMap<String, PsiElement> {
 
         if (element is PsiFile) {
             return AgdaModuleScope(element).getDeclarations();
         }
+
         val declarations : MutableMap<String, PsiElement> = HashMap<String, PsiElement>()
 
         declarations.putAll(AgdaExpressionScope(element.getParent()!!).getVisibleDeclarations());
@@ -72,16 +59,14 @@ public class AgdaExpressionScope(val element : PsiElement) {
                     }
                 }
         }
-            if (current is DataDeclaration) {
-                var dataDeclaration : DataDeclaration? = (current as DataDeclaration?)
-                for (binding : Binding? in dataDeclaration?.getBindingList()!!)
-                {
-                    for (declaration : NameDeclaration? in binding?.getNameDeclarationList()!!)
-                    {
-                        declarations.put(declaration?.getText()!!, declaration!!)
-                    }
+        if (current is DataDeclaration) {
+            val dataDeclaration : DataDeclaration = (current as DataDeclaration)
+            for (binding : Binding? in dataDeclaration.getBindings()!!.getBindingList()) {
+                for (declaration : NameDeclaration? in binding?.getNameDeclarationList()!!) {
+                    declarations.put(declaration?.getText()!!, declaration!!)
                 }
             }
+        }
 
         if ((current is LetExpression?))
             {
@@ -111,19 +96,7 @@ public class AgdaExpressionScope(val element : PsiElement) {
 
         if (parent is FunctionDeclaration) {
             val declaration = parent as FunctionDeclaration
-            addFunctionParameters(declaration.getLhs().getExpression(), declarations, Grammar.getOperationParts(declarations as Map<String?, PsiElement?>))
-        }
-
-        if (parent is TypeSignatures) {
-            val typeSignatures = parent.getTypeSignatureList();
-            for (typeSignature in typeSignatures) {
-                if (typeSignature == element) {
-                    break;
-                }
-                for (nameDeclaration in typeSignature!!.getNameDeclarationList()) {
-                    declarations.put(nameDeclaration!!.getText()!!, nameDeclaration)
-                }
-            }
+            addFunctionParameters(declaration.getLhs().getExpression(), declarations, Grammar.getOperationParts(declarations))
         }
         if (parent is ForallExpression) {
 
@@ -147,21 +120,53 @@ public class AgdaExpressionScope(val element : PsiElement) {
 
 
         }
-        return declarations
+        if (parent is ModuleDeclaration) {
+            addBindings(parent.getBindings()!!.getBindingList().map { it!! }, declarations)
+            if (parent.getChildren().toList().contains(element)) {
+                val moduleDeclaration = AgdaModuleScope(parent).getDeclarations()
+                declarations.putAll(moduleDeclaration);
+            }
+        }
+        if (parent is Bindings) {
+            val bindingsList = parent.getBindingList().map { it!! }.takeWhile { it != element }
+            addBindings(bindingsList, declarations)
+        }
+
+        getVisibleDeclarationsFunctional().forEach { declarations.putAll(it) }
+
+        return declarations;
     }
+
+    public fun getVisibleDeclarationsFunctional() : List<Pair<String, PsiElement>> {
+        val parent = element.getParent()
+
+        if (parent is TypeSignatures) {
+            val declarations = ArrayList<Pair<String, PsiElement>>()
+
+            for (typeSignature in parent.getTypeSignatureList().takeWhile { it != element }) {
+                declarations.addAll(typeSignature!!.getNameDeclarationList().map { it!!.getPair() })
+            }
+            return declarations;
+        }
+        return Collections.emptyList();
+    }
+
+    fun addBindings(bindingsList : List<Binding>, declarations : MutableMap<String, PsiElement>) {
+        for (binding in bindingsList) {
+            for (nameDeclaration in binding.getNameDeclarationList()) {
+                declarations.put(nameDeclaration!!.getText()!!, nameDeclaration)
+            }
+        }
+    }
+
     private fun addFunctionParameters(expression : PsiElement, declarations : MutableMap<String, PsiElement>, operationParts : Set<String?>?) : Unit {
         if (expression is FqName) {
-            var text : String? = expression.getText();
-            if (!declarations.containsKey(text) && !operationParts!!.contains(text))
-            {
+            val text : String? = expression.getText();
+            if (!declarations.containsKey(text) && !operationParts!!.contains(text)) {
                 declarations.put(text!!, expression)
             }
-
-        }
-        else
-        {
-            for (child : PsiElement? in expression.getChildren())
-            {
+        } else {
+            for (child : PsiElement? in expression.getChildren()) {
                 addFunctionParameters(child!!, declarations, operationParts)
             }
         }

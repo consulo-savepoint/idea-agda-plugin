@@ -7,8 +7,8 @@ import com.intellij.psi.PsiElement;
 
 public interface DataDeclaration extends PsiElement {
 
-  @NotNull
-  List<Binding> getBindingList();
+  @Nullable
+  Bindings getBindings();
 
   @Nullable
   Constructors getConstructors();
