@@ -60,7 +60,7 @@ private maybe_newLine ::= (VIRTUAL_LEFT_PAREN | VIRTUAL_RIGHT_PAREN | VIRTUAL_SE
 
 fqName ::= id ('.' id) * {mixin = "org.jetbrains.agda.psi.AgdaReferenceElementImpl"}
 
-name_declaration ::= id
+name_declaration ::= id {mixin = "org.jetbrains.agda.psi.AgdaNamedElement"}
 
 private recovering_declaration ::= module_declaration | module_import | open | infix | postulate | pragma | function_type_declaration | function_declaration | absurd_function {recoverUntil=recover}
 

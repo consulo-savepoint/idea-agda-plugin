@@ -16,34 +16,10 @@ import java.util.ArrayList
 public class AgdaExpressionScope(val element : PsiElement) : Scope() {
     fun NameDeclaration.getPair() =  Pair<String, PsiElement>(this.getText()!!, this)
 
-    override fun traverse(function : (String, PsiElement) -> Boolean) : Boolean {
-        val parent = element.getParent()
-
-        val result = when (parent) {
-            is WhereEpression -> {
-                val wherePart = parent.getWherePart()
-                if (wherePart != null) {AgdaModuleScope(wherePart).traverse(function)} else false;
-            };
-            else -> false;
-        }
-        if (result) {
-            return true;
-        }
-
-        for ((name, value) in getDeclarationsOld()) {
-            if (function(name, value)) {
-                return true;
-            }
-        }
-        return false;
-    }
+    override fun traverse(function : (String, PsiElement) -> Boolean) =
+        ArdaExpressionScopeTraverse(function).traverse()
 
     private fun getDeclarationsOld() : MutableMap<String, PsiElement> {
-
-        if (element is PsiFile) {
-            return AgdaModuleScope(element).getVisibleDeclarations();
-        }
-
         val declarations : MutableMap<String, PsiElement> = HashMap<String, PsiElement>()
 
         declarations.putAll(AgdaExpressionScope(element.getParent()!!).getVisibleDeclarations());
@@ -69,25 +45,6 @@ public class AgdaExpressionScope(val element : PsiElement) : Scope() {
                 {
                     declarations.put(nameDeclaration?.getText()!!, nameDeclaration!!)
                 }
-        }
-
-        if ((current is ForallExpression?)) {
-                var expression : ForallExpression? = (current as ForallExpression?)
-                for (typedUntypedBinding : TypedUntypedBinding? in expression?.getTypedUntypedBindingList()!!)
-                {
-                    for (nameDeclaration : NameDeclaration? in typedUntypedBinding?.getNameDeclarationList()!!)
-                    {
-                        declarations.put(nameDeclaration?.getText()!!, nameDeclaration!!)
-                    }
-                }
-        }
-        if (current is DataDeclaration) {
-            val dataDeclaration : DataDeclaration = (current as DataDeclaration)
-            for (binding : Binding? in dataDeclaration.getBindings()!!.getBindingList()) {
-                for (declaration : NameDeclaration? in binding?.getNameDeclarationList()!!) {
-                    declarations.put(declaration?.getText()!!, declaration!!)
-                }
-            }
         }
 
         if ((current is LetExpression?))
@@ -142,13 +99,7 @@ public class AgdaExpressionScope(val element : PsiElement) : Scope() {
 
 
         }
-        if (parent is ModuleDeclaration) {
-            addBindings(parent.getBindings()!!.getBindingList().map { it!! }, declarations)
-            if (parent.getChildren().toList().contains(element)) {
-                val moduleDeclaration = AgdaModuleScope(parent).getVisibleDeclarations()
-                declarations.putAll(moduleDeclaration);
-            }
-        }
+
         if (parent is Bindings) {
             val bindingsList = parent.getBindingList().map { it!! }.takeWhile { it != element }
             addBindings(bindingsList, declarations)
@@ -194,5 +145,81 @@ public class AgdaExpressionScope(val element : PsiElement) : Scope() {
         }
     }
 
+    class ArdaExpressionScopeTraverse(val function : (String, PsiElement) -> Boolean) {
+
+        fun traverse() : Boolean {
+            val parent = element.getParent()
+
+            val result = when (parent) {
+                is WhereEpression -> {
+                    val wherePart = parent.getWherePart()
+                    if (wherePart != null) {AgdaModuleScope(wherePart).traverse(function)} else false;
+                };
+                is ForallExpression -> {
+                    val expression : ForallExpression = (parent as ForallExpression)
+                    for (typedUntypedBinding in expression.getTypedUntypedBindingList()) {
+                        traverseTypedUntypedBinding(typedUntypedBinding!!);
+                    }
+                    return false;
+                }
+                is PsiFile -> {
+                    return AgdaModuleScope(parent).traverse(function)
+                }
+                is DataDeclaration -> {
+                    traverseList(parent.getBindings()!!.getBindingList().takeWhile { it != element }) {
+                        traverseNameDeclarations(it!!.getNameDeclarationList())
+                    }
+                }
+                is ModuleDeclaration -> {
+                    var t1 = traverseList((parent.getBindings()!!.getBindingList().takeWhile { it != element })) {
+                        traverseNameDeclarations(it!!.getNameDeclarationList())
+                    }
+                    t1 || AgdaModuleScope(parent).traverse(function);
+                }
+                else -> false;
+            }
+            if (result) {
+                return true;
+            }
+
+            return traverseMap(getDeclarationsOld());
+        }
+
+        fun traverseMap(map : Map<String, PsiElement>) : Boolean {
+            for ((name, value) in map) {
+                if (function(name, value)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        fun traverseTypedUntypedBinding(typedUntypedBinding : TypedUntypedBinding) : Boolean {
+            val typeSignature = typedUntypedBinding.getTypeSignature()
+            val nameDeclarations = if (typeSignature != null) {
+                typeSignature.getNameDeclarationList();
+            } else {
+                typedUntypedBinding.getNameDeclarationList()
+            }
+            return traverseNameDeclarations(nameDeclarations);
+        }
+
+        fun traverseNameDeclarations(nameDeclarations : List<NameDeclaration?>) : Boolean {
+            traverseList (nameDeclarations) {
+                function(it!!.getText()!!, it)
+            }
+            return false;
+        }
+
+        fun <A> traverseList(list : List<A>, inline traverseFunction : (A) -> Boolean) : Boolean {
+            for (value in list) {
+                if (traverseFunction(value))  {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+    }
 }
 

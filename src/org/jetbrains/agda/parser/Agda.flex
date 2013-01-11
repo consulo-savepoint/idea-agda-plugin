@@ -82,7 +82,12 @@ IDENTIFIER={LETTER} {IDENTIFIER_PART}*
         }
       }
 
-
+<<EOF>>               { if (prevIndentSize.getLast() > 0) {
+                            prevIndentSize.removeLast();
+                            return AgdaTokenTypes.VIRTUAL_RIGHT_PAREN;
+                        }
+                        return null;
+                      }
 ({WHITE_SPACE_CHAR})+ { return TokenType.WHITE_SPACE; }
 {EOL_COMMENT}         { return AgdaTokenTypes.END_OF_LINE_COMMENT; }
 "{"                   { return AgdaTokenTypes.LEFT_BRACE; }
