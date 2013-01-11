@@ -13,6 +13,7 @@ import com.intellij.psi.tree.IElementType;
 %implements FlexLexer
 
 %{
+    public boolean isHighlighter = false;
     private LinkedList<Integer> prevIndentSize = new LinkedList<Integer>(Collections.singleton(0));
 %}
 
@@ -44,19 +45,25 @@ IDENTIFIER={LETTER} {IDENTIFIER_PART}*
 
 <INDENT> ({WHITE_SPACE_CHAR}|[\n])+ {
      yybegin(YYINITIAL);
+     if (isHighlighter) {
+        return TokenType.WHITE_SPACE;
+     }
      CharSequence yytext = yytext();
      int indentSize = yytext.length() - yytext.toString().lastIndexOf("\n") - 1;
      if (prevIndentSize.getLast() < indentSize) {
-        prevIndentSize.addLast(indentSize);
-        return AgdaTokenTypes.VIRTUAL_LEFT_PAREN;
+         prevIndentSize.addLast(indentSize);
+         return AgdaTokenTypes.VIRTUAL_LEFT_PAREN;
      } else if (prevIndentSize.getLast() == indentSize) {
-        return AgdaTokenTypes.VIRTUAL_SEMICOLON;
+         return AgdaTokenTypes.VIRTUAL_SEMICOLON;
      } else {
-        return TokenType.WHITE_SPACE;
+         return TokenType.WHITE_SPACE;
      }
 }
 
 {INDENT} { yybegin(YYINITIAL);
+        if (isHighlighter) {
+            return TokenType.WHITE_SPACE;
+        }
         CharSequence yytext = yytext();
         int indentSize = yytext.length() - 2;
         yypushback(1);
@@ -117,6 +124,6 @@ IDENTIFIER={LETTER} {IDENTIFIER_PART}*
 (forall)|(\u2200)     { return AgdaTokenTypes.FORALL; }
 
 
-{IDENTIFIER} { return AgdaTokenTypes.ID; }
-"\n"               { return AgdaTokenTypes.VIRTUAL_RIGHT_PAREN; }
-. { return TokenType.BAD_CHARACTER; }
+{IDENTIFIER}          { return AgdaTokenTypes.ID; }
+"\n"                  { return AgdaTokenTypes.VIRTUAL_RIGHT_PAREN; }
+.                     { return TokenType.BAD_CHARACTER; }

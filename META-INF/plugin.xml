@@ -59,5 +59,6 @@
                                      implementationClass="org.jetbrains.agda.highlight.AgdaHighlighterFactory"/>
       <lang.fileViewProviderFactory language="Agda"
                                     implementationClass="org.jetbrains.agda.AgdaFileViewProviderFactory"/>
+      <applicationConfigurable implementation="org.jetbrains.agda.settings.AgdaSettingsConfigurable"/>
   </extensions>
 </idea-plugin>

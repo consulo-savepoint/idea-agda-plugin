@@ -22,18 +22,32 @@ import org.jetbrains.agda.psi.ImportName
 import org.jetbrains.agda.psi.ModuleImport
 import org.jetbrains.agda.psi.RecordDeclaration
 import org.jetbrains.agda.psi.ModuleDeclaration
+import org.jetbrains.agda.psi.WherePart
 
 /**
  * @author Evgeny.Kurbatsky
  */
 
-class AgdaModuleScope(val module : PsiElement) {
+class AgdaModuleScope(val module : PsiElement) : Scope() {
 
-    public fun getDeclarations() : MutableMap<String, PsiElement> {
-        val map = HashMap<String, PsiElement>()
-        getDeclarations(module, map)
-        return map
+    public override fun traverse(function: (String, PsiElement) -> Boolean): Boolean {
+        if (module is WherePart || module is ModuleDeclaration || module is AgdaFileImpl) {
+            for (child in module.getChildren()) {
+                val map = HashMap<String, PsiElement>()
+                getElementDeclarations(child!!, map)
+                for ((name, value) in map) {
+                    if (function(name, value)) {
+                        return true
+                    }
+                }
+            }
+            return false;
+        }
+
+        throw RuntimeException()
     }
+
+
 
     private fun getElementDeclarations(element : PsiElement, map : MutableMap<String, PsiElement>) : Unit {
         if (element is DataDeclaration) {
@@ -79,7 +93,7 @@ class AgdaModuleScope(val module : PsiElement) {
             if (fqName != null) {
                 val file = AgdaGlobalScope().find(fqName);
                 if (file != null) {
-                    val mutableMap = AgdaModuleScope(file).getDeclarations()
+                    val mutableMap = AgdaModuleScope(file).getVisibleDeclarations()
                     if (node!!.getFirstChildNode()!!.getText() == "open") {
                         map.putAll(mutableMap)
                     } else {
@@ -91,22 +105,6 @@ class AgdaModuleScope(val module : PsiElement) {
             }
         }
     }
-
-    private fun getDeclarations(element : PsiElement, map : MutableMap<String, PsiElement>) : Unit {
-        if (element is ModuleDeclaration) {
-            for (child in element.getChildren()) {
-                getElementDeclarations(child!!, map)
-            }
-        }
-
-
-        if (element is AgdaFileImpl) {
-            for (child in element.getChildren()) {
-                getElementDeclarations(child!!, map)
-            }
-        }
-    }
-
 
 }
 

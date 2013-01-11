@@ -1,5 +1,8 @@
 package org.jetbrains.agda.external;
 
+import com.intellij.notification.Notification;
+import com.intellij.notification.NotificationType;
+import com.intellij.notification.Notifications;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.agda.lisp.LispParser;
@@ -59,7 +62,14 @@ public final class AgdaProjectComponent implements ProjectComponent {
             myProcess.execute(cmd, callback);
         } else {
             AgdaProcess process = new AgdaProcess();
-            process.init();
+            try {
+                process.init();
+            } catch (IOException e) {
+                Notifications.Bus.notify(new Notification("Agda executable", "Agda execution problem",
+                        "<html>Can't execute Agda, specify Agda executable path in settings.</html>",
+                        NotificationType.ERROR));
+                return;
+            }
             process.execute(cmd, callback);
             process.stop();
 
@@ -88,8 +98,9 @@ public final class AgdaProjectComponent implements ProjectComponent {
             });
 
             return agdaOutputProcessor.getMessages();
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
+
         }
 
         return null;

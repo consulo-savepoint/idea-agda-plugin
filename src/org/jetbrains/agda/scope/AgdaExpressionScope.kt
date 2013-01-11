@@ -13,13 +13,35 @@ import java.util.Collections
 import java.util.ArrayList
 
 
-public class AgdaExpressionScope(val element : PsiElement) {
+public class AgdaExpressionScope(val element : PsiElement) : Scope() {
     fun NameDeclaration.getPair() =  Pair<String, PsiElement>(this.getText()!!, this)
 
-    public fun getVisibleDeclarations() : MutableMap<String, PsiElement> {
+    override fun traverse(function : (String, PsiElement) -> Boolean) : Boolean {
+        val parent = element.getParent()
+
+        val result = when (parent) {
+            is WhereEpression -> {
+                val wherePart = parent.getWherePart()
+                if (wherePart != null) {AgdaModuleScope(wherePart).traverse(function)} else false;
+            };
+            else -> false;
+        }
+        if (result) {
+            return true;
+        }
+
+        for ((name, value) in getDeclarationsOld()) {
+            if (function(name, value)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private fun getDeclarationsOld() : MutableMap<String, PsiElement> {
 
         if (element is PsiFile) {
-            return AgdaModuleScope(element).getDeclarations();
+            return AgdaModuleScope(element).getVisibleDeclarations();
         }
 
         val declarations : MutableMap<String, PsiElement> = HashMap<String, PsiElement>()
@@ -123,7 +145,7 @@ public class AgdaExpressionScope(val element : PsiElement) {
         if (parent is ModuleDeclaration) {
             addBindings(parent.getBindings()!!.getBindingList().map { it!! }, declarations)
             if (parent.getChildren().toList().contains(element)) {
-                val moduleDeclaration = AgdaModuleScope(parent).getDeclarations()
+                val moduleDeclaration = AgdaModuleScope(parent).getVisibleDeclarations()
                 declarations.putAll(moduleDeclaration);
             }
         }

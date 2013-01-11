@@ -1,8 +1,12 @@
 package org.jetbrains.agda.external;
 
 
+import com.intellij.notification.Notification;
+import com.intellij.notification.NotificationType;
+import com.intellij.notification.Notifications;
 import org.jetbrains.agda.lisp.LispParser;
 import org.jetbrains.agda.lisp.SExpression;
+import org.jetbrains.agda.settings.AgdaSettings;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -73,7 +77,8 @@ public class AgdaProcess {
     public void init() throws IOException {
         Runtime rt = Runtime.getRuntime();
 
-        myProcess = rt.exec("C:\\Users\\Atsky\\Application Data\\cabal\\bin\\agda.exe --interaction");
+        String agdaPath = new AgdaSettings().getAgdaPath();
+        myProcess = rt.exec(agdaPath + " --interaction");
 
         myInput = myProcess.getInputStream();
         myWriter = new OutputStreamWriter(myProcess.getOutputStream());

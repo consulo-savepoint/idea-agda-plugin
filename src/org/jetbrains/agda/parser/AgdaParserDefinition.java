@@ -21,7 +21,7 @@ public class AgdaParserDefinition implements ParserDefinition {
 
     @NotNull
     public Lexer createLexer(Project project) {
-        return new AgdaLexer();
+        return new AgdaLexer(false);
     }
 
     public IFileElementType getFileNodeType() {

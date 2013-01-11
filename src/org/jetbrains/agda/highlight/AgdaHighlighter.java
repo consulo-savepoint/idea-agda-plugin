@@ -23,7 +23,7 @@ public class AgdaHighlighter extends SyntaxHighlighterBase {
 
   @NotNull
   public Lexer getHighlightingLexer() {
-    return new AgdaLexer();
+    return new AgdaLexer(true);
   }
 
 

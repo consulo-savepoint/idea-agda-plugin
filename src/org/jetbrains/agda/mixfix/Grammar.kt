@@ -12,14 +12,14 @@ import java.util.Arrays
 public open class Grammar(val myDeclarations : MutableMap<String, PsiElement>) {
     private var myOperatorParts : ArrayList<String>? = ArrayList<String>()
 
-    private open fun parse(listOfTerminals : List<PsiElement>) : TreeElement {
+    private open fun parse(listOfTerminals : List<PsiElement>) : TreeElement? {
         val list = ArrayList<TreeElement>()
         for (element : PsiElement? in listOfTerminals)
         {
             list.add(TreeElement(element, null, Collections.emptyList()))
         }
         val term = parseIterative(parseApplications(list))
-        return term!!
+        return term
     }
 
     private open fun parseApplications(list : MutableList<TreeElement>) : List<TreeElement> {

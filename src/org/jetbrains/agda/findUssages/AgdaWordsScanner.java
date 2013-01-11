@@ -8,7 +8,7 @@ import org.jetbrains.agda.parser.AgdaTokenTypesOld;
 
 public class AgdaWordsScanner extends DefaultWordsScanner {
   public AgdaWordsScanner() {
-    super(new AgdaLexer(), TokenSet.create(AgdaTokenTypes.ID),
+    super(new AgdaLexer(false), TokenSet.create(AgdaTokenTypes.ID),
             AgdaTokenTypesOld.COMMENTS, TokenSet.create(AgdaTokenTypes.SPEC_CHARACTERS));
   }
 }
