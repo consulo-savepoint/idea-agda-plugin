@@ -4,6 +4,7 @@ package org.jetbrains.agda.highlight;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
 import org.jetbrains.agda.psi.*;
 import org.jetbrains.agda.psi.impl.FqNameImpl;
 import org.jetbrains.annotations.NotNull;
@@ -38,6 +39,9 @@ public class AgdaAnnotator implements Annotator {
                 holder.createInfoAnnotation(element, null).setTextAttributes(AgdaHighlighter.TYPE);
                 return;
             }
+            if (hasAbsurdParent(element)) {
+                return;
+            }
             PsiElement declaration = org.jetbrains.agda.scope.namespace.findDeclaration((FqNameImpl) element);
             if (declaration != null) {
                 if (declaration instanceof DataDeclaration) {
@@ -47,11 +51,19 @@ public class AgdaAnnotator implements Annotator {
                     holder.createInfoAnnotation(element, null).setTextAttributes(AgdaHighlighter.CONSTRUCTOR);
                 }
             } else {
-                holder.createErrorAnnotation(element, "Can't resolve");
+                //holder.createErrorAnnotation(element, "Can't resolve");
             }
 
         }
     }
+
+    private boolean hasAbsurdParent(PsiElement element) {
+        if (element instanceof PsiFile) {
+            return false;
+        }
+        return element instanceof AbsurdFunction || hasAbsurdParent(element.getParent());
+    }
+
 
     private boolean isConstructor(PsiElement declaration) {
         if (declaration instanceof NameDeclaration) {

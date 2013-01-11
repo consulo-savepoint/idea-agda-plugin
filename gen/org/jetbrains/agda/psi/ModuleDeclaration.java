@@ -35,6 +35,9 @@ public interface ModuleDeclaration extends PsiElement {
   List<ModuleImport> getModuleImportList();
 
   @NotNull
+  List<Mutual> getMutualList();
+
+  @NotNull
   List<Open> getOpenList();
 
   @NotNull

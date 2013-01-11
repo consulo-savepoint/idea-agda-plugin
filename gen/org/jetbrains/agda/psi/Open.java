@@ -8,15 +8,18 @@ import com.intellij.psi.PsiElement;
 public interface Open extends PsiElement {
 
   @Nullable
-  Expression getExpression();
+  AsName getAsName();
+
+  @Nullable
+  FqName getFqName();
+
+  @Nullable
+  ModuleArguments getModuleArguments();
 
   @Nullable
   Renaming getRenaming();
 
   @Nullable
   UsingOrHiding getUsingOrHiding();
-
-  @Nullable
-  PsiElement getId();
 
 }

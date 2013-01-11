@@ -31,6 +31,9 @@ public interface RecordDeclaration extends PsiElement {
   @NotNull
   List<ModuleImport> getModuleImportList();
 
+  @NotNull
+  List<Mutual> getMutualList();
+
   @Nullable
   NameDeclaration getNameDeclaration();
 

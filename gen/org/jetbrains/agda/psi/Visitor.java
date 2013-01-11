@@ -19,6 +19,10 @@ public class Visitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitAsName(@NotNull AsName o) {
+    visitPsiElement(o);
+  }
+
   public void visitBinding(@NotNull Binding o) {
     visitPsiElement(o);
   }
@@ -103,11 +107,19 @@ public class Visitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitModuleArguments(@NotNull ModuleArguments o) {
+    visitPsiElement(o);
+  }
+
   public void visitModuleDeclaration(@NotNull ModuleDeclaration o) {
     visitPsiElement(o);
   }
 
   public void visitModuleImport(@NotNull ModuleImport o) {
+    visitPsiElement(o);
+  }
+
+  public void visitMutual(@NotNull Mutual o) {
     visitPsiElement(o);
   }
 

@@ -77,28 +77,6 @@ public class AgdaExpressionScope(val element : PsiElement) : Scope() {
             val declaration = parent as FunctionDeclaration
             addFunctionParameters(declaration.getLhs().getExpression(), declarations, Grammar.getOperationParts(declarations))
         }
-        if (parent is ForallExpression) {
-
-            val bindingsList = parent.getTypedUntypedBindingList()
-
-            for (binding in bindingsList) {
-              if (parent.getExpression() != element && bindingsList.indexOf(element) <= bindingsList.indexOf(binding)) {
-                  continue;
-              }
-              for (nameDeclaration in binding!!.getNameDeclarationList()) {
-                declarations.put(nameDeclaration!!.getText()!!, nameDeclaration)
-
-                val typeSignature = binding.getTypeSignature()
-                if (typeSignature != null) {
-                    for (nameDeclaration in typeSignature.getNameDeclarationList()) {
-                        declarations.put(nameDeclaration!!.getText()!!, nameDeclaration)
-                    }
-                }
-              }
-            }
-
-
-        }
 
         if (parent is Bindings) {
             val bindingsList = parent.getBindingList().map { it!! }.takeWhile { it != element }
@@ -151,19 +129,18 @@ public class AgdaExpressionScope(val element : PsiElement) : Scope() {
             val parent = element.getParent()
 
             val result = when (parent) {
+                is PsiFile -> {
+                    return AgdaModuleScope(parent).traverse(function)
+                }
                 is WhereEpression -> {
                     val wherePart = parent.getWherePart()
                     if (wherePart != null) {AgdaModuleScope(wherePart).traverse(function)} else false;
                 };
                 is ForallExpression -> {
                     val expression : ForallExpression = (parent as ForallExpression)
-                    for (typedUntypedBinding in expression.getTypedUntypedBindingList()) {
-                        traverseTypedUntypedBinding(typedUntypedBinding!!);
+                    traverseList(expression.getTypedUntypedBindingList()) {
+                        traverseTypedUntypedBinding(it!!);
                     }
-                    return false;
-                }
-                is PsiFile -> {
-                    return AgdaModuleScope(parent).traverse(function)
                 }
                 is DataDeclaration -> {
                     traverseList(parent.getBindings()!!.getBindingList().takeWhile { it != element }) {
@@ -178,11 +155,8 @@ public class AgdaExpressionScope(val element : PsiElement) : Scope() {
                 }
                 else -> false;
             }
-            if (result) {
-                return true;
-            }
 
-            return traverseMap(getDeclarationsOld());
+            return result || traverseMap(getDeclarationsOld());
         }
 
         fun traverseMap(map : Map<String, PsiElement>) : Boolean {
@@ -211,14 +185,7 @@ public class AgdaExpressionScope(val element : PsiElement) : Scope() {
             return false;
         }
 
-        fun <A> traverseList(list : List<A>, inline traverseFunction : (A) -> Boolean) : Boolean {
-            for (value in list) {
-                if (traverseFunction(value))  {
-                    return true;
-                }
-            }
-            return false;
-        }
+
 
     }
 }

@@ -19,8 +19,20 @@ public class ModuleImportImpl extends ASTWrapperPsiElement implements ModuleImpo
 
   @Override
   @Nullable
+  public AsName getAsName() {
+    return findChildByClass(AsName.class);
+  }
+
+  @Override
+  @Nullable
   public FqName getFqName() {
     return findChildByClass(FqName.class);
+  }
+
+  @Override
+  @Nullable
+  public ModuleArguments getModuleArguments() {
+    return findChildByClass(ModuleArguments.class);
   }
 
   @Override
@@ -33,12 +45,6 @@ public class ModuleImportImpl extends ASTWrapperPsiElement implements ModuleImpo
   @Nullable
   public UsingOrHiding getUsingOrHiding() {
     return findChildByClass(UsingOrHiding.class);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getId() {
-    return findChildByType(ID);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {

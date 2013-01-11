@@ -5,7 +5,7 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface WherePart extends PsiElement {
+public interface Mutual extends PsiElement {
 
   @NotNull
   List<AbsurdFunction> getAbsurdFunctionList();

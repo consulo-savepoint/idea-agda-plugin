@@ -73,6 +73,12 @@ public class ModuleDeclarationImpl extends ASTWrapperPsiElement implements Modul
 
   @Override
   @NotNull
+  public List<Mutual> getMutualList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, Mutual.class);
+  }
+
+  @Override
+  @NotNull
   public List<Open> getOpenList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, Open.class);
   }

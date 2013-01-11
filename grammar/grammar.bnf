@@ -24,6 +24,7 @@
     PUBLIC_KEYWORD="public"
     USING_KEYWORD="using"
     HIDING_KEYWORD="hiding"
+    MUTUAL_KEYWORD="mutual"
 
     NUMBER="number"
     SPEC_CHARACTERS="SPEC_CHARACTERS"
@@ -62,11 +63,17 @@ fqName ::= id ('.' id) * {mixin = "org.jetbrains.agda.psi.AgdaReferenceElementIm
 
 name_declaration ::= id {mixin = "org.jetbrains.agda.psi.AgdaNamedElement"}
 
-private recovering_declaration ::= module_declaration | module_import | open | infix | postulate | pragma | function_type_declaration | function_declaration | absurd_function {recoverUntil=recover}
+private recovering_declaration ::= module_declaration | module_import | open | infix | postulate | pragma | mutual | function_type_declaration | function_declaration | absurd_function {recoverUntil=recover}
 
 private declaration ::= VIRTUAL_SEMICOLON | data_declaration | record_declaration | record_field | record_constructor | recovering_declaration
 
-open ::= 'open' expression as_name? "public"? using_or_hiding? renaming? {pin=1}
+mutual ::= MUTUAL_KEYWORD VIRTUAL_LEFT_PAREN (declaration +) VIRTUAL_RIGHT_PAREN
+
+open ::= 'open' fqName module_arguments as_name? "public"? using_or_hiding? renaming? {pin=1}
+
+module_import ::= 'open' ? 'import' fqName module_arguments as_name? "public"? using_or_hiding? renaming?  {pin=2}
+
+module_arguments ::= expression *
 
 record_declaration ::= "record" name_declaration typed_untyped_bindings ":" expression "where" VIRTUAL_LEFT_PAREN (declaration +) VIRTUAL_RIGHT_PAREN {pin=1}
 
@@ -104,9 +111,9 @@ import_name ::= ("module"? fqName)
 
 private import_names ::= import_name (";" import_name) *
 
-module_import ::= 'open' ? 'import' fqName as_name? "public"? using_or_hiding? renaming?  {pin=2}
 
-private as_name ::= "as" id
+
+as_name ::= "as" id
 
 renaming ::= new_line "renaming" "(" renamings ")"
 
@@ -171,6 +178,6 @@ explicit_telescope ::= "(" type_signature ")" {extends=telescope}
 
 type_signature ::= ids ":" expression
 
-lambda_expression ::= "\\" (("(" ids ":" expression ")") | ids) ARROW expression {extends=expression}
+lambda_expression ::= ("\\" | "λ") (("(" ids ":" expression ")") | ids) ARROW expression {extends=expression}
 
 function_type ::= maybe_application ARROW maybe_newLine expression

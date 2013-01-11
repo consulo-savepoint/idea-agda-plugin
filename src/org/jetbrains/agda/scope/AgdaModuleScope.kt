@@ -23,6 +23,8 @@ import org.jetbrains.agda.psi.ModuleImport
 import org.jetbrains.agda.psi.RecordDeclaration
 import org.jetbrains.agda.psi.ModuleDeclaration
 import org.jetbrains.agda.psi.WherePart
+import org.jetbrains.agda.psi.Open
+import com.intellij.codeInsight.daemon.impl.quickfix.AddReturnFix
 
 /**
  * @author Evgeny.Kurbatsky
@@ -33,11 +35,30 @@ class AgdaModuleScope(val module : PsiElement) : Scope() {
     public override fun traverse(function: (String, PsiElement) -> Boolean): Boolean {
         if (module is WherePart || module is ModuleDeclaration || module is AgdaFileImpl) {
             for (child in module.getChildren()) {
-                val map = HashMap<String, PsiElement>()
-                getElementDeclarations(child!!, map)
-                for ((name, value) in map) {
-                    if (function(name, value)) {
-                        return true
+                when (child) {
+                    is ModuleImport -> {
+                        if (traverseImport(child, function)) {
+                            return true;
+                        }
+
+                    }
+                    is Open -> {
+                        val text = child.getFqName()!!.getText()!!
+                        val import = findImport(text);
+                        if (import != null) {
+                            if (traverseImport(import as ModuleImport, function)) {
+                                return true;
+                            }
+                        }
+                    }
+                    else -> {
+                        val map = HashMap<String, PsiElement>()
+                        getElementDeclarations(child!!, map)
+                        for ((name, value) in map) {
+                            if (function(name, value)) {
+                                return true
+                            }
+                        }
                     }
                 }
             }
@@ -47,7 +68,35 @@ class AgdaModuleScope(val module : PsiElement) : Scope() {
         throw RuntimeException()
     }
 
+    fun findImport(name : String) : ModuleImport? {
+        for (child in module.getChildren()) {
+            if (child is ModuleImport) {
+                val asName = child.getAsName()
+                if (asName != null && asName.getId().getText() == name) {
+                    return child;
+                }
+            }
+        }
+        return null;
+    }
 
+    inline fun traverseImport(import : ModuleImport, function: (String, PsiElement) -> Boolean) : Boolean {
+        val node = import.getNode()
+        val fqName = import.getFqName()
+        if (fqName != null) {
+            val file = AgdaGlobalScope().find(fqName);
+            if (file != null) {
+                if (node!!.getFirstChildNode()!!.getText() == "open") {
+                    return AgdaModuleScope(file).traverse(function)
+                } else {
+                    return AgdaModuleScope(file).traverse { key, value ->
+                        function(fqName.getText() + "." + key, value)
+                    }
+                }
+            }
+        }
+        return false;
+    }
 
     private fun getElementDeclarations(element : PsiElement, map : MutableMap<String, PsiElement>) : Unit {
         if (element is DataDeclaration) {
@@ -85,24 +134,6 @@ class AgdaModuleScope(val module : PsiElement) : Scope() {
                 }
             }
 
-        }
-
-        if (element is ModuleImport) {
-            val node = element.getNode()
-            val fqName = element.getFqName()
-            if (fqName != null) {
-                val file = AgdaGlobalScope().find(fqName);
-                if (file != null) {
-                    val mutableMap = AgdaModuleScope(file).getVisibleDeclarations()
-                    if (node!!.getFirstChildNode()!!.getText() == "open") {
-                        map.putAll(mutableMap)
-                    } else {
-                        for ((key, value) in mutableMap) {
-                            map.put(fqName.getText() + "." + key, value)
-                        }
-                    }
-                }
-            }
         }
     }
 

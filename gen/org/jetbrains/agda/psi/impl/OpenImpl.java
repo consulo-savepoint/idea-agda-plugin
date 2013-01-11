@@ -19,8 +19,20 @@ public class OpenImpl extends ASTWrapperPsiElement implements Open {
 
   @Override
   @Nullable
-  public Expression getExpression() {
-    return findChildByClass(Expression.class);
+  public AsName getAsName() {
+    return findChildByClass(AsName.class);
+  }
+
+  @Override
+  @Nullable
+  public FqName getFqName() {
+    return findChildByClass(FqName.class);
+  }
+
+  @Override
+  @Nullable
+  public ModuleArguments getModuleArguments() {
+    return findChildByClass(ModuleArguments.class);
   }
 
   @Override
@@ -33,12 +45,6 @@ public class OpenImpl extends ASTWrapperPsiElement implements Open {
   @Nullable
   public UsingOrHiding getUsingOrHiding() {
     return findChildByClass(UsingOrHiding.class);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getId() {
-    return findChildByType(ID);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {

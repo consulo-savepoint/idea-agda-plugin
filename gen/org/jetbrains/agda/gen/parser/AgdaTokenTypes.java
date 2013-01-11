@@ -13,6 +13,7 @@ public interface AgdaTokenTypes {
   IElementType ABSURD_EXPRESSION = new AgdaCompositeElementType("ABSURD_EXPRESSION");
   IElementType ABSURD_FUNCTION = new AgdaCompositeElementType("ABSURD_FUNCTION");
   IElementType APPLICATION = new AgdaCompositeElementType("APPLICATION");
+  IElementType AS_NAME = new AgdaCompositeElementType("AS_NAME");
   IElementType BINDING = new AgdaCompositeElementType("BINDING");
   IElementType BINDINGS = new AgdaCompositeElementType("BINDINGS");
   IElementType BUILD_IN_PRAGMA = new AgdaCompositeElementType("BUILD_IN_PRAGMA");
@@ -34,8 +35,10 @@ public interface AgdaTokenTypes {
   IElementType LAMBDA_EXPRESSION = new AgdaCompositeElementType("LAMBDA_EXPRESSION");
   IElementType LET_EXPRESSION = new AgdaCompositeElementType("LET_EXPRESSION");
   IElementType LHS = new AgdaCompositeElementType("LHS");
+  IElementType MODULE_ARGUMENTS = new AgdaCompositeElementType("MODULE_ARGUMENTS");
   IElementType MODULE_DECLARATION = new AgdaCompositeElementType("MODULE_DECLARATION");
   IElementType MODULE_IMPORT = new AgdaCompositeElementType("MODULE_IMPORT");
+  IElementType MUTUAL = new AgdaCompositeElementType("MUTUAL");
   IElementType NAME_DECLARATION = new AgdaCompositeElementType("NAME_DECLARATION");
   IElementType NEW_LINE = new AgdaCompositeElementType("NEW_LINE");
   IElementType NUMBER_EXPRESSION = new AgdaCompositeElementType("NUMBER_EXPRESSION");
@@ -81,6 +84,7 @@ public interface AgdaTokenTypes {
   IElementType LEFT_PAREN = new AgdaToken("(");
   IElementType LET_KEYWORD = new AgdaToken("let");
   IElementType MODULE_KEYWORD = new AgdaToken("module");
+  IElementType MUTUAL_KEYWORD = new AgdaToken("mutual");
   IElementType NUMBER = new AgdaToken("number");
   IElementType OPEN_KEYWORD = new AgdaToken("open");
   IElementType POSTULATE_KEYWORD = new AgdaToken("postulate");
@@ -110,6 +114,9 @@ public interface AgdaTokenTypes {
       }
       else if (type == APPLICATION) {
         return new ApplicationImpl(node);
+      }
+      else if (type == AS_NAME) {
+        return new AsNameImpl(node);
       }
       else if (type == BINDING) {
         return new BindingImpl(node);
@@ -174,11 +181,17 @@ public interface AgdaTokenTypes {
       else if (type == LHS) {
         return new LhsImpl(node);
       }
+      else if (type == MODULE_ARGUMENTS) {
+        return new ModuleArgumentsImpl(node);
+      }
       else if (type == MODULE_DECLARATION) {
         return new ModuleDeclarationImpl(node);
       }
       else if (type == MODULE_IMPORT) {
         return new ModuleImportImpl(node);
+      }
+      else if (type == MUTUAL) {
+        return new MutualImpl(node);
       }
       else if (type == NAME_DECLARATION) {
         return new NameDeclarationImpl(node);

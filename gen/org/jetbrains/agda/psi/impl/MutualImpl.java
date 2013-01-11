@@ -11,9 +11,9 @@ import static org.jetbrains.agda.gen.parser.AgdaTokenTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import org.jetbrains.agda.psi.*;
 
-public class RecordDeclarationImpl extends ASTWrapperPsiElement implements RecordDeclaration {
+public class MutualImpl extends ASTWrapperPsiElement implements Mutual {
 
-  public RecordDeclarationImpl(ASTNode node) {
+  public MutualImpl(ASTNode node) {
     super(node);
   }
 
@@ -27,12 +27,6 @@ public class RecordDeclarationImpl extends ASTWrapperPsiElement implements Recor
   @NotNull
   public List<DataDeclaration> getDataDeclarationList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, DataDeclaration.class);
-  }
-
-  @Override
-  @Nullable
-  public Expression getExpression() {
-    return findChildByClass(Expression.class);
   }
 
   @Override
@@ -72,12 +66,6 @@ public class RecordDeclarationImpl extends ASTWrapperPsiElement implements Recor
   }
 
   @Override
-  @Nullable
-  public NameDeclaration getNameDeclaration() {
-    return findChildByClass(NameDeclaration.class);
-  }
-
-  @Override
   @NotNull
   public List<Open> getOpenList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, Open.class);
@@ -113,14 +101,8 @@ public class RecordDeclarationImpl extends ASTWrapperPsiElement implements Recor
     return PsiTreeUtil.getChildrenOfTypeAsList(this, RecordField.class);
   }
 
-  @Override
-  @NotNull
-  public List<TypedUntypedBinding> getTypedUntypedBindingList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, TypedUntypedBinding.class);
-  }
-
   public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof Visitor) ((Visitor)visitor).visitRecordDeclaration(this);
+    if (visitor instanceof Visitor) ((Visitor)visitor).visitMutual(this);
     else super.accept(visitor);
   }
 

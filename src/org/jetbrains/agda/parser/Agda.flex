@@ -62,6 +62,7 @@ IDENTIFIER={LETTER} {IDENTIFIER_PART}*
 
 {INDENT} { yybegin(YYINITIAL);
         if (isHighlighter) {
+            yypushback(1);
             return TokenType.WHITE_SPACE;
         }
         CharSequence yytext = yytext();
@@ -112,6 +113,8 @@ IDENTIFIER={LETTER} {IDENTIFIER_PART}*
 "record"              { return AgdaTokenTypes.RECORD_KEYWORD; }
 "postulate"           { yybegin(INDENT);
                         return AgdaTokenTypes.POSTULATE_KEYWORD; }
+"mutual"              { yybegin(INDENT);
+                        return AgdaTokenTypes.MUTUAL_KEYWORD; }
 "infix"               { return AgdaTokenTypes.INFIX_KEYWORD; }
 "infixl"              { return AgdaTokenTypes.INFIXL_KEYWORD; }
 "infixr"              { return AgdaTokenTypes.INFIXR_KEYWORD; }
@@ -130,5 +133,5 @@ IDENTIFIER={LETTER} {IDENTIFIER_PART}*
 
 
 {IDENTIFIER}          { return AgdaTokenTypes.ID; }
-"\n"                  { return AgdaTokenTypes.VIRTUAL_RIGHT_PAREN; }
+[\n]                  { return TokenType.WHITE_SPACE; }
 .                     { return TokenType.BAD_CHARACTER; }

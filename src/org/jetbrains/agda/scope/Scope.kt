@@ -15,5 +15,12 @@ abstract class Scope {
         return declarations;
     }
 
-
+    fun <A> traverseList(list : List<A>, inline traverseFunction : (A) -> Boolean) : Boolean {
+        for (value in list) {
+            if (traverseFunction(value))  {
+                return true;
+            }
+        }
+        return false;
+    }
 }
