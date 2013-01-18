@@ -31,29 +31,28 @@ import org.jetbrains.agda.mixfix.ParentElement
  * @author Evgeny.Kurbatsky
  */
 
-fun buildProgram(var element : PsiElement?) : Program<PsiElement> {
-    while (!((element is PsiFile?)))
-    {
-        element = element?.getParent()
+fun buildProgram(val element : PsiElement) : Program<PsiElement> =
+    if (element is PsiFile) {
+        val program = Program<PsiElement>()
+        buildFromRoot(program, element)
+        program
+    } else {
+        buildProgram(element.getParent()!!);
     }
-    val program = Program<PsiElement>()
-    buildFromRoot(program, element)
-    return program
-}
 
 
-fun buildFromRoot(program : Program<PsiElement>, element : PsiElement?) : Unit {
+
+fun buildFromRoot(program : Program<PsiElement>, element : PsiElement) : Unit {
     if (element is DataDeclaration) {
-        var psiData : DataDeclaration = element;
-        var cDataDeclaration : CDataDeclaration = convertDataDeclaration(program, psiData)
+        val psiData : DataDeclaration = element;
+        val cDataDeclaration : CDataDeclaration = convertDataDeclaration(program, psiData)
         program.myDeclarations.put(psiData, cDataDeclaration)
     }
 
     if (element is FunctionTypeDeclaration) {
-        var functionDeclaration : FunctionTypeDeclaration = element;
+        val functionDeclaration : FunctionTypeDeclaration = element;
         val name : String = functionDeclaration.getNameDeclaration().getText()!!
         val declaration = CFunctionDeclaration(name, convertExpression(program, functionDeclaration.getExpression()!!))
-        program.myLassDeclaration = declaration
         program.myDeclarations.put(functionDeclaration, declaration)
     }
 
@@ -63,12 +62,13 @@ fun buildFromRoot(program : Program<PsiElement>, element : PsiElement?) : Unit {
         val right : Expression = functionDeclaration.getWhereEpression()!!.getExpression();
         val leftPart = convertExpression(program, left)
         val body = convertExpression(program, right)
-        program.myLassDeclaration?.getBodyes()?.add(FunctionBody(leftPart, body))
+        val functionBody = CFunctionBody(leftPart, body)
+        (program.myDeclarations[functionBody.getDeclaration()] as CFunctionDeclaration).addBody(functionBody)
     }
 
     if (element is PsiFile) {
-        for (child : PsiElement? in element.getChildren()) {
-            buildFromRoot(program, child)
+        for (child in element.getChildren()) {
+            buildFromRoot(program, child!!)
         }
     }
 
@@ -220,7 +220,7 @@ fun convertDataDeclaration(program : Program<PsiElement>, psiData : DataDeclarat
     for (signature : CTypeSignature? in signatures) {
         aType = CPiArrowExpression(signature?.getName()!!, signature!!.aType, aType!!)
     }
-    var cDataDeclaration : CDataDeclaration = CDataDeclaration(psiData.getNameDeclaration()?.getText()!!, aType!!)
+    val cDataDeclaration : CDataDeclaration = CDataDeclaration(psiData.getNameDeclaration()?.getText()!!, aType!!)
     val constructors = psiData.getConstructors()
     if (constructors != null) {
         for (typeSignature in constructors.getTypeSignatureList()) {

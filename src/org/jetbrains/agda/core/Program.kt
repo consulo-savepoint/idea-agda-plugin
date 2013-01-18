@@ -21,21 +21,19 @@ import java.nio.charset.CoderResult
 public open class Program<T>() {
     val myDeclarations : MutableMap<T, CDeclaration> = LinkedHashMap<T, CDeclaration>()
     val myExpressions : MutableMap<T, CExpression?> = HashMap<T, CExpression?>()
-    var myLassDeclaration : CFunctionDeclaration? = null
 
     private open fun checkTypes() : Unit {
         for (cDeclaration : CDeclaration? in myDeclarations.values()) {
             if (cDeclaration is CFunctionDeclaration) {
-                var functionDeclaration : CFunctionDeclaration = cDeclaration
-                for (body : FunctionBody? in functionDeclaration.getBodyes()!!)
-                {
-                    check(functionDeclaration, body!!)
+                val functionDeclaration : CFunctionDeclaration = cDeclaration
+                for (body in functionDeclaration.getBodyes()) {
+                    check(functionDeclaration, body)
                 }
             }
 
         }
     }
-    private open fun check(functionDeclaration : CFunctionDeclaration, body : FunctionBody) : Unit {
+    private open fun check(functionDeclaration : CFunctionDeclaration, body : CFunctionBody) : Unit {
         val signature = Signature()
         val contextPair = inferTypes(body.left, null, signature);
         val calculatedType = calculateType(contextPair.first, body.right, signature)
@@ -44,13 +42,13 @@ public open class Program<T>() {
     fun inferTypes(expr : CExpression, val aType : CExpression?, signature : Signature) : Pair<CContext, CExpression> {
         when (expr) {
             is CRefExpression -> {
-                var declaration : Any = expr.declaration
+                val declaration : Any = expr.declaration
                 val cDeclaration : CDeclaration? = myDeclarations.get(declaration)
                 if (cDeclaration != null) {
                     return Pair(emptyContext, cDeclaration.aType)
                 }
                 if (aType != null) {
-                    return Pair(emptyContext.put(expr.name, aType), aType)
+                    return Pair(emptyContext.put(expr.name, aType), aType!!)
                 } else {
                     throw RuntimeException();
                 }
@@ -61,6 +59,9 @@ public open class Program<T>() {
                 if (leftType is CArrowExpression) {
                     val rightContext = inferTypes(expr.right, leftType.left, signature)
                     return Pair(leftContextPair.first.merge(rightContext.first), leftType.right);
+                }
+                if (leftType is CImplicitArrowExpression) {
+
                 }
                 throw RuntimeException();
             }
@@ -171,14 +172,11 @@ public open class Program<T>() {
 
     public fun getTypeOf(elementAt : T) : CExpression? {
         checkTypes()
-        var expression : CExpression? = myExpressions.get(elementAt)
-        if (expression != null)
-        {
-            return expression?.getType()
-        }
+        val expression = myExpressions.get(elementAt)
 
-        return null
+        return expression?.getType()
     }
+
     public open fun printDebug() : Unit {
         for (declaration : CDeclaration? in myDeclarations.values()) {
             println(declaration?.toString())

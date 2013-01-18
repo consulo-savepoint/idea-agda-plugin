@@ -15,6 +15,7 @@ import com.intellij.ui.LightweightHint;
 import org.jetbrains.agda.core.CExpression;
 import org.jetbrains.agda.core.Program;
 import org.jetbrains.agda.core.ProgramBuilder;
+import org.jetbrains.agda.psi.WhereEpression;
 
 import javax.swing.*;
 
@@ -34,6 +35,9 @@ public class ShowType extends AnAction {
         PsiElement elementAt = findElementAt(file, editor.getSelectionModel().getSelectionStart(), editor.getSelectionModel().getSelectionEnd());
         if (elementAt != null) {
             Program<PsiElement> program = new ProgramBuilder().build(file);
+            if (elementAt instanceof WhereEpression) {
+                elementAt = ((WhereEpression) elementAt).getExpression();
+            }
             CExpression typeOf = program.getTypeOf(elementAt);
             if (typeOf != null) {
                 JLabel component = new JLabel(typeOf.toString());
