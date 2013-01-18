@@ -11,6 +11,6 @@ public interface FunctionDeclaration extends PsiElement {
   Lhs getLhs();
 
   @Nullable
-  WhereEpression getWhereEpression();
+  WhereExpression getWhereExpression();
 
 }

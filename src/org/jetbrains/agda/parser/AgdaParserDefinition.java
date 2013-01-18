@@ -21,7 +21,7 @@ public class AgdaParserDefinition implements ParserDefinition {
 
     @NotNull
     public Lexer createLexer(Project project) {
-        return new AgdaLexer(false);
+        return new AgdaFullLexer();
     }
 
     public IFileElementType getFileNodeType() {
@@ -30,12 +30,12 @@ public class AgdaParserDefinition implements ParserDefinition {
 
     @NotNull
     public TokenSet getWhitespaceTokens() {
-        return AgdaTokenTypesOld.WHITESPACES;
+        return AgdaTokenSets.WHITESPACES;
     }
 
     @NotNull
     public TokenSet getCommentTokens() {
-        return AgdaTokenTypesOld.COMMENTS;
+        return AgdaTokenSets.COMMENTS;
     }
 
     @NotNull

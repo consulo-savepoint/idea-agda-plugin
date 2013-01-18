@@ -13,8 +13,7 @@ import com.intellij.psi.tree.IElementType;
 %implements FlexLexer
 
 %{
-    public boolean isHighlighter = false;
-    private LinkedList<Integer> prevIndentSize = new LinkedList<Integer>(Collections.singleton(0));
+
 %}
 
 
@@ -24,11 +23,11 @@ import com.intellij.psi.tree.IElementType;
   return;
 %eof}
 
-%xstate STRING, BLOCK_COMMENT, INDENT
+%xstate STRING, BLOCK_COMMENT
 
 DIGIT=[0-9]
 WHITE_SPACE_CHAR=[\ \t\f]
-INDENT=[\n] {WHITE_SPACE_CHAR}* [^\ \t\f]
+INDENT=[\n] {WHITE_SPACE_CHAR}*
 EOL_COMMENT="--"[^\n]*
 LETTER = [^0-9{}().\ \n\t\f;\\]
 IDENTIFIER_PART=[:digit:]|{LETTER}|[\\]
@@ -36,60 +35,12 @@ IDENTIFIER={LETTER} {IDENTIFIER_PART}*
 
 %%
 
-<BLOCK_COMMENT>([^-]|"-"[^}]) {return AgdaTokenTypes.COMMENT;}
+<BLOCK_COMMENT>([^-]|"-"[^}])+ {return AgdaTokenTypes.COMMENT;}
 <BLOCK_COMMENT>("-}") {  yybegin(YYINITIAL); return AgdaTokenTypes.COMMENT; }
-<INDENT> {WHITE_SPACE_CHAR}+ {
-     yybegin(YYINITIAL);
-     return TokenType.WHITE_SPACE;
-}
 
-<INDENT> ({WHITE_SPACE_CHAR}|[\n])+ {
-     yybegin(YYINITIAL);
-     if (isHighlighter) {
-        return TokenType.WHITE_SPACE;
-     }
-     CharSequence yytext = yytext();
-     int indentSize = yytext.length() - yytext.toString().lastIndexOf("\n") - 1;
-     if (prevIndentSize.getLast() < indentSize) {
-         prevIndentSize.addLast(indentSize);
-         return AgdaTokenTypes.VIRTUAL_LEFT_PAREN;
-     } else if (prevIndentSize.getLast() == indentSize) {
-         return AgdaTokenTypes.VIRTUAL_SEMICOLON;
-     } else {
-         return TokenType.WHITE_SPACE;
-     }
-}
 
-{INDENT} { yybegin(YYINITIAL);
-        if (isHighlighter) {
-            yypushback(1);
-            return TokenType.WHITE_SPACE;
-        }
-        CharSequence yytext = yytext();
-        int indentSize = yytext.length() - 2;
-        yypushback(1);
-        if (yytext.charAt(yytext.length() - 1) == '\n') {
-            return TokenType.WHITE_SPACE;
-        }
-
-        if (indentSize > prevIndentSize.getLast()) {
-          return TokenType.WHITE_SPACE;
-        } else if (indentSize < prevIndentSize.getLast()) {
-          prevIndentSize.removeLast();
-          yypushback(yytext.length() - 1);
-          return AgdaTokenTypes.VIRTUAL_RIGHT_PAREN;
-        } else {
-          return AgdaTokenTypes.VIRTUAL_SEMICOLON;
-        }
-      }
-
-<<EOF>>               { if (prevIndentSize.getLast() > 0) {
-                            prevIndentSize.removeLast();
-                            return AgdaTokenTypes.VIRTUAL_RIGHT_PAREN;
-                        }
-                        return null;
-                      }
 ({WHITE_SPACE_CHAR})+ { return TokenType.WHITE_SPACE; }
+{INDENT}              { return TokenType.NEW_LINE_INDENT; }
 {EOL_COMMENT}         { return AgdaTokenTypes.END_OF_LINE_COMMENT; }
 "{"                   { return AgdaTokenTypes.LEFT_BRACE; }
 "}"                   { return AgdaTokenTypes.RIGHT_BRACE; }
@@ -105,23 +56,18 @@ IDENTIFIER={LETTER} {IDENTIFIER_PART}*
 "let"                 { return AgdaTokenTypes.LET_KEYWORD; }
 "in"                  { return AgdaTokenTypes.IN_KEYWORD; }
 "data"                { return AgdaTokenTypes.DATA_KEYWORD; }
-"where"               { yybegin(INDENT);
-                        return AgdaTokenTypes.WHERE_KEYWORD; }
+"where"               { return AgdaTokenTypes.WHERE_KEYWORD; }
 "module"              { return AgdaTokenTypes.MODULE_KEYWORD; }
 "open"                { return AgdaTokenTypes.OPEN_KEYWORD; }
 "import"              { return AgdaTokenTypes.IMPORT_KEYWORD; }
 "record"              { return AgdaTokenTypes.RECORD_KEYWORD; }
-"postulate"           { yybegin(INDENT);
-                        return AgdaTokenTypes.POSTULATE_KEYWORD; }
-"mutual"              { yybegin(INDENT);
-                        return AgdaTokenTypes.MUTUAL_KEYWORD; }
+"postulate"           { return AgdaTokenTypes.POSTULATE_KEYWORD; }
+"mutual"              { return AgdaTokenTypes.MUTUAL_KEYWORD; }
 "infix"               { return AgdaTokenTypes.INFIX_KEYWORD; }
 "infixl"              { return AgdaTokenTypes.INFIXL_KEYWORD; }
 "infixr"              { return AgdaTokenTypes.INFIXR_KEYWORD; }
-"constructor"         { yybegin(INDENT);
-                        return AgdaTokenTypes.CONSTRUCTOR_KEYWORD; }
-"field"               { yybegin(INDENT);
-                        return AgdaTokenTypes.FIELD_KEYWORD; }
+"constructor"         { return AgdaTokenTypes.CONSTRUCTOR_KEYWORD; }
+"field"               { return AgdaTokenTypes.FIELD_KEYWORD; }
 "public"              { return AgdaTokenTypes.PUBLIC_KEYWORD; }
 "using"               { return AgdaTokenTypes.USING_KEYWORD; }
 "hiding"              { return AgdaTokenTypes.HIDING_KEYWORD; }
@@ -133,5 +79,4 @@ IDENTIFIER={LETTER} {IDENTIFIER_PART}*
 
 
 {IDENTIFIER}          { return AgdaTokenTypes.ID; }
-[\n]                  { return TokenType.WHITE_SPACE; }
 .                     { return TokenType.BAD_CHARACTER; }

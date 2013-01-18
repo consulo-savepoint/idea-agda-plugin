@@ -11,14 +11,26 @@ import static org.jetbrains.agda.gen.parser.AgdaTokenTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import org.jetbrains.agda.psi.*;
 
-public class NewLineImpl extends ASTWrapperPsiElement implements NewLine {
+public class WhereExpressionImpl extends ASTWrapperPsiElement implements WhereExpression {
 
-  public NewLineImpl(ASTNode node) {
+  public WhereExpressionImpl(ASTNode node) {
     super(node);
   }
 
+  @Override
+  @NotNull
+  public Expression getExpression() {
+    return findNotNullChildByClass(Expression.class);
+  }
+
+  @Override
+  @Nullable
+  public WherePart getWherePart() {
+    return findChildByClass(WherePart.class);
+  }
+
   public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof Visitor) ((Visitor)visitor).visitNewLine(this);
+    if (visitor instanceof Visitor) ((Visitor)visitor).visitWhereExpression(this);
     else super.accept(visitor);
   }
 

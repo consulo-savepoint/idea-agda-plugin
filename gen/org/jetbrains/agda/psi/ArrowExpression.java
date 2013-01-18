@@ -5,7 +5,7 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface FunctionType extends PsiElement {
+public interface ArrowExpression extends PsiElement {
 
   @NotNull
   List<Expression> getExpressionList();

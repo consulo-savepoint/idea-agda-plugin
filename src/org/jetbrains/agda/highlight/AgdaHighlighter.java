@@ -12,7 +12,7 @@ import com.intellij.psi.StringEscapesTokenTypes;
 import com.intellij.psi.tree.IElementType;
 import gnu.trove.THashMap;
 import org.jetbrains.agda.gen.parser.AgdaTokenTypes;
-import org.jetbrains.agda.parser.AgdaLexer;
+import org.jetbrains.agda.parser.AgdaHighlightLexer;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
@@ -23,7 +23,7 @@ public class AgdaHighlighter extends SyntaxHighlighterBase {
 
   @NotNull
   public Lexer getHighlightingLexer() {
-    return new AgdaLexer(true);
+    return new AgdaHighlightLexer();
   }
 
 

@@ -29,12 +29,6 @@ public class LetExpressionImpl extends ASTWrapperPsiElement implements LetExpres
     return findNotNullChildByClass(NameDeclaration.class);
   }
 
-  @Override
-  @NotNull
-  public NewLine getNewLine() {
-    return findNotNullChildByClass(NewLine.class);
-  }
-
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof Visitor) ((Visitor)visitor).visitLetExpression(this);
     else super.accept(visitor);

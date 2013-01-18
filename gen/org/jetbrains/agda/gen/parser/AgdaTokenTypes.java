@@ -13,6 +13,7 @@ public interface AgdaTokenTypes {
   IElementType ABSURD_EXPRESSION = new AgdaCompositeElementType("ABSURD_EXPRESSION");
   IElementType ABSURD_FUNCTION = new AgdaCompositeElementType("ABSURD_FUNCTION");
   IElementType APPLICATION = new AgdaCompositeElementType("APPLICATION");
+  IElementType ARROW_EXPRESSION = new AgdaCompositeElementType("ARROW_EXPRESSION");
   IElementType AS_NAME = new AgdaCompositeElementType("AS_NAME");
   IElementType BINDING = new AgdaCompositeElementType("BINDING");
   IElementType BINDINGS = new AgdaCompositeElementType("BINDINGS");
@@ -26,7 +27,6 @@ public interface AgdaTokenTypes {
   IElementType FORALL_EXPRESSION = new AgdaCompositeElementType("FORALL_EXPRESSION");
   IElementType FQ_NAME = new AgdaCompositeElementType("FQ_NAME");
   IElementType FUNCTION_DECLARATION = new AgdaCompositeElementType("FUNCTION_DECLARATION");
-  IElementType FUNCTION_TYPE = new AgdaCompositeElementType("FUNCTION_TYPE");
   IElementType FUNCTION_TYPE_DECLARATION = new AgdaCompositeElementType("FUNCTION_TYPE_DECLARATION");
   IElementType GOAL_EXPRESSION = new AgdaCompositeElementType("GOAL_EXPRESSION");
   IElementType IMPLICIT_TELESCOPE = new AgdaCompositeElementType("IMPLICIT_TELESCOPE");
@@ -40,7 +40,6 @@ public interface AgdaTokenTypes {
   IElementType MODULE_IMPORT = new AgdaCompositeElementType("MODULE_IMPORT");
   IElementType MUTUAL = new AgdaCompositeElementType("MUTUAL");
   IElementType NAME_DECLARATION = new AgdaCompositeElementType("NAME_DECLARATION");
-  IElementType NEW_LINE = new AgdaCompositeElementType("NEW_LINE");
   IElementType NUMBER_EXPRESSION = new AgdaCompositeElementType("NUMBER_EXPRESSION");
   IElementType OPEN = new AgdaCompositeElementType("OPEN");
   IElementType PARENTHESIS_EXPRESSION = new AgdaCompositeElementType("PARENTHESIS_EXPRESSION");
@@ -59,7 +58,7 @@ public interface AgdaTokenTypes {
   IElementType TYPE_SIGNATURE = new AgdaCompositeElementType("TYPE_SIGNATURE");
   IElementType TYPE_SIGNATURES = new AgdaCompositeElementType("TYPE_SIGNATURES");
   IElementType USING_OR_HIDING = new AgdaCompositeElementType("USING_OR_HIDING");
-  IElementType WHERE_EPRESSION = new AgdaCompositeElementType("WHERE_EPRESSION");
+  IElementType WHERE_EXPRESSION = new AgdaCompositeElementType("WHERE_EXPRESSION");
   IElementType WHERE_PART = new AgdaCompositeElementType("WHERE_PART");
 
   IElementType ARROW = new AgdaToken("->");
@@ -95,7 +94,6 @@ public interface AgdaTokenTypes {
   IElementType RIGHT_BRACE = new AgdaToken("}");
   IElementType RIGHT_PAREN = new AgdaToken(")");
   IElementType SEMICOLON = new AgdaToken(";");
-  IElementType SPEC_CHARACTERS = new AgdaToken("SPEC_CHARACTERS");
   IElementType STRING = new AgdaToken("STRING");
   IElementType USING_KEYWORD = new AgdaToken("using");
   IElementType VIRTUAL_LEFT_PAREN = new AgdaToken("VIRTUAL_LEFT_PAREN");
@@ -114,6 +112,9 @@ public interface AgdaTokenTypes {
       }
       else if (type == APPLICATION) {
         return new ApplicationImpl(node);
+      }
+      else if (type == ARROW_EXPRESSION) {
+        return new ArrowExpressionImpl(node);
       }
       else if (type == AS_NAME) {
         return new AsNameImpl(node);
@@ -154,9 +155,6 @@ public interface AgdaTokenTypes {
       else if (type == FUNCTION_DECLARATION) {
         return new FunctionDeclarationImpl(node);
       }
-      else if (type == FUNCTION_TYPE) {
-        return new FunctionTypeImpl(node);
-      }
       else if (type == FUNCTION_TYPE_DECLARATION) {
         return new FunctionTypeDeclarationImpl(node);
       }
@@ -195,9 +193,6 @@ public interface AgdaTokenTypes {
       }
       else if (type == NAME_DECLARATION) {
         return new NameDeclarationImpl(node);
-      }
-      else if (type == NEW_LINE) {
-        return new NewLineImpl(node);
       }
       else if (type == NUMBER_EXPRESSION) {
         return new NumberExpressionImpl(node);
@@ -253,8 +248,8 @@ public interface AgdaTokenTypes {
       else if (type == USING_OR_HIDING) {
         return new UsingOrHidingImpl(node);
       }
-      else if (type == WHERE_EPRESSION) {
-        return new WhereEpressionImpl(node);
+      else if (type == WHERE_EXPRESSION) {
+        return new WhereExpressionImpl(node);
       }
       else if (type == WHERE_PART) {
         return new WherePartImpl(node);

@@ -29,12 +29,6 @@ public class BindingImpl extends ASTWrapperPsiElement implements Binding {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, NameDeclaration.class);
   }
 
-  @Override
-  @NotNull
-  public NewLine getNewLine() {
-    return findNotNullChildByClass(NewLine.class);
-  }
-
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof Visitor) ((Visitor)visitor).visitBinding(this);
     else super.accept(visitor);

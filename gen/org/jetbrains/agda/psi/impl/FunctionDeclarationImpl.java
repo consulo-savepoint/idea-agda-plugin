@@ -25,8 +25,8 @@ public class FunctionDeclarationImpl extends ASTWrapperPsiElement implements Fun
 
   @Override
   @Nullable
-  public WhereEpression getWhereEpression() {
-    return findChildByClass(WhereEpression.class);
+  public WhereExpression getWhereExpression() {
+    return findChildByClass(WhereExpression.class);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {

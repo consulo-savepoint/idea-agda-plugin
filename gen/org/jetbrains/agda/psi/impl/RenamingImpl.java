@@ -19,8 +19,8 @@ public class RenamingImpl extends ASTWrapperPsiElement implements Renaming {
 
   @Override
   @NotNull
-  public List<NewLine> getNewLineList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, NewLine.class);
+  public PsiElement getId() {
+    return findNotNullChildByType(ID);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {

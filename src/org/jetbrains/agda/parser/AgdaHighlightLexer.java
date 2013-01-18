@@ -13,9 +13,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 
-public class AgdaLexer extends FlexAdapter {
-    public AgdaLexer(boolean highlighter) {
+public class AgdaHighlightLexer extends FlexAdapter {
+    public AgdaHighlightLexer() {
         super(new _AgdaLexer((Reader) null));
-        ((_AgdaLexer)getFlex()).isHighlighter = highlighter;
     }
 }

@@ -13,7 +13,4 @@ public interface LetExpression extends PsiElement {
   @NotNull
   NameDeclaration getNameDeclaration();
 
-  @NotNull
-  NewLine getNewLine();
-
 }

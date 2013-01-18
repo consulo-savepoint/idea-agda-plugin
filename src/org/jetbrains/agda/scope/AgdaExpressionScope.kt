@@ -132,7 +132,7 @@ public class AgdaExpressionScope(val element : PsiElement) : Scope() {
                 is PsiFile -> {
                     return AgdaModuleScope(parent, false).traverse(function)
                 }
-                is WhereEpression -> {
+                is WhereExpression -> {
                     val wherePart = parent.getWherePart()
                     if (wherePart != null) {AgdaModuleScope(wherePart, false).traverse(function)} else false;
                 };

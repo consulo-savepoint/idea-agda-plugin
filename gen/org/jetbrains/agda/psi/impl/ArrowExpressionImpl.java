@@ -11,9 +11,9 @@ import static org.jetbrains.agda.gen.parser.AgdaTokenTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import org.jetbrains.agda.psi.*;
 
-public class FunctionTypeImpl extends ASTWrapperPsiElement implements FunctionType {
+public class ArrowExpressionImpl extends ASTWrapperPsiElement implements ArrowExpression {
 
-  public FunctionTypeImpl(ASTNode node) {
+  public ArrowExpressionImpl(ASTNode node) {
     super(node);
   }
 
@@ -48,7 +48,7 @@ public class FunctionTypeImpl extends ASTWrapperPsiElement implements FunctionTy
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof Visitor) ((Visitor)visitor).visitFunctionType(this);
+    if (visitor instanceof Visitor) ((Visitor)visitor).visitArrowExpression(this);
     else super.accept(visitor);
   }
 

@@ -19,6 +19,10 @@ public class Visitor extends PsiElementVisitor {
     visitExpression(o);
   }
 
+  public void visitArrowExpression(@NotNull ArrowExpression o) {
+    visitPsiElement(o);
+  }
+
   public void visitAsName(@NotNull AsName o) {
     visitPsiElement(o);
   }
@@ -71,10 +75,6 @@ public class Visitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
-  public void visitFunctionType(@NotNull FunctionType o) {
-    visitPsiElement(o);
-  }
-
   public void visitFunctionTypeDeclaration(@NotNull FunctionTypeDeclaration o) {
     visitPsiElement(o);
   }
@@ -124,10 +124,6 @@ public class Visitor extends PsiElementVisitor {
   }
 
   public void visitNameDeclaration(@NotNull NameDeclaration o) {
-    visitPsiElement(o);
-  }
-
-  public void visitNewLine(@NotNull NewLine o) {
     visitPsiElement(o);
   }
 
@@ -203,7 +199,7 @@ public class Visitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
-  public void visitWhereEpression(@NotNull WhereEpression o) {
+  public void visitWhereExpression(@NotNull WhereExpression o) {
     visitPsiElement(o);
   }
 

@@ -13,7 +13,6 @@ import org.jetbrains.agda.mixfix.TreeElement
 import org.jetbrains.agda.psi.NameDeclaration
 import org.jetbrains.agda.psi.TeleArrow
 import org.jetbrains.agda.psi.ExplicitTelescope
-import org.jetbrains.agda.psi.FunctionType
 import org.jetbrains.agda.psi.ParenthesisExpression
 import org.jetbrains.agda.psi.Binding
 import java.util.Collections
@@ -26,6 +25,7 @@ import org.jetbrains.agda.psi.FqName
 import org.jetbrains.agda.psi.impl.FqNameImpl
 import org.jetbrains.agda.mixfix.TermElement
 import org.jetbrains.agda.mixfix.ParentElement
+import org.jetbrains.agda.psi.ArrowExpression
 
 /**
  * @author Evgeny.Kurbatsky
@@ -59,7 +59,7 @@ fun buildFromRoot(program : Program<PsiElement>, element : PsiElement) : Unit {
     if (element is FunctionDeclaration) {
         val functionDeclaration : FunctionDeclaration = element;
         val left : Expression = functionDeclaration.getLhs().getExpression()
-        val right : Expression = functionDeclaration.getWhereEpression()!!.getExpression();
+        val right : Expression = functionDeclaration.getWhereExpression()!!.getExpression();
         val leftPart = convertExpression(program, left)
         val body = convertExpression(program, right)
         val functionBody = CFunctionBody(leftPart, body)
@@ -181,7 +181,7 @@ fun convertExpressionImpl(program : Program<PsiElement>, expression : PsiElement
         return result
     }
 
-    if (expression is FunctionType) {
+    if (expression is ArrowExpression) {
         var children : Array<PsiElement?> = expression.getChildren()
         var left : CExpression = convertExpression(program, children[0]!!)
         var right : CExpression = convertExpression(program, children[1]!!)

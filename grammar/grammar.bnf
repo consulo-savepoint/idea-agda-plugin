@@ -27,7 +27,6 @@
     MUTUAL_KEYWORD="mutual"
 
     NUMBER="number"
-    SPEC_CHARACTERS="SPEC_CHARACTERS"
     STRING="STRING"
     COMMENT="COMMENT"
     END_OF_LINE_COMMENT="--"
@@ -55,32 +54,17 @@
 
 root ::= declaration *
 
-private recover ::= ! (VIRTUAL_RIGHT_PAREN | VIRTUAL_SEMICOLON)
 
-private maybe_newLine ::= (VIRTUAL_LEFT_PAREN | VIRTUAL_RIGHT_PAREN | VIRTUAL_SEMICOLON)?
+
+private recover ::= ! (VIRTUAL_RIGHT_PAREN | VIRTUAL_SEMICOLON)
 
 fqName ::= id ('.' id) * {mixin = "org.jetbrains.agda.psi.AgdaReferenceElementImpl"}
 
 name_declaration ::= id {mixin = "org.jetbrains.agda.psi.AgdaNamedElement"}
 
-private recovering_declaration ::= module_declaration | module_import | open | infix | postulate | pragma | mutual | function_type_declaration | function_declaration | absurd_function {recoverUntil=recover}
+private ids ::= name_declaration+
 
-private declaration ::= VIRTUAL_SEMICOLON | data_declaration | record_declaration | record_field | record_constructor | recovering_declaration
-
-mutual ::= MUTUAL_KEYWORD VIRTUAL_LEFT_PAREN (declaration +) VIRTUAL_RIGHT_PAREN
-
-open ::= 'open' fqName module_arguments as_name? "public"? using_or_hiding? renaming? {pin=1}
-
-module_import ::= 'open' ? 'import' fqName module_arguments as_name? "public"? using_or_hiding? renaming?  {pin=2}
-
-module_arguments ::= expression *
-
-record_declaration ::= "record" name_declaration typed_untyped_bindings ":" expression "where" VIRTUAL_LEFT_PAREN (declaration +) VIRTUAL_RIGHT_PAREN {pin=1}
-
-type_signatures ::= type_signature (VIRTUAL_SEMICOLON type_signature)*
-
-record_field ::= "field" ((VIRTUAL_LEFT_PAREN type_signatures VIRTUAL_RIGHT_PAREN) | type_signature) {pin=1}
-record_constructor ::= "constructor" maybe_newLine name_declaration {pin=1}
+// Pragmas
 
 pragma_string ::= (id | "(" | ")" | "\\" | "->") *
 
@@ -89,6 +73,25 @@ pragma ::= PRAGMA_OPEN (build_in_pragma | compiled_type_pragma | compiled_pragma
 build_in_pragma ::= "BUILTIN" name_declaration name_declaration {pin=1}
 compiled_type_pragma ::= "COMPILED_TYPE" name_declaration pragma_string {pin=1}
 compiled_pragma ::= "COMPILED" name_declaration pragma_string {pin=1}
+
+
+// Declarations
+
+private recovering_declaration ::= module_declaration | module_import | open | infix | postulate | pragma | mutual | data_declaration | function_type_declaration | function_declaration | absurd_function {recoverUntil=recover}
+
+private declaration ::= VIRTUAL_SEMICOLON? (record_declaration | record_field | record_constructor | recovering_declaration)
+
+mutual ::= MUTUAL_KEYWORD VIRTUAL_LEFT_PAREN (declaration +) VIRTUAL_RIGHT_PAREN
+
+
+module_arguments ::= expression *
+
+record_declaration ::= "record" name_declaration typed_untyped_bindings ":" expression "where" VIRTUAL_LEFT_PAREN (declaration +) VIRTUAL_RIGHT_PAREN {pin=1}
+
+type_signatures ::= type_signature (VIRTUAL_SEMICOLON type_signature)*
+
+record_field ::= "field" ((VIRTUAL_LEFT_PAREN type_signatures VIRTUAL_RIGHT_PAREN) | type_signature) {pin=1}
+record_constructor ::= "constructor" name_declaration {pin=1}
 
 infix ::= ("infix" | "infixl" | "infixr") NUMBER name_declaration * {pin=1}
 
@@ -100,28 +103,29 @@ module_declaration ::= 'module' fqName bindings "where" (VIRTUAL_LEFT_PAREN decl
 
 bindings ::= binding *
 
-new_line ::= VIRTUAL_LEFT_PAREN | VIRTUAL_RIGHT_PAREN | VIRTUAL_SEMICOLON | ()
 
+// Import and open
 
-private ids ::= name_declaration+
+module_import ::= 'open' ? 'import' fqName module_arguments as_name? "public"? using_or_hiding? renaming?  {pin=2}
+open ::= 'open' fqName module_arguments as_name? "public"? using_or_hiding? renaming? {pin=1}
 
-binding ::= (new_line "{" ids (":" expression)? "}") | (new_line "(" ids (":" expression)? ")")
+binding ::= "{" ids (":" expression)? "}" | "(" ids (":" expression)? ")"
 
 import_name ::= ("module"? fqName)
 
 private import_names ::= import_name (";" import_name) *
 
-
-
 as_name ::= "as" id
 
-renaming ::= new_line "renaming" "(" renamings ")"
+renaming ::= "renaming" "(" renamings ")"
 
-private renamings ::= id "to" id (new_line ";" id "to" id)*
+private renamings ::= id "to" id (";" id "to" id)*
 
-private using_keyword ::= maybe_newLine 'using' maybe_newLine
+private using_keyword ::= 'using'
 
 using_or_hiding ::= (using_keyword '(' import_names ')') | ('hiding' '(' import_names ')')
+
+
 
 // Data declaration
 
@@ -131,15 +135,23 @@ constructors ::= type_signature (VIRTUAL_SEMICOLON type_signature) *
 
 // Function declaration
 
-function_type_declaration ::= name_declaration ":" maybe_newLine expression {pin=2}
+function_type_declaration ::= name_declaration ":" expression {pin=2}
 
 lhs ::= ("..." "|" expression) | expression
 
-function_declaration ::= lhs "=" where_epression {pin = 2}
+function_declaration ::= lhs "=" where_expression {pin = 2}
+
+where_part ::= "where" ((VIRTUAL_LEFT_PAREN (declaration +) VIRTUAL_RIGHT_PAREN) | declaration)
+
+where_expression ::= expression where_part?
 
 absurd_function ::= expression
 
 // Expressions
+
+expression ::= let_expression | tele_arrow | lambda_expression | forall_expression | arrow_expression | application | atom_expr
+
+private atom_expr ::= absurd_expression | parenthesis_expression | goal_expression | substitute_implisit | fqName | number_expression
 
 absurd_expression ::= "(" ")" {extends=expression}
 
@@ -147,31 +159,26 @@ parenthesis_expression ::= "(" expression ")" {pin=1; extends=expression}
 
 goal_expression ::= "{" "!!" "}"
 
-private atom_expr ::= absurd_expression | parenthesis_expression | goal_expression | substitute_implisit | fqName | number_expression
 
 application ::= (atom_expr maybe_application) {extends=expression}
 
 private maybe_application ::= application | atom_expr
 
-expression ::= let_expression | tele_arrow | lambda_expression | function_type | application | atom_expr | forall_expression
 
-where_part ::= "where" ((VIRTUAL_LEFT_PAREN (declaration +) VIRTUAL_RIGHT_PAREN) | declaration)
-
-where_epression ::= expression where_part?
 
 number_expression ::= number
 
 substitute_implisit ::= "{" (name_declaration "=")?  expression "}"
 
-let_expression ::= "let" name_declaration "=" expression "in" new_line expression
+let_expression ::= "let" name_declaration "=" expression "in" expression
 
 typed_untyped_binding ::= name_declaration+  | '{' ids '}' | ("{" type_signature "}") | ("(" type_signature ")")
 
-private typed_untyped_bindings ::= (typed_untyped_binding maybe_newLine)*
+private typed_untyped_bindings ::= (typed_untyped_binding)*
 
-forall_expression ::= 'forall' typed_untyped_bindings ARROW maybe_newLine expression {pin=1}
+forall_expression ::= 'forall' typed_untyped_bindings ARROW expression {pin=1}
 
-tele_arrow ::= telescope+ ARROW maybe_newLine expression
+tele_arrow ::= telescope+ ARROW expression
 telescope ::= implicit_telescope | explicit_telescope
 implicit_telescope ::= "{" type_signature "}" {extends=telescope}
 explicit_telescope ::= "(" type_signature ")" {extends=telescope}
@@ -180,4 +187,4 @@ type_signature ::= ids ":" expression
 
 lambda_expression ::= ("\\" | "λ") (("(" ids ":" expression ")") | ids) ARROW expression {extends=expression}
 
-function_type ::= maybe_application ARROW maybe_newLine expression
+arrow_expression ::= maybe_application ARROW expression

@@ -8,6 +8,6 @@ import com.intellij.psi.PsiElement;
 public interface Renaming extends PsiElement {
 
   @NotNull
-  List<NewLine> getNewLineList();
+  PsiElement getId();
 
 }
