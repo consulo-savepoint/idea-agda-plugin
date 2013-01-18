@@ -192,7 +192,8 @@ public class AgdaParser implements PsiParser {
   }
 
   private static final TokenSet[] EXTENDS_SETS_ = new TokenSet[] {
-    TokenSet.create(ABSURD_EXPRESSION, EXPRESSION, LAMBDA_EXPRESSION, PARENTHESIS_EXPRESSION),
+    TokenSet.create(ABSURD_EXPRESSION, APPLICATION, EXPRESSION, LAMBDA_EXPRESSION,
+      PARENTHESIS_EXPRESSION),
     TokenSet.create(EXPLICIT_TELESCOPE, IMPLICIT_TELESCOPE, TELESCOPE),
   };
   public static boolean type_extends_(IElementType child_, IElementType parent_) {
@@ -249,11 +250,16 @@ public class AgdaParser implements PsiParser {
   private static boolean application_0(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "application_0")) return false;
     boolean result_ = false;
+    int start_ = builder_.getCurrentOffset();
     Marker marker_ = builder_.mark();
     enterErrorRecordingSection(builder_, level_, _SECTION_GENERAL_, "<application>");
     result_ = atom_expr(builder_, level_ + 1);
     result_ = result_ && maybe_application(builder_, level_ + 1);
-    if (result_) {
+    LighterASTNode last_ = result_? builder_.getLatestDoneMarker() : null;
+    if (last_ != null && last_.getStartOffset() == start_ && type_extends_(last_.getTokenType(), APPLICATION)) {
+      marker_.drop();
+    }
+    else if (result_) {
       marker_.done(APPLICATION);
     }
     else {
@@ -671,7 +677,7 @@ public class AgdaParser implements PsiParser {
   }
 
   /* ********************************************************** */
-  // let_expression | tele_arrow | lambda_expression | function_type | maybe_application | forall_expression
+  // let_expression | tele_arrow | lambda_expression | function_type | application | atom_expr | forall_expression
   public static boolean expression(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "expression")) return false;
     boolean result_ = false;
@@ -682,7 +688,8 @@ public class AgdaParser implements PsiParser {
     if (!result_) result_ = tele_arrow(builder_, level_ + 1);
     if (!result_) result_ = lambda_expression(builder_, level_ + 1);
     if (!result_) result_ = function_type(builder_, level_ + 1);
-    if (!result_) result_ = maybe_application(builder_, level_ + 1);
+    if (!result_) result_ = application(builder_, level_ + 1);
+    if (!result_) result_ = atom_expr(builder_, level_ + 1);
     if (!result_) result_ = forall_expression(builder_, level_ + 1);
     LighterASTNode last_ = result_? builder_.getLatestDoneMarker() : null;
     if (last_ != null && last_.getStartOffset() == start_ && type_extends_(last_.getTokenType(), EXPRESSION)) {

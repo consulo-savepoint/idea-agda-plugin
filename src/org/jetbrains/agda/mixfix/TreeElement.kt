@@ -10,53 +10,59 @@ import org.jetbrains.agda.psi.FqName
  * Time: 2:33
  * To change this template use File | Settings | File Templates.
  */
-public open class TreeElement(element : PsiElement?, declaration : PsiElement?, children : List<TreeElement>) {
-    private val myChildren : List<TreeElement>
-    private val myElement : PsiElement?
-    private val myDeclaration : PsiElement?
-    public open fun getText() : String? {
-        if ((myElement is FqName?))
-        {
-            return myElement?.getText()
-        }
+public abstract class TreeElement() {
+    public open fun getText() : String? = null
 
-        return null
-    }
-    
-    public open fun getChildren() : List<TreeElement> {
-        return myChildren
-    }
-    
-    public open fun getElement() : PsiElement? {
-        return myElement
-    }
-    public open fun isTerm() : Boolean {
-        return (myElement is FqName?)
-    }
+    public fun isTerm() : Boolean =
+        this is TermElement
+
     public open fun getDeclaration() : PsiElement? {
-        return myDeclaration
-    }
-    public open fun getDeclaration(element : PsiElement?) : PsiElement? {
-        for (child : TreeElement? in myChildren)
-        {
-            if (child?.getElement() == element)
-            {
-                return myDeclaration
-            }
-
-            var declaration : PsiElement? = child?.getDeclaration(element)
-            if (declaration != null)
-            {
-                return declaration
-            }
-
-        }
         return null
     }
-    {
-        myElement = element
-        myDeclaration = declaration
-        myChildren = children
+
+    public abstract fun getDeclaration(element : PsiElement) : PsiElement?
+
+}
+
+public class TermElement(val element : PsiElement) : TreeElement() {
+
+    public override fun getText() : String? {
+        if (element is FqName) {
+            return element.getText()
+        }
+
+        return null
+    }
+
+
+    public override fun getDeclaration(element : PsiElement) : PsiElement? {
+        return null
     }
 
 }
+
+public class ParentElement(val myDeclaration : PsiElement?, val myChildren : List<TreeElement>) : TreeElement() {
+
+    public override fun getDeclaration() : PsiElement? = myDeclaration
+
+    public fun getChildren() : List<TreeElement> {
+        return myChildren
+    }
+
+    public override fun getDeclaration(element : PsiElement) : PsiElement? {
+        for (child : TreeElement? in myChildren) {
+            when(child) {
+                is TermElement -> if (child.element == element) return myDeclaration
+                is ParentElement -> {
+                    var declaration : PsiElement? = child.getDeclaration(element)
+                    if (declaration != null) {
+                        return declaration
+                    }
+                }
+                else -> throw RuntimeException()
+            }
+        }
+        return null
+    }
+}
+

@@ -16,7 +16,7 @@ public class Visitor extends PsiElementVisitor {
   }
 
   public void visitApplication(@NotNull Application o) {
-    visitPsiElement(o);
+    visitExpression(o);
   }
 
   public void visitAsName(@NotNull AsName o) {

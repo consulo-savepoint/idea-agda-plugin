@@ -18,12 +18,6 @@ public class FunctionTypeImpl extends ASTWrapperPsiElement implements FunctionTy
   }
 
   @Override
-  @Nullable
-  public Application getApplication() {
-    return findChildByClass(Application.class);
-  }
-
-  @Override
   @NotNull
   public List<Expression> getExpressionList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, Expression.class);

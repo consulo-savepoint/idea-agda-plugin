@@ -5,10 +5,7 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface Application extends PsiElement {
-
-  @Nullable
-  Application getApplication();
+public interface Application extends Expression {
 
   @NotNull
   List<Expression> getExpressionList();

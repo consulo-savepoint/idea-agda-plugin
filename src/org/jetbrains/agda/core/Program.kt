@@ -37,42 +37,42 @@ public open class Program<T>() {
     }
     private open fun check(functionDeclaration : CFunctionDeclaration, body : FunctionBody) : Unit {
         val signature = Signature()
-        val contextPair = makeContext(body.left, null, signature);
+        val contextPair = inferTypes(body.left, null, signature);
         val calculatedType = calculateType(contextPair.first, body.right, signature)
     }
 
-    fun makeContext(expr : CExpression, aType : CExpression?, signature : Signature) : Pair<CContext, CExpression?> {
+    fun inferTypes(expr : CExpression, val aType : CExpression?, signature : Signature) : Pair<CContext, CExpression> {
         when (expr) {
             is CRefExpression -> {
                 var declaration : Any = expr.declaration
                 val cDeclaration : CDeclaration? = myDeclarations.get(declaration)
                 if (cDeclaration != null) {
-                    return Pair(CContext(HashMap<String, CExpression>()), cDeclaration.aType)
+                    return Pair(emptyContext, cDeclaration.aType)
                 }
                 if (aType != null) {
-                    return Pair(emptyContext().put(expr.name, aType), aType)
+                    return Pair(emptyContext.put(expr.name, aType), aType)
                 } else {
                     throw RuntimeException();
                 }
             }
             is CApplication -> {
-                val leftContextPair = makeContext(expr.left, null, signature)
+                val leftContextPair = inferTypes(expr.left, null, signature)
                 val leftType = leftContextPair.second
                 if (leftType is CArrowExpression) {
-                    val rightContext = makeContext(expr.right, leftType.left, signature)
+                    val rightContext = inferTypes(expr.right, leftType.left, signature)
                     return Pair(leftContextPair.first.merge(rightContext.first), leftType.right);
                 }
                 throw RuntimeException();
             }
             else -> {
-                return Pair(CContext(HashMap<String, CExpression>()), null)
+                throw RuntimeException();
             }
         }
     }
 
     public fun calculateType(expression : CExpression) : CExpression? {
         val signature = Signature()
-        var calculatedType = calculateType(CContext(HashMap<String, CExpression>()), expression, signature)!!
+        var calculatedType = calculateType(emptyContext, expression, signature)!!
         for (val rule in signature.rules) {
             calculatedType = replaceVar(calculatedType, rule.name, rule.value);
         }
@@ -147,6 +147,7 @@ public open class Program<T>() {
         }
         throw RuntimeException()
     }
+
     private fun doCalculateType(context : CContext, expression : CExpression, signature : Signature) : CExpression? {
         if (expression is CApplication) {
             val application : CApplication = expression
@@ -154,8 +155,8 @@ public open class Program<T>() {
             val rightType : CExpression = calculateType(context, application.right, signature)!!
             return doCheckApplication(context, leftType, rightType, signature);
         } else if (expression is CRefExpression) {
-            if (context.map.containsKey(expression.name)) {
-                return context.map[expression.name]
+            if (context.get(expression.name) != null) {
+                return context.get(expression.name)
             }
             var declaration : Any = expression.declaration
             val cDeclaration : CDeclaration? = myDeclarations.get(declaration)

@@ -7,9 +7,6 @@ import com.intellij.psi.PsiElement;
 
 public interface FunctionType extends PsiElement {
 
-  @Nullable
-  Application getApplication();
-
   @NotNull
   List<Expression> getExpressionList();
 

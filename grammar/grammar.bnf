@@ -149,11 +149,11 @@ goal_expression ::= "{" "!!" "}"
 
 private atom_expr ::= absurd_expression | parenthesis_expression | goal_expression | substitute_implisit | fqName | number_expression
 
-application ::= (atom_expr maybe_application)
+application ::= (atom_expr maybe_application) {extends=expression}
 
 private maybe_application ::= application | atom_expr
 
-expression ::= let_expression | tele_arrow | lambda_expression | function_type | maybe_application | forall_expression
+expression ::= let_expression | tele_arrow | lambda_expression | function_type | application | atom_expr | forall_expression
 
 where_part ::= "where" ((VIRTUAL_LEFT_PAREN (declaration +) VIRTUAL_RIGHT_PAREN) | declaration)
 

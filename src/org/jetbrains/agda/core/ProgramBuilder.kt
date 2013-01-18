@@ -24,6 +24,8 @@ import org.jetbrains.agda.core.expression.CMetaVariable
 import org.jetbrains.agda.scope.findDeclaration
 import org.jetbrains.agda.psi.FqName
 import org.jetbrains.agda.psi.impl.FqNameImpl
+import org.jetbrains.agda.mixfix.TermElement
+import org.jetbrains.agda.mixfix.ParentElement
 
 /**
  * @author Evgeny.Kurbatsky
@@ -41,7 +43,6 @@ fun buildProgram(var element : PsiElement?) : Program<PsiElement> {
 
 
 fun buildFromRoot(program : Program<PsiElement>, element : PsiElement?) : Unit {
-
     if (element is DataDeclaration) {
         var psiData : DataDeclaration = element;
         var cDataDeclaration : CDataDeclaration = convertDataDeclaration(program, psiData)
@@ -57,12 +58,12 @@ fun buildFromRoot(program : Program<PsiElement>, element : PsiElement?) : Unit {
     }
 
     if (element is FunctionDeclaration) {
-        var functionDeclaration : FunctionDeclaration = element;
-        val left : Expression? = functionDeclaration.getLhs().getExpression()
-        val right : Expression? = functionDeclaration.getWhereEpression()!!.getExpression();
-        val leftPart : CExpression? = convertExpression(program, left!!)
-        val body : CExpression? = convertExpression(program, right!!)
-        program.myLassDeclaration?.getBodyes()?.add(FunctionBody(leftPart!!, body!!))
+        val functionDeclaration : FunctionDeclaration = element;
+        val left : Expression = functionDeclaration.getLhs().getExpression()
+        val right : Expression = functionDeclaration.getWhereEpression()!!.getExpression();
+        val leftPart = convertExpression(program, left)
+        val body = convertExpression(program, right)
+        program.myLassDeclaration?.getBodyes()?.add(FunctionBody(leftPart, body))
     }
 
     if (element is PsiFile) {
@@ -73,36 +74,37 @@ fun buildFromRoot(program : Program<PsiElement>, element : PsiElement?) : Unit {
 
 }
 
-fun treeToExpression(programm : Program<PsiElement>, treeElement : TreeElement?) : CExpression {
-    if (treeElement?.getDeclaration() != null)
-    {
-        var declaration : PsiElement? = treeElement?.getDeclaration()
-        var ref : CRefExpression = CRefExpression(declaration!!, getDeclarationName(declaration)!!)
-        var children : MutableList<CExpression?>? = ArrayList<CExpression?>()
-        for (child : TreeElement? in treeElement?.getChildren()!!) {
-            if (! child!!.isTerm()) {
-                children?.add(treeToExpression(programm, child))
-            }
+fun treeToExpression(programm : Program<PsiElement>, treeElement : TreeElement) : CExpression {
+    when (treeElement) {
+        is TermElement-> return convertExpression(programm, treeElement.element)
+        is ParentElement -> {
+            if (treeElement.getDeclaration() != null) {
+                val declaration : PsiElement? = treeElement.getDeclaration()
+                val ref : CRefExpression = CRefExpression(declaration!!, getDeclarationName(declaration)!!)
+                val children : MutableList<CExpression> = ArrayList<CExpression>()
+                for (child : TreeElement? in treeElement.getChildren()) {
+                    if (! child!!.isTerm()) {
+                        children.add(treeToExpression(programm, child))
+                    }
 
-        }
-        var current : CExpression = ref
-        for (child : CExpression? in children!!) {
-            current = CApplication(current, child!!)
-        }
-        return current
-    } else {
-        if (treeElement?.getElement() != null) {
-            return convertExpression(programm, treeElement?.getElement()!!)
-        }
-        else {
-            var children : List<TreeElement>? = treeElement?.getChildren()
-            if ((children?.size)!! == 1) {
-                return treeToExpression(programm, children!![0])
-            } else if ((children?.size)!! == 2) {
-                return CApplication(treeToExpression(programm, children!![0]), treeToExpression(programm, children!![1]))
+                }
+                var current : CExpression = ref
+                for (child : CExpression in children) {
+                    current = CApplication(current, child)
+                }
+                return current
+            } else {
+                val children = treeElement.getChildren()
+                if ((children.size) == 1) {
+                    return treeToExpression(programm, children[0])
+                } else if ((children.size) == 2) {
+                    return CApplication(treeToExpression(programm, children[0]), treeToExpression(programm, children[1]))
+                }
             }
         }
+        else -> throw RuntimeException()
     }
+
     throw RuntimeException()
 }
 private fun getDeclarationName(declaration : PsiElement?) : String? {
@@ -123,10 +125,10 @@ private fun getDeclarationName(declaration : PsiElement?) : String? {
 
 
 
-fun parseExpressionImpl(program : Program<PsiElement>, expression : PsiElement?) : CExpression {
+fun convertExpressionImpl(program : Program<PsiElement>, expression : PsiElement?) : CExpression {
     if (expression is Application) {
-        var treeElement : TreeElement? = Grammar.parse(expression)
-        return treeToExpression(program, treeElement)
+        val treeElement : TreeElement? = Grammar.parse(expression)
+        return treeToExpression(program, treeElement!!)
     }
 
     if (expression is FqNameImpl) {
@@ -190,23 +192,22 @@ fun parseExpressionImpl(program : Program<PsiElement>, expression : PsiElement?)
         return convertExpression(program, expression.getExpression()!!)
     }
 
-    val firstChild : PsiElement? = expression?.getFirstChild()
-    if (firstChild != null) {
-        return convertExpression(program, firstChild)
+    if (expression is Expression) {
+        return convertExpression(program, expression.getFirstChild()!!)
     }
     else throw RuntimeException()
 }
 
 fun convertExpression(program : Program<PsiElement>, expression : PsiElement) : CExpression {
-    var result : CExpression = parseExpressionImpl(program, expression)
+    var result : CExpression = convertExpressionImpl(program, expression)
     program.myExpressions.put(expression, result)
     return result
 }
 
-fun convertDataDeclaration(program : Program<PsiElement>, psiData : DataDeclaration?) : CDataDeclaration {
-    var aType : CExpression? = convertExpression(program, psiData?.getExpression()!!)
+fun convertDataDeclaration(program : Program<PsiElement>, psiData : DataDeclaration) : CDataDeclaration {
+    var aType : CExpression? = convertExpression(program, psiData.getExpression()!!)
     val signatures : MutableList<CTypeSignature?> = ArrayList<CTypeSignature?>()
-    for (binding : Binding? in psiData?.getBindings()!!.getBindingList()) {
+    for (binding : Binding? in psiData.getBindings()!!.getBindingList()) {
         var expression : CExpression? = convertExpression(program, binding?.getExpression()!!)
         for (nameDeclaration : NameDeclaration? in binding?.getNameDeclarationList()!!)
         {
@@ -216,23 +217,22 @@ fun convertDataDeclaration(program : Program<PsiElement>, psiData : DataDeclarat
         }
     }
     Collections.reverse(signatures)
-    for (signature : CTypeSignature? in signatures)
-    {
+    for (signature : CTypeSignature? in signatures) {
         aType = CPiArrowExpression(signature?.getName()!!, signature!!.aType, aType!!)
     }
-    var cDataDeclaration : CDataDeclaration = CDataDeclaration(psiData?.getNameDeclaration()?.getText()!!, aType!!)
-    for (typeSignature : TypeSignature? in psiData?.getConstructors()?.getTypeSignatureList()!!)
-    {
-        var ctype : CExpression? = convertExpression(program, typeSignature?.getExpression()!!)
-        for (signature : CTypeSignature? in signatures)
-        {
-            ctype = CImplicitArrowExpression(signature?.getName()!!, signature!!.aType, ctype!!)
-        }
-        for (nameDeclaration : NameDeclaration? in typeSignature?.getNameDeclarationList()!!)
-        {
-            val constructor : CTypeSignature = CTypeSignature(nameDeclaration?.getText()!!, ctype!!)
-            cDataDeclaration.getConstructors().add(constructor)
-            program.myDeclarations.put(nameDeclaration!!, constructor)
+    var cDataDeclaration : CDataDeclaration = CDataDeclaration(psiData.getNameDeclaration()?.getText()!!, aType!!)
+    val constructors = psiData.getConstructors()
+    if (constructors != null) {
+        for (typeSignature in constructors.getTypeSignatureList()) {
+            var ctype : CExpression? = convertExpression(program, typeSignature?.getExpression()!!)
+            for (signature : CTypeSignature? in signatures) {
+                ctype = CImplicitArrowExpression(signature?.getName()!!, signature!!.aType, ctype!!)
+            }
+            for (nameDeclaration : NameDeclaration? in typeSignature?.getNameDeclarationList()!!) {
+                val constructor : CTypeSignature = CTypeSignature(nameDeclaration?.getText()!!, ctype!!)
+                cDataDeclaration.getConstructors().add(constructor)
+                program.myDeclarations.put(nameDeclaration!!, constructor)
+            }
         }
     }
     return cDataDeclaration

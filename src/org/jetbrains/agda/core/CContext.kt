@@ -5,21 +5,21 @@ import java.util.HashMap
 /**
  * @author Evgeny.Kurbatsky
  */
-public class CContext(val map : Map<String, CExpression>) {
+public class CContext(val pair : Pair<String, CExpression>?, val parent : CContext?) {
 
-    public fun put(name : String, cType : CExpression) : CContext {
-        val newMap : HashMap<String, CExpression> = HashMap<String, CExpression>()
-        newMap.putAll(map);
-        newMap.put(name, cType)
-        return CContext(newMap)
-    }
+    public fun get(key : String) : CExpression? =
+        if (pair != null && pair.first == key)
+            pair.second
+        else
+            parent?.get(key)
 
-    public fun merge(context : CContext) : CContext {
-        val newMap : HashMap<String, CExpression> = HashMap<String, CExpression>()
-        newMap.putAll(map);
-        newMap.putAll(context.map)
-        return CContext(newMap)
-    }
+    public fun put(name : String, cType : CExpression) : CContext =
+        CContext(Pair(name, cType), this)
+
+
+    public fun merge(context : CContext) : CContext =
+        CContext(pair, if (parent == null) context else parent.merge(context))
+
 }
 
-fun emptyContext() = CContext(HashMap<String, CExpression>())
+val emptyContext = CContext(null, null)

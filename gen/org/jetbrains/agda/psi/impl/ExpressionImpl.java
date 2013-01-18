@@ -19,12 +19,6 @@ public class ExpressionImpl extends ASTWrapperPsiElement implements Expression {
 
   @Override
   @Nullable
-  public Application getApplication() {
-    return findChildByClass(Application.class);
-  }
-
-  @Override
-  @Nullable
   public ForallExpression getForallExpression() {
     return findChildByClass(ForallExpression.class);
   }

@@ -8,19 +8,12 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static org.jetbrains.agda.gen.parser.AgdaTokenTypes.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import org.jetbrains.agda.psi.*;
 
-public class ApplicationImpl extends ASTWrapperPsiElement implements Application {
+public class ApplicationImpl extends ExpressionImpl implements Application {
 
   public ApplicationImpl(ASTNode node) {
     super(node);
-  }
-
-  @Override
-  @Nullable
-  public Application getApplication() {
-    return findChildByClass(Application.class);
   }
 
   @Override

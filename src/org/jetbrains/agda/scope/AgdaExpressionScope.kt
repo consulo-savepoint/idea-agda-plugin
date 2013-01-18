@@ -130,11 +130,11 @@ public class AgdaExpressionScope(val element : PsiElement) : Scope() {
 
             val result = when (parent) {
                 is PsiFile -> {
-                    return AgdaModuleScope(parent).traverse(function)
+                    return AgdaModuleScope(parent, false).traverse(function)
                 }
                 is WhereEpression -> {
                     val wherePart = parent.getWherePart()
-                    if (wherePart != null) {AgdaModuleScope(wherePart).traverse(function)} else false;
+                    if (wherePart != null) {AgdaModuleScope(wherePart, false).traverse(function)} else false;
                 };
                 is ForallExpression -> {
                     val expression : ForallExpression = (parent as ForallExpression)
@@ -151,7 +151,7 @@ public class AgdaExpressionScope(val element : PsiElement) : Scope() {
                     var t1 = traverseList((parent.getBindings()!!.getBindingList().takeWhile { it != element })) {
                         traverseNameDeclarations(it!!.getNameDeclarationList())
                     }
-                    t1 || AgdaModuleScope(parent).traverse(function);
+                    t1 || AgdaModuleScope(parent, false).traverse(function);
                 }
                 else -> false;
             }

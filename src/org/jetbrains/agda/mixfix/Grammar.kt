@@ -10,51 +10,43 @@ import java.util.Arrays
 
 
 public open class Grammar(val myDeclarations : MutableMap<String, PsiElement>) {
-    private var myOperatorParts : ArrayList<String>? = ArrayList<String>()
+    private val myOperatorParts = ArrayList<String>()
 
     private open fun parse(listOfTerminals : List<PsiElement>) : TreeElement? {
         val list = ArrayList<TreeElement>()
-        for (element : PsiElement? in listOfTerminals)
+        for (element : PsiElement in listOfTerminals)
         {
-            list.add(TreeElement(element, null, Collections.emptyList()))
+            list.add(TermElement(element))
         }
         val term = parseIterative(parseApplications(list))
         return term
     }
 
-    private open fun parseApplications(list : MutableList<TreeElement>) : List<TreeElement> {
+    private open fun parseApplications(list : List<TreeElement>) : List<TreeElement> {
         val result = ArrayList<TreeElement>()
         var current : TreeElement? = null
-        for (term : TreeElement? in list) {
-            if (myOperatorParts?.contains(term?.getText())!!)
-            {
-                if (current != null)
-                {
+        for (term in list) {
+            if (myOperatorParts.contains(term.getText())) {
+                if (current != null) {
                     result.add(current!!)
                     current = null
                 }
-
-                result.add(term!!)
-            }
-            else
-            {
-                if (current == null)
-                {
-                    current = TreeElement(null, null, Collections.singletonList(term))
-                }
-                else
-                {
-                    current = TreeElement(null, null, Arrays.asList(current!!, TreeElement(null, null, Collections.singletonList(term))))
+                result.add(term)
+            } else {
+                if (current == null) {
+                    current = ParentElement(null, Collections.singletonList(term))
+                } else {
+                    current = ParentElement(null, Arrays.asList(current!!, ParentElement(null, Collections.singletonList(term))))
                 }
             }
         }
-        if (current != null)
-        {
-            result?.add(current!!)
+        if (current != null) {
+            result.add(current!!)
         }
 
         return result
     }
+
     private open fun parseIterative(list : List<TreeElement>) : TreeElement? {
         if ((list?.size())!! == 1)
         {
@@ -82,7 +74,7 @@ public open class Grammar(val myDeclarations : MutableMap<String, PsiElement>) {
                 }
                 else
                 {
-                    current = TreeElement(null, null, Arrays.asList(current!!, treeElement!!))
+                    current = ParentElement(null, Arrays.asList(current!!, treeElement!!))
                 }
             }
             return current
@@ -106,15 +98,15 @@ public open class Grammar(val myDeclarations : MutableMap<String, PsiElement>) {
                 continue
             }
 
-            var ruleCode : List<String> = decode(rule!!)
-            var length : Int = (ruleCode!!.size) - 1
+            val ruleCode : List<String> = decode(rule!!)
+            val length : Int = (ruleCode.size) - 1
             if (i >= length)
             {
                 var matches : Boolean = true
-                for (j in 0..ruleCode!!.size - 1) {
-                    if (ruleCode!![j].equals("_"))
+                for (j in 0..ruleCode.size - 1) {
+                    if (ruleCode[j].equals("_"))
                     {
-                        if (myOperatorParts?.contains(list?.get(i + j - length)?.getText())!!)
+                        if (myOperatorParts.contains(list?.get(i + j - length)?.getText()))
                         {
                             matches = false
                             break
@@ -123,7 +115,7 @@ public open class Grammar(val myDeclarations : MutableMap<String, PsiElement>) {
                     }
                     else
                     {
-                        if (!ruleCode!![j].equals(list?.get(i + j - length)?.getText()))
+                        if (!ruleCode[j].equals(list?.get(i + j - length)?.getText()))
                         {
                             matches = false
                             break
@@ -134,7 +126,7 @@ public open class Grammar(val myDeclarations : MutableMap<String, PsiElement>) {
                 if (matches)
                 {
                     var termList : List<TreeElement> = list!!.subList(i - length, i + 1)
-                    var term : TreeElement? = TreeElement(null, myDeclarations?.get(rule)!!, termList)
+                    var term : TreeElement? = ParentElement(myDeclarations.get(rule)!!, termList)
                     return parseIterative(replace(list, i, length, term!!))
                 }
 
@@ -216,7 +208,7 @@ public open class Grammar(val myDeclarations : MutableMap<String, PsiElement>) {
         }
 
         private open fun decode(rule : String) : List<String> {
-            if (rule?.contains("_")!!) {
+            if (rule.contains("_")!!) {
                 var result = ArrayList<String>()
                 var start : Int = 0
                 for (i in 0..rule!!.length() - 1) {

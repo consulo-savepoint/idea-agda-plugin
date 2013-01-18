@@ -30,24 +30,28 @@ import com.intellij.codeInsight.daemon.impl.quickfix.AddReturnFix
  * @author Evgeny.Kurbatsky
  */
 
-class AgdaModuleScope(val module : PsiElement) : Scope() {
+class AgdaModuleScope(val module : PsiElement, val external : Boolean) : Scope() {
 
     public override fun traverse(function: (String, PsiElement) -> Boolean): Boolean {
         if (module is WherePart || module is ModuleDeclaration || module is AgdaFileImpl) {
             for (child in module.getChildren()) {
                 when (child) {
                     is ModuleImport -> {
-                        if (traverseImport(child, function)) {
-                            return true;
+                        if (!external) {
+                            if (traverseImport(child, function)) {
+                                return true;
+                            }
                         }
-
                     }
                     is Open -> {
-                        val text = child.getFqName()!!.getText()!!
-                        val import = findImport(text);
-                        if (import != null) {
-                            if (traverseImport(import as ModuleImport, function)) {
-                                return true;
+                        val fqName = child.getFqName()
+                        if (fqName != null) {
+                            val text = fqName.getText()!!
+                            val import = findImport(text);
+                            if (import != null) {
+                                if (traverseImport(import as ModuleImport, function)) {
+                                    return true;
+                                }
                             }
                         }
                     }
@@ -87,9 +91,9 @@ class AgdaModuleScope(val module : PsiElement) : Scope() {
             val file = AgdaGlobalScope().find(fqName);
             if (file != null) {
                 if (node!!.getFirstChildNode()!!.getText() == "open") {
-                    return AgdaModuleScope(file).traverse(function)
+                    return AgdaModuleScope(file, true).traverse(function)
                 } else {
-                    return AgdaModuleScope(file).traverse { key, value ->
+                    return AgdaModuleScope(file, true).traverse { key, value ->
                         function(fqName.getText() + "." + key, value)
                     }
                 }
@@ -141,11 +145,9 @@ class AgdaModuleScope(val module : PsiElement) : Scope() {
 
 
 public fun findDeclaration(element : AgdaReferenceElementImpl) : PsiElement? {
-    if (element.getParent() is Application)
-    {
+    if (element.getParent() is Application) {
         var term : TreeElement? = Grammar.parse(element.getParent() as Application)
-        if (term != null)
-        {
+        if (term != null)  {
             var declaration : PsiElement? = term?.getDeclaration(element)
             if (declaration != null)
             {
