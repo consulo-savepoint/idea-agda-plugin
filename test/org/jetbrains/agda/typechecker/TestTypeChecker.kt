@@ -5,8 +5,9 @@ package org.jetbrains.agda.typechecker
  */
 import org.junit.Test as test
 import org.junit.Assert.*
-import org.jetbrains.agda.core.Program
+import org.jetbrains.agda.core.TypeChecker
 import org.jetbrains.agda.core.*
+import java.util.HashMap
 
 class TestTypeChecker {
     val Set = CSet()
@@ -37,17 +38,21 @@ class TestTypeChecker {
     fun consV(fst : CExpression, snd : CExpression) = ref("consV") app fst app snd
 
 
-    fun makeProgram() : Program<String> {
-        val program = Program<String>();
+    fun makeProgram() : TypeChecker<String> {
+        val declarations = HashMap<String, CDeclaration>()
+        val program = TypeChecker<String>({ reference ->
+            declarations.get(reference);
+        });
         val natData = data("Nat", CSet())
         val zeroType = CTypeSignature("zero", Nat)
         val succType = CTypeSignature("succ", Nat arrow Nat)
 
+
         natData.getConstructors().add(zeroType);
         natData.getConstructors().add(succType);
-        program.myDeclarations.put("Nat", natData)
-        program.myDeclarations.put("zero", zeroType);
-        program.myDeclarations.put("succ", succType);
+        declarations.put("Nat", natData)
+        declarations.put("zero", zeroType);
+        declarations.put("succ", succType);
 
         val listData = data("List", Set arrow Set)
         val empty = CTypeSignature("emptyL", implisit("A", Set) {A -> List(A)})
@@ -55,9 +60,9 @@ class TestTypeChecker {
         listData.getConstructors().add(empty)
         listData.getConstructors().add(cons)
 
-        program.myDeclarations.put("List", listData)
-        program.myDeclarations.put("emptyL", empty);
-        program.myDeclarations.put("cons", cons);
+        declarations.put("List", listData)
+        declarations.put("emptyL", empty);
+        declarations.put("cons", cons);
 
         val vectorData = data("Vec", Set arrow (Nat arrow Set))
         val emptyVector = CTypeSignature("emptyV", implisit("A", Set) {A -> Vec(A, zero)})
@@ -69,9 +74,9 @@ class TestTypeChecker {
         vectorData.getConstructors().add(emptyVector)
         vectorData.getConstructors().add(consVector)
 
-        program.myDeclarations.put("Vec", listData)
-        program.myDeclarations.put("emptyV", emptyVector);
-        program.myDeclarations.put("consV", consVector);
+        declarations.put("Vec", listData)
+        declarations.put("emptyV", emptyVector);
+        declarations.put("consV", consVector);
 
         return program
     }

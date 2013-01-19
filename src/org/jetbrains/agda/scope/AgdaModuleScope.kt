@@ -145,23 +145,32 @@ class AgdaModuleScope(val module : PsiElement, val external : Boolean) : Scope()
 
 
 public fun findDeclaration(element : AgdaReferenceElementImpl) : PsiElement? {
-    if (element.getParent() is Application) {
-        var term : TreeElement? = Grammar.parse(element.getParent() as Application)
-        if (term != null)  {
-            var declaration : PsiElement? = term?.getDeclaration(element)
-            if (declaration != null)
-            {
-                return declaration
-            }
 
-        }
-
-    }
-
-    var declarations : Map<String, PsiElement> = AgdaExpressionScope(element).getVisibleDeclarations()
     if (element is FqNameImpl) {
         val text = element.getText()
-        return declarations.get(text)
+        var declaration : PsiElement? = null
+        AgdaExpressionScope(element).traverse { name, element ->
+            if (name == text) {
+                declaration = element
+                true
+            } else {
+                false
+            }
+        }
+        if (declaration != null) {
+            return declaration;
+        }
+    }
+
+    if (element.getParent() is Application) {
+        var term : TreeElement? = Grammar.parse(element.getParent() as Application)
+        if (term != null) {
+            val declaration : PsiElement? = term?.getDeclaration(element)
+            if (declaration != null) {
+                return declaration
+            }
+        }
+
     }
 
     throw RuntimeException()

@@ -1,6 +1,7 @@
 package org.jetbrains.agda.core
 
-import org.jetbrains.agda.core.expression.CMetaVariable
+import org.jetbrains.agda.core.expression.CAnything
+import org.jetbrains.agda.core.expression.CMetaRef
 
 /**
  * @author Evgeny.Kurbatsky
@@ -42,8 +43,12 @@ open class ExpressionTransformer {
         return set;
     }
 
-    public open fun transformMeta(meta: CMetaVariable) : CMetaVariable  {
+    public open fun transformMeta(meta: CAnything) : CAnything {
         return meta;
+    }
+
+    public open fun transformMetaRef(ref : CMetaRef) : CExpression{
+        return ref;
     }
 }
 
@@ -55,7 +60,8 @@ fun CExpression.transform(transformer : ExpressionTransformer) : CExpression {
         is CPiArrowExpression -> return transformer.transformPiArrow(this);
         is CRefExpression -> return transformer.transformRef(this);
         is CSet -> return transformer.transformSet(this);
-        is CMetaVariable -> return transformer.transformMeta(this);
+        is CAnything -> return transformer.transformMeta(this);
+        is CMetaRef -> return transformer.transformMetaRef(this);
         else -> throw RuntimeException();
     }
 }

@@ -2,6 +2,7 @@ package org.jetbrains.agda.core
 
 import java.util.ArrayList
 import com.intellij.util.containers.hash.HashMap
+import org.jetbrains.agda.core.expression.CMetaRef
 
 
 class EquationsContainer {
@@ -10,11 +11,11 @@ class EquationsContainer {
     val variables = HashMap<String, CExpression>()
     val matavariables = HashMap<String, CExpression>()
 
-    fun nextVarRef(name : String, aType: CExpression) : CRefExpression {
+    fun nextVarRef(name : String, aType: CExpression) : CMetaRef {
         lastVariable++;
         val varName = name + "_" + lastVariable
         matavariables.put(varName, aType)
-        return CRefExpression(varName, varName);
+        return CMetaRef(varName);
 
     }
 

@@ -13,13 +13,12 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.ui.LightweightHint;
 import org.jetbrains.agda.core.CExpression;
-import org.jetbrains.agda.core.TypeChecker;
 import org.jetbrains.agda.core.ProgramBuilder;
 import org.jetbrains.agda.psi.WhereExpression;
 
 import javax.swing.*;
 
-public class ShowType extends AnAction {
+public class Normailze extends AnAction {
     @Override
     public void actionPerformed(AnActionEvent e) {
         final Editor editor = e.getData(PlatformDataKeys.EDITOR);
@@ -31,15 +30,15 @@ public class ShowType extends AnAction {
         final PsiFile file = PsiDocumentManager.getInstance(project).getPsiFile(editor.getDocument());
         if (file == null) {
             return;
-            }
+        }
         PsiElement elementAt = findElementAt(file, editor.getSelectionModel().getSelectionStart(), editor.getSelectionModel().getSelectionEnd());
         if (elementAt != null) {
             if (elementAt instanceof WhereExpression) {
                 elementAt = ((WhereExpression) elementAt).getExpression();
             }
-            CExpression typeOf = new ProgramBuilder().getTypeOf(elementAt);
-            if (typeOf != null) {
-                JLabel component = new JLabel(typeOf.toString());
+            CExpression normalized = new ProgramBuilder().normalize(elementAt);
+            if (normalized != null) {
+                JLabel component = new JLabel(normalized.toString());
 
                 final LightweightHint hint = new LightweightHint(component);
                 final HintManagerImpl hintManager = HintManagerImpl.getInstanceImpl();

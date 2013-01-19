@@ -6,9 +6,8 @@ import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDocumentManager;
-import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import org.jetbrains.agda.core.Program;
+import org.jetbrains.agda.core.TypeChecker;
 import org.jetbrains.agda.core.ProgramBuilder;
 
 public class BuildProgram extends AnAction {
@@ -24,8 +23,8 @@ public class BuildProgram extends AnAction {
         if (file == null) {
             return;
         }
-        Program program = new ProgramBuilder().build(file);
-        program.printDebug();
+//        TypeChecker<> program = new ProgramBuilder().getTypeOf(file);
+//        program.printDebug();
     }
 
 }

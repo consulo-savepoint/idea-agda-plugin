@@ -62,7 +62,7 @@ class AgdaSettingsConfigurable : Configurable {
         return "Agda"
     }
 
-    public override fun getIcon(): Icon? {
+    public fun getIcon(): Icon? {
         return null;
     }
 

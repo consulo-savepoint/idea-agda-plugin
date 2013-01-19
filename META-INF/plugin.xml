@@ -36,6 +36,9 @@
           <action id="agda-plugin.ShowType" class="org.jetbrains.agda.actions.ShowType" text="Show Type" description="A test menu item">
               <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift T"/>
           </action>
+          <action id="agda-plugin.Normalize" class="org.jetbrains.agda.actions.Normailze" text="Normalize" description="Normalize">
+              <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift H"/>
+          </action>
           <action id="agda-plugin.ShowProgram" class="org.jetbrains.agda.actions.BuildProgram" text="Print internal program presentation" description="A test menu item">
               <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift P"/>
           </action>

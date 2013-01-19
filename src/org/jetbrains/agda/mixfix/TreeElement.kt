@@ -16,15 +16,15 @@ public abstract class TreeElement() {
     public fun isTerm() : Boolean =
         this is TermElement
 
-    public open fun getDeclaration() : PsiElement? {
-        return null
-    }
-
     public abstract fun getDeclaration(element : PsiElement) : PsiElement?
 
 }
 
 public class TermElement(val element : PsiElement) : TreeElement() {
+
+    public override fun getDeclaration(element: PsiElement): PsiElement? {
+        return null;
+    }
 
     public override fun getText() : String? {
         if (element is FqName) {
@@ -34,29 +34,36 @@ public class TermElement(val element : PsiElement) : TreeElement() {
         return null
     }
 
-
-    public override fun getDeclaration(element : PsiElement) : PsiElement? {
-        return null
-    }
-
 }
 
-public class ParentElement(val myDeclaration : PsiElement?, val myChildren : List<TreeElement>) : TreeElement() {
-
-    public override fun getDeclaration() : PsiElement? = myDeclaration
-
-    public fun getChildren() : List<TreeElement> {
-        return myChildren
+public class ApplicationTreeElement(val left : TreeElement, val right : TreeElement) : TreeElement() {
+    public override fun getDeclaration(element: PsiElement): PsiElement? {
+        if (left.getDeclaration(element) != null) {
+            return left.getDeclaration(element)
+        }
+        if (right.getDeclaration(element) != null) {
+            return right.getDeclaration(element)
+        }
+        return null;
     }
+}
+
+public class OperationElement(val declaration: PsiElement, val children: List<TreeElement>) : TreeElement() {
 
     public override fun getDeclaration(element : PsiElement) : PsiElement? {
-        for (child : TreeElement? in myChildren) {
+        for (child : TreeElement? in children) {
             when(child) {
-                is TermElement -> if (child.element == element) return myDeclaration
-                is ParentElement -> {
+                is TermElement -> if (child.element == element) return declaration
+                is OperationElement -> {
                     var declaration : PsiElement? = child.getDeclaration(element)
                     if (declaration != null) {
                         return declaration
+                    }
+                }
+                is ApplicationTreeElement -> {
+                    val element1 = child.getDeclaration(element)
+                    if (element1 != null) {
+                        return element1;
                     }
                 }
                 else -> throw RuntimeException()

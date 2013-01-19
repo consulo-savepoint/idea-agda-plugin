@@ -14,26 +14,14 @@ import java.util.Arrays
 import org.codehaus.groovy.ast.expr.ExpressionTransformer
 import java.util.ArrayList
 import java.nio.charset.CoderResult
-import org.jetbrains.agda.core.expression.CMetaVariable
+import org.jetbrains.agda.core.expression.CAnything
+import org.jetbrains.agda.core.expression.CMetaRef
 
 /**
  * @author Evgeny.Kurbatsky
  */
-public open class Program<T>() {
-    val myDeclarations : MutableMap<T, CDeclaration> = LinkedHashMap<T, CDeclaration>()
+public open class TypeChecker<T>(val declarationProvider : (T) -> CDeclaration?) {
     val myExpressions : MutableMap<T, CExpression?> = HashMap<T, CExpression?>()
-
-    private open fun checkTypes() : Unit {
-        for (cDeclaration : CDeclaration? in myDeclarations.values()) {
-            if (cDeclaration is CFunctionDeclaration) {
-                val functionDeclaration : CFunctionDeclaration = cDeclaration
-                for (body in functionDeclaration.getBodyes()) {
-                    check(body)
-                }
-            }
-
-        }
-    }
 
     public fun calculateType(expression : CExpression) : CExpression? {
         val signature = EquationsContainer()
@@ -46,7 +34,7 @@ public open class Program<T>() {
         return result;
     }
 
-    private open fun check(body : CFunctionBody) : Unit {
+    public open fun checkTypes(body : CFunctionBody) : Unit {
         val signature = EquationsContainer()
         val resultType = checkType(emptyContext, signature, body.left, null, true)
 
@@ -55,50 +43,66 @@ public open class Program<T>() {
 
     public fun checkType(context : CContext, signature : EquationsContainer, expression : CExpression,  aType : CExpression?, leftPart : Boolean) : CExpression {
         val result = doCheckType(context, signature, expression, aType, leftPart)
+        if (aType != null) {
+            unifyExpressions(context, signature, result, aType);
+        }
         expression.setType(result)
         return result;
     }
 
     fun replaceVar(expr : CExpression, name : String, value : CExpression) =
         expr.transform(object : ExpressionTransformer() {
-            public override fun transformRef(cref: CRefExpression): CExpression {
-                if (cref.name == name) {
+
+            public override fun transformRef(val ref: CRefExpression): CExpression {
+                if (ref.name == name) {
                     return value;
                 } else {
-                    return super<ExpressionTransformer>.transformRef(cref)
+                    return super<ExpressionTransformer>.transformRef(ref)
+                }
+            }
+
+            public override fun transformMetaRef(val ref: CMetaRef): CExpression {
+                if (ref.name == name) {
+                    return value;
+                } else {
+                    return super<ExpressionTransformer>.transformMetaRef(ref)
                 }
             }
         })
 
 
-    private fun unifyExpressions(context : CContext, left : CExpression, right : CExpression, signature : EquationsContainer) {
+    private fun unifyExpressions(context : CContext, signature : EquationsContainer, left : CExpression, right : CExpression) {
         if (left is CRefExpression) {
             if (right is CRefExpression) {
-                if (signature.matavariables.containsKey(left.name)) {
-                    signature.rules.add(Rule(left.name, right))
-                    return
-                }
-                if (signature.matavariables.containsKey(right.name)) {
-                    signature.rules.add(Rule(right.name, left))
-                    return
-                }
                 if (left.declaration == right.declaration) {
                     return
                 }
             }
         }
+        if (left is CMetaRef) {
+            if (left != right) {
+                signature.rules.add(Rule(left.name, right))
+            }
+            return
+        }
+        if (right is CMetaRef) {
+            if (left != right) {
+                signature.rules.add(Rule(right.name, left))
+            }
+            return
+        }
         if (left is CImplicitArrowExpression) {
             val newLeft = replaceVar(left.right, left.name, signature.nextVarRef(left.name, left.left))
-            return unifyExpressions(context, newLeft, right, signature);
+            return unifyExpressions(context, signature, newLeft, right);
         }
         if (right is CImplicitArrowExpression) {
             val newRight = replaceVar(right.right, right.name, signature.nextVarRef(right.name, right.left))
-            return unifyExpressions(context, left, newRight, signature)
+            return unifyExpressions(context, signature, left, newRight)
         }
         if (left is CApplication) {
             if (right is CApplication) {
-                unifyExpressions(context, left.left, right.left, signature)
-                unifyExpressions(context, left.right, right.right, signature)
+                unifyExpressions(context, signature, left.left,  right.left)
+                unifyExpressions(context, signature, left.right, right.right)
                 return
             }
         }
@@ -108,7 +112,7 @@ public open class Program<T>() {
 
     private fun doCheckApplication(context : CContext, left : CExpression, rightExpression : CExpression, signature : EquationsContainer, leftPart : Boolean) : CExpression {
         if (left is CArrowExpression) {
-            doCheckType(context, signature, rightExpression, left.left, leftPart)
+            checkType(context, signature, rightExpression, left.left, leftPart)
             return left.right;
         } else if (left is CPiArrowExpression) {
             val piArrowExpression : CPiArrowExpression = left;
@@ -129,37 +133,47 @@ public open class Program<T>() {
             if (context.get(expression.name) != null) {
                 return context.get(expression.name)!!
             }
-            var declaration : Any = expression.declaration
-            val cDeclaration : CDeclaration? = myDeclarations.get(declaration)
-            if (cDeclaration != null) {
-                return cDeclaration.aType
-            }
             val functionsVar = signature.variables.get(expression.name)
             if (functionsVar != null) {
                 return functionsVar
             }
+
+            val cDeclaration : CDeclaration? = declarationProvider(expression.declaration as T)
+            if (cDeclaration != null) {
+                return cDeclaration.aType
+            }
+
             if (leftPart) {
                 signature.variables.put(expression.name, aType!!)
                 return aType
             }
             throw RuntimeException()
         }
-        if (expression is CMetaVariable) {
+        if (expression is CAnything) {
             return aType!!;
         }
         throw RuntimeException()
     }
 
     public fun getTypeOf(elementAt : T) : CExpression? {
-        checkTypes()
-        val expression = myExpressions.get(elementAt)
-
-        return expression?.getType()
+        return myExpressions.get(elementAt)!!.getType()
     }
 
     public open fun printDebug() : Unit {
-        for (declaration : CDeclaration? in myDeclarations.values()) {
-            println(declaration?.toString())
+
+    }
+
+    open fun normalize(expr : CExpression) : CExpression {
+        if (expr is CRefExpression) {
+            val declaration = declarationProvider(expr.declaration as T)
+            if (declaration != null) {
+                if (declaration is CFunctionDeclaration) {
+                    if (declaration.getBodyes().size == 1) {
+                        return declaration.getBodyes()[1].right;
+                    }
+                }
+            }
         }
+        return expr;
     }
 }
