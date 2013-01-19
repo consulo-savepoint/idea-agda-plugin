@@ -17,12 +17,6 @@ public class RenamingImpl extends ASTWrapperPsiElement implements Renaming {
     super(node);
   }
 
-  @Override
-  @NotNull
-  public PsiElement getId() {
-    return findNotNullChildByType(ID);
-  }
-
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof Visitor) ((Visitor)visitor).visitRenaming(this);
     else super.accept(visitor);

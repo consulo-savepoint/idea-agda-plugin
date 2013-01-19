@@ -5,7 +5,7 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface NumberExpression extends PsiElement {
+public interface NumberExpression extends Expression {
 
   @NotNull
   PsiElement getNumber();

@@ -17,16 +17,7 @@ public interface Expression extends PsiElement {
   FqName getFqName();
 
   @Nullable
-  GoalExpression getGoalExpression();
-
-  @Nullable
   LetExpression getLetExpression();
-
-  @Nullable
-  NumberExpression getNumberExpression();
-
-  @Nullable
-  SubstituteImplisit getSubstituteImplisit();
 
   @Nullable
   TeleArrow getTeleArrow();

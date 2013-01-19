@@ -37,26 +37,8 @@ public class ExpressionImpl extends ASTWrapperPsiElement implements Expression {
 
   @Override
   @Nullable
-  public GoalExpression getGoalExpression() {
-    return findChildByClass(GoalExpression.class);
-  }
-
-  @Override
-  @Nullable
   public LetExpression getLetExpression() {
     return findChildByClass(LetExpression.class);
-  }
-
-  @Override
-  @Nullable
-  public NumberExpression getNumberExpression() {
-    return findChildByClass(NumberExpression.class);
-  }
-
-  @Override
-  @Nullable
-  public SubstituteImplisit getSubstituteImplisit() {
-    return findChildByClass(SubstituteImplisit.class);
   }
 
   @Override

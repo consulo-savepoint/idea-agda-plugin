@@ -13,13 +13,4 @@ public interface ArrowExpression extends PsiElement {
   @Nullable
   FqName getFqName();
 
-  @Nullable
-  GoalExpression getGoalExpression();
-
-  @Nullable
-  NumberExpression getNumberExpression();
-
-  @Nullable
-  SubstituteImplisit getSubstituteImplisit();
-
 }

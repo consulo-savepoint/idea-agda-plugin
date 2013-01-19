@@ -26,6 +26,7 @@ import org.jetbrains.agda.psi.impl.FqNameImpl
 import org.jetbrains.agda.mixfix.TermElement
 import org.jetbrains.agda.mixfix.ParentElement
 import org.jetbrains.agda.psi.ArrowExpression
+import org.jetbrains.agda.psi.GoalExpression
 
 /**
  * @author Evgeny.Kurbatsky
@@ -63,7 +64,10 @@ fun buildFromRoot(program : Program<PsiElement>, element : PsiElement) : Unit {
         val leftPart = convertExpression(program, left)
         val body = convertExpression(program, right)
         val functionBody = CFunctionBody(leftPart, body)
-        (program.myDeclarations[functionBody.getDeclaration()] as CFunctionDeclaration).addBody(functionBody)
+        val declaration = program.myDeclarations[functionBody.getDeclaration()]
+        if (declaration != null) {
+         (declaration as CFunctionDeclaration).addBody(functionBody)
+        }
     }
 
     if (element is PsiFile) {
@@ -188,14 +192,12 @@ fun convertExpressionImpl(program : Program<PsiElement>, expression : PsiElement
         return CArrowExpression(left, right)
     }
 
-    if (expression is ParenthesisExpression) {
-        return convertExpression(program, expression.getExpression()!!)
+    return when (expression) {
+        is ParenthesisExpression -> convertExpression(program, expression.getExpression()!!)
+        is GoalExpression -> CMetaVariable()
+        is Expression -> convertExpression(program, expression.getFirstChild()!!)
+        else -> throw RuntimeException();
     }
-
-    if (expression is Expression) {
-        return convertExpression(program, expression.getFirstChild()!!)
-    }
-    else throw RuntimeException()
 }
 
 fun convertExpression(program : Program<PsiElement>, expression : PsiElement) : CExpression {

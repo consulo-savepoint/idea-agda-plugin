@@ -157,7 +157,7 @@ absurd_expression ::= "(" ")" {extends=expression}
 
 parenthesis_expression ::= "(" expression ")" {pin=1; extends=expression}
 
-goal_expression ::= "{" "!!" "}"
+goal_expression ::= "{" "!!" "}" {extends=expression}
 
 
 application ::= (atom_expr maybe_application) {extends=expression}
@@ -166,9 +166,9 @@ private maybe_application ::= application | atom_expr
 
 
 
-number_expression ::= number
+number_expression ::= number {extends=expression}
 
-substitute_implisit ::= "{" (name_declaration "=")?  expression "}"
+substitute_implisit ::= "{" (name_declaration "=")?  expression "}" {extends=expression}
 
 let_expression ::= "let" name_declaration "=" expression "in" expression
 

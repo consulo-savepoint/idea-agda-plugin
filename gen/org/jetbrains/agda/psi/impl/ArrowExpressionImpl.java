@@ -29,24 +29,6 @@ public class ArrowExpressionImpl extends ASTWrapperPsiElement implements ArrowEx
     return findChildByClass(FqName.class);
   }
 
-  @Override
-  @Nullable
-  public GoalExpression getGoalExpression() {
-    return findChildByClass(GoalExpression.class);
-  }
-
-  @Override
-  @Nullable
-  public NumberExpression getNumberExpression() {
-    return findChildByClass(NumberExpression.class);
-  }
-
-  @Override
-  @Nullable
-  public SubstituteImplisit getSubstituteImplisit() {
-    return findChildByClass(SubstituteImplisit.class);
-  }
-
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof Visitor) ((Visitor)visitor).visitArrowExpression(this);
     else super.accept(visitor);

@@ -80,7 +80,7 @@ public class Visitor extends PsiElementVisitor {
   }
 
   public void visitGoalExpression(@NotNull GoalExpression o) {
-    visitPsiElement(o);
+    visitExpression(o);
   }
 
   public void visitImplicitTelescope(@NotNull ImplicitTelescope o) {
@@ -128,7 +128,7 @@ public class Visitor extends PsiElementVisitor {
   }
 
   public void visitNumberExpression(@NotNull NumberExpression o) {
-    visitPsiElement(o);
+    visitExpression(o);
   }
 
   public void visitOpen(@NotNull Open o) {
@@ -172,7 +172,7 @@ public class Visitor extends PsiElementVisitor {
   }
 
   public void visitSubstituteImplisit(@NotNull SubstituteImplisit o) {
-    visitPsiElement(o);
+    visitExpression(o);
   }
 
   public void visitTeleArrow(@NotNull TeleArrow o) {

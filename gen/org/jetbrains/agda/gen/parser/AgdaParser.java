@@ -189,8 +189,8 @@ public class AgdaParser implements PsiParser {
   }
 
   private static final TokenSet[] EXTENDS_SETS_ = new TokenSet[] {
-    TokenSet.create(ABSURD_EXPRESSION, APPLICATION, EXPRESSION, LAMBDA_EXPRESSION,
-      PARENTHESIS_EXPRESSION),
+    TokenSet.create(ABSURD_EXPRESSION, APPLICATION, EXPRESSION, GOAL_EXPRESSION,
+      LAMBDA_EXPRESSION, NUMBER_EXPRESSION, PARENTHESIS_EXPRESSION, SUBSTITUTE_IMPLISIT),
     TokenSet.create(EXPLICIT_TELESCOPE, IMPLICIT_TELESCOPE, TELESCOPE),
   };
   public static boolean type_extends_(IElementType child_, IElementType parent_) {

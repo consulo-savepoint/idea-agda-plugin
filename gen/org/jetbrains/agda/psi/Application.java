@@ -13,13 +13,4 @@ public interface Application extends Expression {
   @NotNull
   List<FqName> getFqNameList();
 
-  @NotNull
-  List<GoalExpression> getGoalExpressionList();
-
-  @NotNull
-  List<NumberExpression> getNumberExpressionList();
-
-  @NotNull
-  List<SubstituteImplisit> getSubstituteImplisitList();
-
 }

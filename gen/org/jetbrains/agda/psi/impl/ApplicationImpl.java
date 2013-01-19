@@ -28,24 +28,6 @@ public class ApplicationImpl extends ExpressionImpl implements Application {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, FqName.class);
   }
 
-  @Override
-  @NotNull
-  public List<GoalExpression> getGoalExpressionList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, GoalExpression.class);
-  }
-
-  @Override
-  @NotNull
-  public List<NumberExpression> getNumberExpressionList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, NumberExpression.class);
-  }
-
-  @Override
-  @NotNull
-  public List<SubstituteImplisit> getSubstituteImplisitList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, SubstituteImplisit.class);
-  }
-
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof Visitor) ((Visitor)visitor).visitApplication(this);
     else super.accept(visitor);

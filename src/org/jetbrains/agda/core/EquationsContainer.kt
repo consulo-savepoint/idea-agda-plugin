@@ -4,15 +4,16 @@ import java.util.ArrayList
 import com.intellij.util.containers.hash.HashMap
 
 
-class Signature {
+class EquationsContainer {
     var lastVariable : Int = 0;
-    var rules = ArrayList<Rule>()
+    val rules = ArrayList<Rule>()
     val variables = HashMap<String, CExpression>()
+    val matavariables = HashMap<String, CExpression>()
 
-    fun nextVarRef(aType: CExpression) : CRefExpression {
+    fun nextVarRef(name : String, aType: CExpression) : CRefExpression {
         lastVariable++;
-        val varName = "_" + lastVariable
-        variables.put(varName, aType)
+        val varName = name + "_" + lastVariable
+        matavariables.put(varName, aType)
         return CRefExpression(varName, varName);
 
     }

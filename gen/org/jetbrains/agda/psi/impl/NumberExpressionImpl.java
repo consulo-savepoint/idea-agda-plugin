@@ -8,10 +8,9 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static org.jetbrains.agda.gen.parser.AgdaTokenTypes.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import org.jetbrains.agda.psi.*;
 
-public class NumberExpressionImpl extends ASTWrapperPsiElement implements NumberExpression {
+public class NumberExpressionImpl extends ExpressionImpl implements NumberExpression {
 
   public NumberExpressionImpl(ASTNode node) {
     super(node);
