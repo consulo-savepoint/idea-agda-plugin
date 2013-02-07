@@ -107,8 +107,8 @@ fun treeToExpression(programm : TypeChecker<PsiElement>?, treeElement : TreeElem
             val declaration = treeElement.declaration
             val ref : CRefExpression = CRefExpression(declaration, getDeclarationName(declaration)!!)
             val children : MutableList<CExpression> = ArrayList<CExpression>()
-            for (child : TreeElement? in treeElement.children) {
-                if (! child!!.isTerm()) {
+            for (child in treeElement.children) {
+                if (child is TermElement && !child.isOperation) {
                     children.add(treeToExpression(programm, child))
                 }
 
@@ -143,7 +143,7 @@ private fun getDeclarationName(declaration : PsiElement?) : String? {
 
 
 
-fun convertExpressionImpl(program : TypeChecker<PsiElement>?, expression : PsiElement?) : CExpression {
+fun convertExpressionImpl(program : TypeChecker<PsiElement>?, expression : PsiElement) : CExpression {
     if (expression is Application) {
         val treeElement : TreeElement? = Grammar.parse(expression)
         return treeToExpression(program, treeElement!!)
@@ -167,31 +167,27 @@ fun convertExpressionImpl(program : TypeChecker<PsiElement>?, expression : PsiEl
     }
 
     if (expression is TeleArrow) {
-        var telescopeList : MutableList<Telescope?> = expression.getTelescopeList()
+        val telescopeList : MutableList<Telescope> = expression.getTelescopeList()
         Collections.reverse(telescopeList);
         var result : CExpression = convertExpression(program, expression.getExpression());
-        for (telescope : Telescope? in telescopeList)
-        {
+        for (telescope in telescopeList) {
             if (telescope is ImplicitTelescope) {
-                var implicitTelescope : ImplicitTelescope? = (telescope as ImplicitTelescope?)
-                var cType : CExpression? = convertExpression(program, implicitTelescope?.getTypeSignature()?.getExpression()!!)
-                var nameDeclarationList : MutableList<NameDeclaration?> = implicitTelescope?.getTypeSignature()?.getNameDeclarationList()!!
+                val implicitTelescope : ImplicitTelescope = telescope
+                val cType : CExpression? = convertExpression(program, implicitTelescope.getTypeSignature().getExpression())
+                val nameDeclarationList : MutableList<NameDeclaration> = implicitTelescope.getTypeSignature().getNameDeclarationList()
                 Collections.reverse(nameDeclarationList)
-                for (nameDeclaration : NameDeclaration? in nameDeclarationList)
-                {
+                for (nameDeclaration : NameDeclaration? in nameDeclarationList) {
                     result = CImplicitArrowExpression(nameDeclaration?.getText()!!, cType!!, result)
                 }
             }
 
-            if ((telescope is ExplicitTelescope?))
-            {
-                var explicitTelescope : ExplicitTelescope? = (telescope as ExplicitTelescope?)
-                var cType : CExpression = convertExpression(program, explicitTelescope?.getTypeSignature()?.getExpression()!!)
-                var nameDeclarationList : MutableList<NameDeclaration?> = explicitTelescope?.getTypeSignature()?.getNameDeclarationList()!!
+            if (telescope is ExplicitTelescope) {
+                val explicitTelescope : ExplicitTelescope = telescope
+                val cType : CExpression = convertExpression(program, explicitTelescope.getTypeSignature().getExpression())
+                val nameDeclarationList : MutableList<NameDeclaration> = explicitTelescope.getTypeSignature().getNameDeclarationList()
                 Collections.reverse(nameDeclarationList)
-                for (nameDeclaration : NameDeclaration? in nameDeclarationList)
-                {
-                    result = CPiArrowExpression(nameDeclaration?.getText()!!, cType, result)
+                for (nameDeclaration in nameDeclarationList) {
+                    result = CPiArrowExpression(nameDeclaration.getText()!!, cType, result)
                 }
             }
 
@@ -200,9 +196,9 @@ fun convertExpressionImpl(program : TypeChecker<PsiElement>?, expression : PsiEl
     }
 
     if (expression is ArrowExpression) {
-        var children : Array<PsiElement?> = expression.getChildren()
-        var left : CExpression = convertExpression(program, children[0]!!)
-        var right : CExpression = convertExpression(program, children[1]!!)
+        var children : Array<PsiElement> = expression.getChildren()
+        var left : CExpression = convertExpression(program, children[0])
+        var right : CExpression = convertExpression(program, children[1])
         return CArrowExpression(left, right)
     }
 
@@ -229,7 +225,6 @@ fun convertDataDeclaration(program : TypeChecker<PsiElement>, psiData : DataDecl
         {
             val typeSignature = CTypeSignature(nameDeclaration?.getText()!!, expression!!)
             signatures.add(typeSignature)
-            //program.myDeclarations.put(nameDeclaration!!, typeSignature)
         }
     }
     Collections.reverse(signatures)

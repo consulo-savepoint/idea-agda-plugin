@@ -32,7 +32,7 @@ public class AgdaReference implements PsiReference {
                 return new AgdaGlobalScope().find((FqName) getElement());
             }
         }
-        return org.jetbrains.agda.scope.namespace.findDeclaration(getElement());
+        return org.jetbrains.agda.scope.ScopePackage.findDeclaration(getElement());
     }
 
     @NotNull

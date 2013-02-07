@@ -46,7 +46,6 @@ class AgdaFullLexer() : LexerBase() {
                 if (nextToken != null && !AgdaTokenSets.WHITESPACES.contains(nextToken) &&
                     !AgdaTokenSets.COMMENTS.contains(nextToken)) {
 
-
                     if (tokenSize == indentStack.last!!) {
                         tokenTypes[tokenTypes.size - 1] = AgdaTokenTypes.VIRTUAL_SEMICOLON
                     } else {

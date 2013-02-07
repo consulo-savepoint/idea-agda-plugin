@@ -7,6 +7,7 @@ import org.jetbrains.agda.scope.AgdaExpressionScope
 import org.jetbrains.agda.psi.Application
 import java.util.Collections
 import java.util.Arrays
+import org.jetbrains.agda.psi.FqName
 
 
 public open class Grammar(val myDeclarations : MutableMap<String, PsiElement>) {
@@ -15,7 +16,8 @@ public open class Grammar(val myDeclarations : MutableMap<String, PsiElement>) {
     private open fun parse(listOfTerminals : List<PsiElement>) : TreeElement? {
         val list = ArrayList<TreeElement>()
         for (element : PsiElement in listOfTerminals) {
-            list.add(TermElement(element))
+            val isOperation = (element is FqName) && myOperatorParts.contains(element.getText())
+            list.add(TermElement(element, isOperation))
         }
         return parseIterative(parseApplications(list))
     }
@@ -155,17 +157,17 @@ public open class Grammar(val myDeclarations : MutableMap<String, PsiElement>) {
                 application = (application.getParent() as Application)
             }
             val result = ArrayList<PsiElement>()
-            var element : PsiElement? = application
-            while ((element is Application?)) {
-                var expressionList : Array<PsiElement?>? = element!!.getChildren()
-                result.add(expressionList!![0]!!)
-                if ((expressionList!!.size) > 1) {
-                    element = expressionList!![1]
+            var element : PsiElement = application
+            while (element is Application) {
+                val expressionList : Array<PsiElement> = (element : PsiElement).getChildren()
+                result.add(expressionList[0])
+                if ((expressionList.size) > 1) {
+                    element = expressionList[1]
                 } else {
                     break
                 }
             }
-            result.add(element!!)
+            result.add(element)
             return result
         }
 

@@ -13,14 +13,10 @@ import org.jetbrains.agda.psi.FqName
 public abstract class TreeElement() {
     public open fun getText() : String? = null
 
-    public fun isTerm() : Boolean =
-        this is TermElement
-
     public abstract fun getDeclaration(element : PsiElement) : PsiElement?
-
 }
 
-public class TermElement(val element : PsiElement) : TreeElement() {
+public class TermElement(val element : PsiElement, val isOperation : Boolean) : TreeElement() {
 
     public override fun getDeclaration(element: PsiElement): PsiElement? {
         return null;

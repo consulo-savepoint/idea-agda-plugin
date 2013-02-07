@@ -123,7 +123,7 @@ public class AgdaExpressionScope(val element : PsiElement) : Scope() {
         }
     }
 
-    class ArdaExpressionScopeTraverse(val function : (String, PsiElement) -> Boolean) {
+    inner class ArdaExpressionScopeTraverse(val function : (String, PsiElement) -> Boolean) {
 
         fun traverse() : Boolean {
             val parent = element.getParent()
@@ -139,17 +139,17 @@ public class AgdaExpressionScope(val element : PsiElement) : Scope() {
                 is ForallExpression -> {
                     val expression : ForallExpression = (parent as ForallExpression)
                     traverseList(expression.getTypedUntypedBindingList()) {
-                        traverseTypedUntypedBinding(it!!);
+                        traverseTypedUntypedBinding(it);
                     }
                 }
                 is DataDeclaration -> {
                     traverseList(parent.getBindings()!!.getBindingList().takeWhile { it != element }) {
-                        traverseNameDeclarations(it!!.getNameDeclarationList())
+                        traverseNameDeclarations(it.getNameDeclarationList())
                     }
                 }
                 is ModuleDeclaration -> {
                     var t1 = traverseList((parent.getBindings()!!.getBindingList().takeWhile { it != element })) {
-                        traverseNameDeclarations(it!!.getNameDeclarationList())
+                        traverseNameDeclarations(it.getNameDeclarationList())
                     }
                     t1 || AgdaModuleScope(parent, false).traverse(function);
                 }

@@ -7,6 +7,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.agda.psi.*;
 import org.jetbrains.agda.psi.impl.FqNameImpl;
+import org.jetbrains.agda.scope.ScopePackage;
 import org.jetbrains.annotations.NotNull;
 
 public class AgdaAnnotator implements Annotator {
@@ -42,7 +43,7 @@ public class AgdaAnnotator implements Annotator {
             if (hasAbsurdParent(element)) {
                 return;
             }
-            PsiElement declaration = org.jetbrains.agda.scope.namespace.findDeclaration((FqNameImpl) element);
+            PsiElement declaration = ScopePackage.findDeclaration((FqNameImpl) element);
             if (declaration != null) {
                 if (declaration instanceof DataDeclaration) {
                     holder.createInfoAnnotation(element, null).setTextAttributes(AgdaHighlighter.TYPE);

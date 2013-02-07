@@ -169,7 +169,7 @@ public open class TypeChecker<T>(val declarationProvider : (T) -> CDeclaration?)
             if (declaration != null) {
                 if (declaration is CFunctionDeclaration) {
                     if (declaration.getBodyes().size == 1) {
-                        return declaration.getBodyes()[1].right;
+                        return normalize(declaration.getBodyes()[0].right);
                     }
                 }
             }
