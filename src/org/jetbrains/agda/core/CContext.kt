@@ -1,25 +1,28 @@
 package org.jetbrains.agda.core
 
 import java.util.HashMap
+import org.jetbrains.agda.util.FList
+import org.jetbrains.agda.util.Cons
+import org.jetbrains.agda.util.Nil
 
 /**
  * @author Evgeny.Kurbatsky
  */
-public class CContext(val pair : Pair<String, CExpression>?, val parent : CContext?) {
+
+public class CContext(val pairs : FList<Pair<String, CExpression>>) {
 
     public fun get(key : String) : CExpression? =
-        if (pair != null && pair.first == key)
-            pair.second
-        else
-            parent?.get(key)
+        pairs.fold<CExpression?>(null) { pair, next ->
+            if (pair.first == key) pair.second else next()
+        }
 
     public fun put(name : String, cType : CExpression) : CContext =
-        CContext(Pair(name, cType), this)
+        CContext(Cons(Pair(name, cType), pairs))
 
 
     public fun merge(context : CContext) : CContext =
-        CContext(pair, if (parent == null) context else parent.merge(context))
+        CContext(pairs.append(context.pairs))
 
 }
 
-val emptyContext = CContext(null, null)
+val emptyContext = CContext(Nil())

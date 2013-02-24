@@ -16,12 +16,17 @@ import java.util.ArrayList
 import java.nio.charset.CoderResult
 import org.jetbrains.agda.core.expression.CAnything
 import org.jetbrains.agda.core.expression.CMetaRef
+import org.jetbrains.agda.mixfix.ApplicationTreeElement
+import org.jetbrains.agda.util.FList
+import org.jetbrains.agda.util.singeFList
+import org.jetbrains.agda.util.case
+import org.jetbrains.agda.util.Nil
+import org.jetbrains.agda.util.Cons
 
 /**
  * @author Evgeny.Kurbatsky
  */
-public open class TypeChecker<T>(val declarationProvider : (T) -> CDeclaration?) {
-    val myExpressions : MutableMap<T, CExpression?> = HashMap<T, CExpression?>()
+public open class TypeChecker(val declarationProvider : (Any) -> CDeclaration?) {
 
     public fun calculateType(expression : CExpression) : CExpression? {
         val signature = EquationsContainer()
@@ -138,7 +143,7 @@ public open class TypeChecker<T>(val declarationProvider : (T) -> CDeclaration?)
                 return functionsVar
             }
 
-            val cDeclaration : CDeclaration? = declarationProvider(expression.declaration as T)
+            val cDeclaration : CDeclaration? = declarationProvider(expression.declaration)
             if (cDeclaration != null) {
                 return cDeclaration.aType
             }
@@ -155,25 +160,86 @@ public open class TypeChecker<T>(val declarationProvider : (T) -> CDeclaration?)
         throw RuntimeException()
     }
 
-    public fun getTypeOf(elementAt : T) : CExpression? {
-        return myExpressions.get(elementAt)!!.getType()
-    }
-
-    public open fun printDebug() : Unit {
+    fun printDebug() : Unit {
 
     }
 
-    open fun normalize(expr : CExpression) : CExpression {
+    fun normalize(expr : CExpression) : CExpression {
         if (expr is CRefExpression) {
-            val declaration = declarationProvider(expr.declaration as T)
+            val declaration = declarationProvider(expr.declaration)
             if (declaration != null) {
                 if (declaration is CFunctionDeclaration) {
                     if (declaration.getBodyes().size == 1) {
-                        return normalize(declaration.getBodyes()[0].right);
+                        return normalize(declaration.getBodyes()[0].right)
                     }
                 }
             }
         }
+        if (expr is CApplication) {
+            val application : CApplication = expr
+            return apply(normalize(application.left), singeFList(normalize(application.right)))
+        }
         return expr;
     }
+
+    fun matchOne(pattern : CExpression, arg : CExpression) : FList<Pair<String, CExpression>>? {
+        return null;
+    }
+
+    fun match(patterns : FList<CExpression>, args : FList<CExpression>) : FList<Pair<String, CExpression>>? =
+        when (patterns) {
+            is Nil<CExpression> -> Nil()
+            is Cons<CExpression> -> when (args) {
+                is Nil<CExpression> -> null
+                is Cons<CExpression> -> {
+                    val m1 = matchOne(patterns.head, args.head)
+                    val m2 = match(patterns.tail, args.tail)
+                    if (m1 == null ||m2 == null) {
+                        null
+                    }else {
+                        m2
+                    }
+                }
+                else -> null
+            }
+            else -> null
+        }
+
+
+    fun reduce(f : CFunctionDeclaration, args : FList<CExpression>) : CExpression {
+        for (val body in f.getBodyes()) {
+            val m = match(getArguments(body.left), args)
+            if (m != null) {
+                throw UnsupportedOperationException()
+            }
+        }
+        throw UnsupportedOperationException()
+    }
+
+    fun getArguments(expression : CExpression, acc : FList<CExpression> = Nil()) : FList<CExpression> =
+            when (expression) {
+                is CApplication -> getArguments(expression.left, Cons(expression.right, acc))
+
+                else            -> acc
+            }
+
+
+    fun apply(f : CExpression, args : FList<CExpression>) : CExpression =
+      when (f) {
+        is CRefExpression -> {
+          val declaration = declarationProvider(f.declaration)
+          when (declaration) {
+            is CFunctionDeclaration -> {
+              reduce(declaration, args)
+            }
+            else -> {
+              throw RuntimeException()
+            }
+          }
+        }
+        else -> {
+          throw RuntimeException();
+        }
+      }
+
 }

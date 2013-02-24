@@ -173,5 +173,5 @@ public fun findDeclaration(element : AgdaReferenceElementImpl) : PsiElement? {
 
     }
 
-    throw RuntimeException()
+    return null;
 }
