@@ -27,10 +27,10 @@ class AgdaOutputProcessor {
 
         if (command.contains("agda2-highlight-add-annotations"))
         {
-            messages.addAll(AgdaSyntaxAnnotation.parse(cmdExpression)!!)
+            messages.addAll(AgdaSyntaxAnnotation.parse(cmdExpression))
         }
 
-        if (command.contains("agda2-highlight-load-and-delete-action")!!)
+        if (command.contains("agda2-highlight-load-and-delete-action"))
         {
             var expr : SExpression? = LispParser(command).parseExpression()
             try

@@ -69,7 +69,7 @@ class ProgramBuilder() {
             var aName : FqNameImpl = expression
             if (aName.getText()?.equals("Set")!!)
             {
-                return CSet()
+                return CSet(0)
             }
             if (aName.getText()?.equals("_")!!) {
                 return CAnything()
@@ -151,7 +151,7 @@ class ProgramBuilder() {
         throw RuntimeException();
     }
 
-    fun checkTypesFor(val element : PsiElement) : TypeChecker {
+    fun checkTypesFor(element : PsiElement) : TypeChecker {
         val typeChecker = TypeChecker({ declaration ->
             convertDeclaration(declaration as PsiElement)
         });
@@ -180,15 +180,16 @@ class ProgramBuilder() {
     fun convertFunctionTypeDeclaration(element : FunctionTypeDeclaration) : CFunctionDeclaration {
         val functionDeclaration : FunctionTypeDeclaration = element;
         val name : String = functionDeclaration.getNameDeclaration().getText()!!
-        val declaration = CFunctionDeclaration(name, convertExpression(functionDeclaration.getExpression()!!))
+        val bodies = ArrayList<CFunctionBody>()
         for (child in element.getParent()!!.getChildren()) {
             if (child is FunctionDeclaration) {
                 val functionTypeDeclaration = findTypeDeclaration(child)
                 if (functionTypeDeclaration == functionDeclaration) {
-                    declaration.addBody(convertFunctionBody(child))
+                    bodies.add(convertFunctionBody(child))
                 }
             }
         }
+        val declaration = CFunctionDeclaration(name, convertExpression(functionDeclaration.getExpression()!!), bodies)
         return declaration
     }
 
@@ -197,7 +198,7 @@ class ProgramBuilder() {
             is TermElement-> return convertExpression(treeElement.element)
             is OperationElement -> {
                 val declaration = treeElement.declaration
-                val ref : CRefExpression = CRefExpression(declaration, getDeclarationName(declaration)!!)
+                val ref : CRefExpression = CRefExpression(declaration, getDeclarationName(declaration))
                 val children : MutableList<CExpression> = ArrayList<CExpression>()
                 for (child in treeElement.children) {
                     if (child is TermElement && !child.isOperation) {
@@ -218,17 +219,17 @@ class ProgramBuilder() {
         }
     }
 
-    private fun getDeclarationName(declaration : PsiElement?) : String? {
+    private fun getDeclarationName(declaration : PsiElement) : String {
         if (declaration is FunctionTypeDeclaration) {
-            return declaration.getNameDeclaration().getText()
+            return declaration.getNameDeclaration().getText()!!
         }
 
         if (declaration is DataDeclaration) {
-            return declaration.getNameDeclaration()?.getText()
+            return declaration.getNameDeclaration()?.getText()!!
         }
 
         if (declaration is NameDeclaration) {
-            return declaration.getText()
+            return declaration.getText()!!
         }
 
         throw IllegalArgumentException()

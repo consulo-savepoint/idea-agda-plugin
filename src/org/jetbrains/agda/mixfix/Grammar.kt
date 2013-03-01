@@ -152,7 +152,8 @@ public open class Grammar(val myDeclarations : MutableMap<String, PsiElement>) {
             }
             return operationParts
         }
-        private open fun getListOfTerminals(var application : Application) : List<PsiElement>? {
+        private open fun getListOfTerminals(applicationArg : Application) : List<PsiElement>? {
+            var application = applicationArg;
             while ((application.getParent() is Application)) {
                 application = (application.getParent() as Application)
             }

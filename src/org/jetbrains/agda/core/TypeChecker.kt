@@ -58,7 +58,7 @@ public open class TypeChecker(val declarationProvider : (Any) -> CDeclaration?) 
     fun replaceVar(expr : CExpression, name : String, value : CExpression) =
         expr.transform(object : ExpressionTransformer() {
 
-            public override fun transformRef(val ref: CRefExpression): CExpression {
+            public override fun transformRef(ref: CRefExpression): CExpression {
                 if (ref.name == name) {
                     return value;
                 } else {
@@ -66,7 +66,7 @@ public open class TypeChecker(val declarationProvider : (Any) -> CDeclaration?) 
                 }
             }
 
-            public override fun transformMetaRef(val ref: CMetaRef): CExpression {
+            public override fun transformMetaRef(ref: CMetaRef): CExpression {
                 if (ref.name == name) {
                     return value;
                 } else {
@@ -135,8 +135,9 @@ public open class TypeChecker(val declarationProvider : (Any) -> CDeclaration?) 
             val leftType : CExpression = checkType(context, signature, application.left, null, leftPart)
             return doCheckApplication(context, leftType, application.right, signature, leftPart);
         } else if (expression is CRefExpression) {
-            if (context.get(expression.name) != null) {
-                return context.get(expression.name)!!
+            val contextContent = context.get(expression.name)
+            if (contextContent != null) {
+                return contextContent
             }
             val functionsVar = signature.variables.get(expression.name)
             if (functionsVar != null) {
@@ -169,8 +170,8 @@ public open class TypeChecker(val declarationProvider : (Any) -> CDeclaration?) 
             val declaration = declarationProvider(expr.declaration)
             if (declaration != null) {
                 if (declaration is CFunctionDeclaration) {
-                    if (declaration.getBodyes().size == 1) {
-                        return normalize(declaration.getBodyes()[0].right)
+                    if (declaration.bodies.size == 1) {
+                        return normalize(declaration.bodies[0].right)
                     }
                 }
             }
@@ -207,7 +208,7 @@ public open class TypeChecker(val declarationProvider : (Any) -> CDeclaration?) 
 
 
     fun reduce(f : CFunctionDeclaration, args : FList<CExpression>) : CExpression {
-        for (val body in f.getBodyes()) {
+        for (body in f.bodies) {
             val m = match(getArguments(body.left), args)
             if (m != null) {
                 throw UnsupportedOperationException()

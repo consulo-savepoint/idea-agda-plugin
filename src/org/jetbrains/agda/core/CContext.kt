@@ -12,8 +12,14 @@ import org.jetbrains.agda.util.Nil
 public class CContext(val pairs : FList<Pair<String, CExpression>>) {
 
     public fun get(key : String) : CExpression? =
-        pairs.fold<CExpression?>(null) { pair, next ->
-            if (pair.first == key) pair.second else next()
+        when (pairs) {
+            is Nil<Pair<String, CExpression>> -> null
+            is Cons<Pair<String, CExpression>> ->
+               if (pairs.head.first == key)
+                   pairs.head.second
+               else
+                   CContext(pairs.tail).get(key)
+            else -> null
         }
 
     public fun put(name : String, cType : CExpression) : CContext =
