@@ -1,0 +1,11 @@
+Name:                agda-interface
+Version:             0.1
+Description:         Library to use Agda compiler
+License:             MIT
+Build-Type:          Simple
+Cabal-Version:       >=1.2
+
+Executable agda-interface
+  Main-is:           Main.hs
+  Build-Depends:     base >= 3 && < 5,
+                     Agda 
