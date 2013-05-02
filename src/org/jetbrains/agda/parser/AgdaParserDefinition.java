@@ -1,5 +1,6 @@
 package org.jetbrains.agda.parser;
 
+import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.ParserDefinition;
 import com.intellij.lang.PsiParser;
@@ -21,7 +22,7 @@ public class AgdaParserDefinition implements ParserDefinition {
 
     @NotNull
     public Lexer createLexer(Project project) {
-        return new AgdaFullLexer();
+        return new AgdaHighlightLexer();
     }
 
     public IFileElementType getFileNodeType() {
@@ -45,7 +46,7 @@ public class AgdaParserDefinition implements ParserDefinition {
 
     @NotNull
     public PsiParser createParser(final Project project) {
-        return new org.jetbrains.agda.gen.parser.AgdaParser();
+        return new ExternalAgdaParser();
     }
 
     public PsiFile createFile(FileViewProvider viewProvider) {
@@ -58,6 +59,6 @@ public class AgdaParserDefinition implements ParserDefinition {
 
     @NotNull
     public PsiElement createElement(ASTNode node) {
-        return AgdaTokenTypes.Factory.createElement(node);
+        return new ASTWrapperPsiElement(node);
     }
 }

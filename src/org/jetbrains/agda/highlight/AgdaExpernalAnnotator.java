@@ -55,7 +55,7 @@ public final class AgdaExpernalAnnotator extends ExternalAnnotator<PsiFile, Anno
 
         System.out.println("Annotations");
         AgdaProjectComponent component = psiFile.getProject().getComponent(AgdaProjectComponent.class);
-        List<AgdaExternalAnnotation> agdaExternalAnnotations = component.load(file.getPath());
+        List<AgdaExternalAnnotation> agdaExternalAnnotations = new ArrayList<AgdaExternalAnnotation>(); //component.load(file.getPath());
 
         return new AnnotationResult(file, agdaExternalAnnotations);
     }
