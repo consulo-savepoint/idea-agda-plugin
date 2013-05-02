@@ -1,21 +1,30 @@
-import Agda.Syntax.Parser
+--import Agda.Syntax.Parser
 import Agda.Syntax.Concrete
 import Agda.Syntax.Position
 import Agda.Syntax.Concrete.Name 
 import Agda.Syntax.Common 
 
-
+import qualified Agda.Syntax.Parser.Monad as M
+import qualified Agda.Syntax.Parser.Parser as P 
+import Agda.Syntax.Parser.Lexer
+import System.IO
+import System.Environment 
 import Data.List
 import Data.Maybe
+import Protocol
+import SExpr
 
+parse :: M.Parser a -> String -> M.ParseResult a
+parse p = M.parse (M.defaultParseFlags { M.parseKeepComments = False }) [normal] p
 
 main = do
-        x <- readFile "test.agda"
-        m <- parse moduleParser x
-        putStrLn $ sExprToString $ moduleToSExpr m
+        hSetBuffering stdout NoBuffering
+        hSetEncoding stdin utf8
+        hSetEncoding stdout utf8
+        x <- getContents      
+        m <- return $ parse P.moduleParser x
+        putStrLn $ sExprToString $ parseResultToSExpr m
 
-
-data SExpr = Atom String | SList [SExpr] | SStr String
 
 sExprToString = sExprToString' " "
 
@@ -47,98 +56,14 @@ class SExprPresentable a where
         sexpr :: a -> SExpr
 
 
-lamBindingToSExpr (DomainFree hiding relevance boundName) = SList [Atom "DomainFree"]
-lamBindingToSExpr (DomainFull typedBindings)              = SList [Atom "DomainFull"]
+parseResultToSExpr :: M.ParseResult Module -> SExpr
+parseResultToSExpr (M.ParseOk _ x)     = SList [(Atom "ParseOk"), moduleToSExpr x]
+parseResultToSExpr (M.ParseFailed err) = SList [(Atom "ParseFailed")]
 
-
-rangeToSExpr :: Range -> SExpr
-rangeToSExpr (Range intervals) = SList [Atom "Range", SList $ map intervalToSExpr intervals]
-
-positionToSExpr :: Position -> SExpr
-positionToSExpr position = SList [Atom "position", Atom $ show (posPos position)]
-
-intervalToSExpr :: Interval -> SExpr
-intervalToSExpr (Interval iStart iEnd) = SList [Atom "Interval", positionToSExpr iStart, positionToSExpr iEnd]
+--pragmaToSExpr :: Pragma -> SExpr
+--pragmaToSExpr pragma = SList [Atom "Pragma"]
 
 moduleToSExpr :: Module -> SExpr
 moduleToSExpr (pragmas, declarations) = SList [
                           (SList $ map pragmaToSExpr pragmas),
                           (SList $ map declarationToSExpr declarations) ]
-
-
-pragmaToSExpr :: Pragma -> SExpr
-pragmaToSExpr progma = Atom "Pragma"
-
-namePartToSExpr :: NamePart -> SExpr
-namePartToSExpr Hole         = Atom "Hole"
-namePartToSExpr (Id string)  = (SList [Atom "Id", SStr string])
-
-nameIdToSExpr :: NameId -> SExpr
-nameIdToSExpr (NameId v1 v2) = (SList [Atom "NameId", Atom $ show v1, Atom $ show v2])
-
-nameToSExpr :: Name -> SExpr
-nameToSExpr (Name   range nameParts) = SList [(Atom "Name"), rangeToSExpr range, SList $ map namePartToSExpr nameParts]
-nameToSExpr (NoName range nameId)    = SList [(Atom "NoName"), rangeToSExpr range, nameIdToSExpr nameId ]
-
-qnameToSExpr :: QName -> SExpr
-qnameToSExpr (Qual  name qName) = SList [Atom "Qual", nameToSExpr name, qnameToSExpr qName]
-qnameToSExpr (QName name)       = SList [Atom "QName", nameToSExpr name]
-
-typedBindingToSExpr :: TypedBindings -> SExpr
-typedBindingToSExpr typedBinding = SList [Atom "TypedBindings"]
-
-inductionToSExpr :: Induction -> SExpr
-inductionToSExpr induction = SList [Atom "Induction"]
-
-exprToSExpr :: Expr -> SExpr
-exprToSExpr expression = SList [Atom "Expr"]
-
-maybeExprToSExpr :: Maybe Expr -> SExpr
-maybeExprToSExpr Nothing     = Atom "Nothing"
-maybeExprToSExpr (Just expr) = SList [Atom "Just", exprToSExpr expr]
-
-constructorToSExpr :: Constructor -> SExpr
-constructorToSExpr constructor = SList [ Atom "Constructor" ]
-
-{-
-TypeSig Relevance Name Expr -- ^ Axioms and functions can be irrelevant.
-        | Field Name (Arg Expr) -- ^ Record field, can be hidden and/or irrelevant.
-        | FunClause LHS RHS WhereClause
-        | DataSig     !Range Induction Name [LamBinding] Expr -- ^ lone data signature in mutual block
-        | Data        !Range Ind uction Name [LamBinding] (Maybe Expr) [Constructor]
-        | Reco rdSig   !Range Name [LamBinding] Expr -- ^ lone record signature in mutual block
-        | Record      !Range Name (Maybe Induction) (Maybe Name) [LamBinding] (Maybe Expr) [Declaration]
-          -- ^ The optional name is a name for the record constructor.
-        | Infix Fixity [Name]
-        | Syntax      Name Notation -- ^ notation declaration for a name
-        | PatternSyn  !Range Name [Name] Pattern
-        | Mutual      !Range [Declaration]
-        | Abstract    !Range [Declaration]
-        | Private     !Range [Declaration]
-        | Postulate   !Range [TypeSignature]
-        | Primitive   !Range [TypeSignature]
-        | Open        !Range QName ImportDirective
-        | Import      !Range QName (Maybe AsName) OpenShortHand ImportDirective
-        | ModuleMacro !Range  Name ModuleApplication OpenShortHand ImportDirective
-        | Module      !Range QName [TypedBindings] [Declaration]
-        | Pragma      Pragma
--}
-
-declarationToSExpr :: Declaration -> SExpr
-declarationToSExpr (Module range qName typedBindings declarations) = SList [
-                (Atom "Module"),
-                (rangeToSExpr range),
-                (qnameToSExpr qName),
-                SList $ map typedBindingToSExpr typedBindings,
-                SList $ map declarationToSExpr declarations
-                ]        
-declarationToSExpr (Data range induction name lamBindings maybeExpr constructors) = SList [
-                (Atom "Data"),
-                (rangeToSExpr range),
-                (inductionToSExpr induction), 
-                (nameToSExpr name),
-                SList $ map lamBindingToSExpr lamBindings,
-                maybeExprToSExpr maybeExpr,
-                SList $ map constructorToSExpr constructors
-                ]
-declarationToSExpr declaration = Atom "Declaration"
