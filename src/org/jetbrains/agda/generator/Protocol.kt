@@ -66,7 +66,7 @@ public fun Protocol.data(name : String, body : MutableList<Constructor>.() -> Un
 }
 
 fun protocol(body : Protocol.() -> Unit) : Protocol {
-    val protocol = Protocol(ArrayList<Data>())
+    val protocol = Protocol(ArrayList<ProtocolElement>())
     protocol.body()
     return protocol
 }

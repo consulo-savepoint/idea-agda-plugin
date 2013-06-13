@@ -9,31 +9,30 @@ import java.io.InputStreamReader
 import org.jetbrains.agda.lisp.LispParser
 import java.io.File
 import org.jetbrains.agda.util.FileUtil
+import org.jetbrains.agda.parser.ast.ASTNode
+import org.jetbrains.agda.parser.ast.getASTNode
 
 /**
  * @author Evgeny.Kurbatsky
  */
 
 public class AgdaInteface() {
-    var myProcess : Process? = null;
-    var myInput : InputStream? = null;
-    var myWriter : Writer? = null;
 
     public fun run(fileContent : String) : String {
         val rt = Runtime.getRuntime()
         val agdaPath : String = "C:\\Users\\Atsky\\Dropbox\\agda-plugin\\haskell\\.dist-buildwrapper\\dist\\build\\agda-interface\\agda-interface.exe"
         //val agdaPath : String = "/home/atsky/Dropbox/agda-plugin/haskell/cabal-dev/bin/agda-interface"
 
-        myProcess = rt.exec(agdaPath)
-        myInput = myProcess!!.getInputStream()
-        myWriter = OutputStreamWriter(myProcess!!.getOutputStream() as OutputStream, "utf8")
+        val process : Process = rt.exec(agdaPath)
+        val input : InputStream = process.getInputStream()!!
+        val writer : Writer = OutputStreamWriter(process.getOutputStream() as OutputStream, "utf8");
 
-        myWriter!!.write(fileContent)
-        myWriter!!.flush()
-        myWriter!!.close()
+        writer.write(fileContent)
+        writer.flush()
+        writer.close()
 
         val result = StringBuilder()
-        val reader = BufferedReader(InputStreamReader(myInput!!, "utf8"))
+        val reader = BufferedReader(InputStreamReader(input, "utf8"))
         while (true) {
             val line = reader.readLine()
             if (line != null) {
@@ -50,10 +49,11 @@ public class AgdaInteface() {
 
 
 public fun main(args : Array<String>) {
-    val fileContent : String = FileUtil.readFile(File("/home/atsky/Dropbox/agda/src/experiments/test.agda"))!!
+    val fileContent : String = FileUtil.readFile(File("C:/Users/Atsky/Dropbox/agda/src/experiments/test.agda"))!!
     val expression = AgdaInteface().run(fileContent)
 
     val parser = LispParser(expression)
     val sexpression = parser.parseExpression()
-    System.out.println(expression)
+    val node = getASTNode(sexpression.get(1)!!.get(1)!!.get(0)!!)
+    System.out.println(node)
 }

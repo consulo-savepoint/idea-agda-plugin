@@ -6,7 +6,6 @@ import com.intellij.psi.tree.IElementType
 import org.jetbrains.agda.lisp.LispParser
 import org.jetbrains.agda.lisp.SExpression
 import java.util.ArrayList
-import org.jetbrains.agda.parser.ast.getASTNode
 
 public class AgdaParsing(val builder : PsiBuilder) {
     var UNKNOWN : IElementType = AgdaToken("UNKNOWN")
@@ -18,85 +17,55 @@ public class AgdaParsing(val builder : PsiBuilder) {
         val result = AgdaInteface().run(builder.getOriginalText()?.toString())
         System.out.println(result)
         val parser : LispParser = LispParser(result)
-        val sexpression : SExpression = parser.parseExpression()
-        val astNode = getASTNode(sexpression)
-        var module : SExpression = sexpression.get(1)!!.get(1)!!.get(0)!!
-        parseModule(module)
-        while (!builder.eof()) {
-            val mark = builder.mark()!!
-            val currentOffset : Int = builder.getCurrentOffset()
-            builder.advanceLexer()
-            val traverse : IElementType? = traverse(sexpression, currentOffset)
-            if (traverse != null) {
-                mark.done(traverse)
-            } else {
-                mark.done(UNKNOWN)
-            }
-        }
-    }
+        val sexpression : SExpression = parser.parseExpression().get(1)!!.get(1)!!.get(0)!!;
 
-    fun parseBody(sexpression : SExpression) {
+        parseNode(sexpression)
 
         while (!builder.eof()) {
             val mark = builder.mark()!!
             val currentOffset : Int = builder.getCurrentOffset()
             builder.advanceLexer()
-            val traverse : IElementType? = traverse(sexpression, currentOffset)
-            if (traverse != null) {
-                mark.done(traverse)
-            } else {
-                mark.done(UNKNOWN)
-            }
-        }
 
+            mark.done(UNKNOWN)
+        }
     }
 
-    private fun parseModule(module : SExpression) : Unit {
-        var mark : PsiBuilder.Marker = builder.mark()!!
-        val rangeList = parseRange(module.get(1)!!)
-
-        parseBody(module);
-
-        mark.done(MODULE)
-    }
-
-    private fun parseRange(expression : SExpression) : List<Int> {
-        assert("Range".equals(expression.getValue(0)))
-        val list = ArrayList<Int>()
-
-        for (child in expression.get(1)!!.getChildren()!!) {
-            var index : Int = Integer.decode(child.get(1)!!.getValue(1))!!
-            list.add(index)
+    private fun getNodeType(expression: SExpression) : IElementType? {
+        if (expression.getValue(0) == "Module") {
+            return MODULE;
         }
-
-        return list
-    }
-
-    private fun traverse(sexpression : SExpression, currentOffset : Int) : IElementType? {
-        if (!sexpression.isAtom()) {
-            if ((sexpression.getChildren()?.size())!! > 0 &&
-                    (sexpression.get(0)?.isAtom())!! &&
-                    (sexpression.getValue(0)?.equals("Name"))!!) {
-                val interval = sexpression.get(1)?.get(1)?.get(0)!!
-                val indexString : String? = interval.get(1)?.get(1)?.getValue()
-                if (indexString != null) {
-                    var index : Int = Integer.decode(indexString)!!
-                    if (index == currentOffset + 1) {
-                        return NAME
-                    }
-                }
-            }
-
-            for (e in sexpression.getChildren()!!) {
-                val t : IElementType? = traverse(e, currentOffset)
-                if (t != null) {
-                    return t
-                }
-
-            }
-        }
-
         return null;
+    }
+
+    private fun getOffsetsList(expression: SExpression) : List<Int> {
+        val range = expression.get(1)!!
+        assert("Range" == range.getValue(0))
+        val intervals = range.get(1)!!.getChildren()!!
+        val result = ArrayList<Int>()
+        for (interval in intervals) {
+            result.add(Integer.decode(interval.get(1)!!.getValue(1)!!)!! - 1)
+        }
+        return result;
+    }
+
+    private fun parseNode(expression: SExpression) : Unit {
+        var mark : PsiBuilder.Marker = builder.mark()!!
+
+        val nodeType = getNodeType(expression)
+        val offsetsList = getOffsetsList(expression)
+        if (nodeType != null) {
+            while (!builder.eof()) {
+                val currentOffset : Int = builder.getCurrentOffset()
+                if (!offsetsList.contains(currentOffset)) {
+                    break
+                }
+                builder.advanceLexer()
+            }
+
+            mark.done(nodeType)
+        } else {
+            mark.drop()
+        }
     }
 
 }
