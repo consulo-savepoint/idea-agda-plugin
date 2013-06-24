@@ -1,4 +1,4 @@
-package org.jetbrains.agda.lisp;
+package org.jetbrains.agda.util.lisp;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -9,8 +9,6 @@ import java.io.InputStreamReader
 import org.jetbrains.agda.lisp.LispParser
 import java.io.File
 import org.jetbrains.agda.util.FileUtil
-import org.jetbrains.agda.parser.ast.ASTNode
-import org.jetbrains.agda.parser.ast.getASTNode
 
 /**
  * @author Evgeny.Kurbatsky
@@ -54,6 +52,5 @@ public fun main(args : Array<String>) {
 
     val parser = LispParser(expression)
     val sexpression = parser.parseExpression()
-    val node = getASTNode(sexpression.get(1)!!.get(1)!!.get(0)!!)
-    System.out.println(node)
+    System.out.println(sexpression)
 }

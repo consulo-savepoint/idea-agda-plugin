@@ -1,11 +1,8 @@
 package org.jetbrains.agda.external;
 
 
-import com.intellij.notification.Notification;
-import com.intellij.notification.NotificationType;
-import com.intellij.notification.Notifications;
-import org.jetbrains.agda.lisp.LispParser;
-import org.jetbrains.agda.lisp.SExpression;
+import org.jetbrains.agda.util.lisp.LispParser;
+import org.jetbrains.agda.util.lisp.SExpression;
 import org.jetbrains.agda.settings.AgdaSettings;
 
 import java.io.*;

@@ -1,8 +1,8 @@
 package org.jetbrains.agda;
 
 import org.jetbrains.agda.external.AgdaProcess;
-import org.jetbrains.agda.lisp.LispParser;
-import org.jetbrains.agda.lisp.SExpression;
+import org.jetbrains.agda.util.lisp.LispParser;
+import org.jetbrains.agda.util.lisp.SExpression;
 import org.jetbrains.agda.util.FileUtil;
 
 import java.io.*;

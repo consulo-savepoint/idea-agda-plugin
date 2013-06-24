@@ -5,16 +5,11 @@ import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.project.Project;
-import org.jetbrains.agda.lisp.LispParser;
-import org.jetbrains.agda.lisp.SExpression;
-import org.jetbrains.agda.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 public final class AgdaProjectComponent implements ProjectComponent {
     private final boolean keepAlive = false;
