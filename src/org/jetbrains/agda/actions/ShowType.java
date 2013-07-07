@@ -13,7 +13,6 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.ui.LightweightHint;
 import org.jetbrains.agda.core.CExpression;
-import org.jetbrains.agda.core.TypeChecker;
 import org.jetbrains.agda.core.ProgramBuilder;
 import org.jetbrains.agda.psi.WhereExpression;
 
@@ -34,19 +33,6 @@ public class ShowType extends AnAction {
             }
         PsiElement elementAt = findElementAt(file, editor.getSelectionModel().getSelectionStart(), editor.getSelectionModel().getSelectionEnd());
         if (elementAt != null) {
-            if (elementAt instanceof WhereExpression) {
-                elementAt = ((WhereExpression) elementAt).getExpression();
-            }
-            CExpression typeOf = new ProgramBuilder().getTypeOf(elementAt);
-            if (typeOf != null) {
-                JLabel component = new JLabel(typeOf.toString());
-
-                final LightweightHint hint = new LightweightHint(component);
-                final HintManagerImpl hintManager = HintManagerImpl.getInstanceImpl();
-                hintManager.showEditorHint(hint, editor, hintManager.getHintPosition(hint, editor, HintManager.ABOVE),
-                        HintManager.HIDE_BY_ANY_KEY | HintManager.HIDE_BY_LOOKUP_ITEM_CHANGE | HintManager.UPDATE_BY_SCROLLING,
-                        0, false, HintManager.ABOVE);
-            }
         }
     }
 

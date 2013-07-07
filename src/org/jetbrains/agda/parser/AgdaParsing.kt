@@ -3,8 +3,8 @@ package org.jetbrains.agda.parser
 import com.intellij.lang.PsiBuilder
 import org.jetbrains.agda.agdaInterface.AgdaInteface
 import com.intellij.psi.tree.IElementType
-import org.jetbrains.agda.lisp.LispParser
-import org.jetbrains.agda.lisp.SExpression
+import org.jetbrains.agda.util.lisp.LispParser
+import org.jetbrains.agda.util.lisp.SExpression
 import java.util.ArrayList
 
 public class AgdaParsing(val builder : PsiBuilder) {

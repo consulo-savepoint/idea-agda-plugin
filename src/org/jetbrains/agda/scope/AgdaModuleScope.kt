@@ -121,7 +121,9 @@ class AgdaModuleScope(val module : PsiElement, val external : Boolean) : Scope()
 
         if (element is RecordDeclaration) {
             val nameDeclaration = element.getNameDeclaration()
-            map.put(nameDeclaration!!.getText()!!, nameDeclaration)
+            if (nameDeclaration != null) {
+                map.put(nameDeclaration.getText()!!, nameDeclaration)
+            }
         }
 
         if (element is FunctionTypeDeclaration) {

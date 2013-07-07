@@ -1,8 +1,8 @@
 package org.jetbrains.agda.external
 
 import java.util.ArrayList
-import org.jetbrains.agda.lisp.LispParser
-import org.jetbrains.agda.lisp.SExpression
+import org.jetbrains.agda.util.lisp.LispParser
+import org.jetbrains.agda.util.lisp.SExpression
 import java.util.regex.Pattern
 import java.io.File
 import org.jetbrains.agda.util.FileUtil
@@ -42,14 +42,14 @@ class AgdaOutputProcessor {
                 messages?.addAll(AgdaSyntaxAnnotation.parse(expression))
             }
             catch (e : IOException) {
-                e?.printStackTrace()
+                e.printStackTrace()
             }
 
         }
 
-        if (!command?.contains("*Type-checking*") && !command?.contains("agda2-highlight-add-annotations"))
+        if (!command.contains("*Type-checking*") && !command.contains("agda2-highlight-add-annotations"))
         {
-            System.out?.println("[" + command + "]")
+            System.out.println("[" + command + "]")
         }
 
         return true

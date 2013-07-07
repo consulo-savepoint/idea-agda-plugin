@@ -52,7 +52,7 @@ public class AgdaAnnotator implements Annotator {
                     holder.createInfoAnnotation(element, null).setTextAttributes(AgdaHighlighter.CONSTRUCTOR);
                 }
             } else {
-                //holder.createErrorAnnotation(element, "Can't resolve");
+                holder.createErrorAnnotation(element, "Can't resolve");
             }
 
         }

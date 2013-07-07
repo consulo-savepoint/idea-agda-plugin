@@ -1,6 +1,6 @@
 package org.jetbrains.agda.external
 
-import org.jetbrains.agda.lisp.SExpression
+import org.jetbrains.agda.util.lisp.SExpression
 import java.util.ArrayList
 
 

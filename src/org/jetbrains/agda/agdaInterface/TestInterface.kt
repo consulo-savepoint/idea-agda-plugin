@@ -6,7 +6,7 @@ import java.io.Writer
 import java.io.OutputStream
 import java.io.BufferedReader
 import java.io.InputStreamReader
-import org.jetbrains.agda.lisp.LispParser
+import org.jetbrains.agda.util.lisp.LispParser
 import java.io.File
 import org.jetbrains.agda.util.FileUtil
 

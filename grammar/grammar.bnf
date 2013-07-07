@@ -106,8 +106,8 @@ bindings ::= binding *
 
 // Import and open
 
-module_import ::= 'open' ? 'import' fqName module_arguments as_name? "public"? using_or_hiding? renaming?  {pin=2}
-open ::= 'open' fqName module_arguments as_name? "public"? using_or_hiding? renaming? {pin=1}
+module_import ::= OPEN_KEYWORD ? 'import' fqName module_arguments as_name? "public"? using_or_hiding? renaming?  {pin=2}
+open ::= OPEN_KEYWORD fqName module_arguments as_name? "public"? using_or_hiding? renaming? {pin=1}
 
 binding ::= "{" ids (":" expression)? "}" | "(" ids (":" expression)? ")"
 

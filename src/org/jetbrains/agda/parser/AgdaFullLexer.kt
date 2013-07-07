@@ -16,7 +16,10 @@ import com.intellij.psi.TokenType
  * @author Evgeny.Kurbatsky
  */
 class AgdaFullLexer() : LexerBase() {
-    val indentTokens = HashSet<IElementType>(Arrays.asList(AgdaTokenTypes.WHERE_KEYWORD))
+    val indentTokens = HashSet<IElementType>(Arrays.asList(
+            AgdaTokenTypes.WHERE_KEYWORD,
+            AgdaTokenTypes.FIELD_KEYWORD,
+            AgdaTokenTypes.POSTULATE_KEYWORD))
     val lexer = AgdaHighlightLexer();
     val tokenStarts = ArrayList<Int>();
     val tokenEnds = ArrayList<Int>();
@@ -31,11 +34,6 @@ class AgdaFullLexer() : LexerBase() {
         var tokenType = lexer.getTokenType()
         while (tokenType != null) {
 
-
-            if (indentTokens.contains(tokenType)) {
-                recordIndent = true
-            }
-
             addToken(lexer.getTokenStart(), lexer.getTokenEnd(), lexer.getState(), tokenType!!)
             val tokenSize : Int = lexer.getTokenEnd() - lexer.getTokenStart() - 1
 
@@ -47,20 +45,29 @@ class AgdaFullLexer() : LexerBase() {
                     !AgdaTokenSets.COMMENTS.contains(nextToken)) {
 
                     if (tokenSize == indentStack.last!!) {
-                        tokenTypes[tokenTypes.size - 1] = AgdaTokenTypes.VIRTUAL_SEMICOLON
+                        addToken(lexer.getTokenStart(), lexer.getTokenStart(), 0, AgdaTokenTypes.VIRTUAL_SEMICOLON)
                     } else {
                         if (recordIndent && (tokenSize > indentStack.last!!)) {
                             indentStack.addLast(tokenSize);
                             addToken(lexer.getTokenStart(), lexer.getTokenStart(), 0, AgdaTokenTypes.VIRTUAL_LEFT_PAREN)
-                            recordIndent = false;
                         }
-                        while (tokenSize < indentStack.last!!) {
-                            indentStack.removeLast();
-                            addToken(lexer.getTokenStart(), lexer.getTokenStart(), 0, AgdaTokenTypes.VIRTUAL_RIGHT_PAREN)
+                        if (tokenSize < indentStack.last!!) {
+                            while (tokenSize < indentStack.last!!) {
+                                indentStack.removeLast();
+                                addToken(lexer.getTokenStart(), lexer.getTokenStart(), 0, AgdaTokenTypes.VIRTUAL_RIGHT_PAREN)
+                            }
                             addToken(lexer.getTokenStart(), lexer.getTokenStart(), 0, AgdaTokenTypes.VIRTUAL_SEMICOLON)
                         }
                     }
                 }
+            }
+
+            if (!AgdaTokenSets.COMMENTS.contains(tokenType) && !AgdaTokenSets.WHITESPACES.contains(tokenType)) {
+                recordIndent = false;
+            }
+
+            if (indentTokens.contains(tokenType)) {
+                recordIndent = true;
             }
 
             tokenType = lexer.getTokenType()
